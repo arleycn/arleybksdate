@@ -84,7 +84,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* 弹窗样式 */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;
@@ -98,7 +97,6 @@
         .modal-content p { margin-bottom: 1.5rem; color: #e8e8e8; }
         .modal-buttons { display: flex; gap: 1rem; justify-content: center; }
         
-        /* 提示框 */
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: #27ae60; color: white; padding: 12px 24px;
@@ -113,6 +111,28 @@
         }
         
         .category-hint { font-size: 0.7rem; color: #888; margin-top: 0.25rem; }
+        
+        .quick-link-item {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .quick-link-input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1px solid #2a2a3e;
+            background: #1a1a2e;
+            color: #e8e8e8;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .quick-link-input:focus { border-color: #9b59b6; }
     </style>
 </head>
 <body>
@@ -122,6 +142,7 @@
     <div class="tabs">
         <div class="tab active" data-tab="bookmarks">📚 书签管理</div>
         <div class="tab" data-tab="messages">💬 留言管理</div>
+        <div class="tab" data-tab="quicklinks">🔗 快捷链接</div>
         <div class="tab" data-tab="settings">⚙️ 网站设置</div>
     </div>
     
@@ -131,10 +152,10 @@
             <h2>➕ 添加书签</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📂 分类 <span style="color:#888;">(可选择现有或输入新分类)</span></label>
+                    <label>📂 分类</label>
                     <input type="text" id="newCategory" list="categoryList" placeholder="选择或输入新分类" autocomplete="off">
                     <datalist id="categoryList"></datalist>
-                    <div class="category-hint">💡 提示：可以从下拉列表选择，也可以直接输入新分类名</div>
+                    <div class="category-hint">💡 可以从下拉列表选择，也可以直接输入新分类名</div>
                 </div>
                 <div class="form-group">
                     <label>📖 标题</label>
@@ -145,7 +166,7 @@
                     <input type="text" id="newUrl" placeholder="https://">
                 </div>
                 <div class="form-group">
-                    <label>💬 描述 <span style="color:#888;">(可选)</span></label>
+                    <label>💬 描述</label>
                     <input type="text" id="newDesc" placeholder="简单描述这个网站">
                 </div>
             </div>
@@ -166,6 +187,15 @@
         </div>
     </div>
     
+    <!-- 快捷链接管理 -->
+    <div id="tab-quicklinks" class="tab-content">
+        <div class="card">
+            <h2>🔗 快捷链接管理</h2>
+            <div id="quickLinksList"></div>
+            <button class="btn btn-primary" id="addQuickLinkBtn" style="margin-top: 1rem;">➕ 添加链接</button>
+        </div>
+    </div>
+    
     <!-- 网站设置 -->
     <div id="tab-settings" class="tab-content">
         <div class="card">
@@ -176,12 +206,11 @@
             </div>
             <div class="form-group">
                 <label>网站描述</label>
-                <input type="text" id="siteDesc" placeholder="一个纯静态前后端分离的导航站，网址都是自用收藏的">
+                <input type="text" id="siteDesc" placeholder="自用书签导航站，欢迎使用">
             </div>
             <button class="btn btn-primary" id="saveSiteInfo">💾 保存设置</button>
         </div>
         
-        <!-- 版权设置卡片 -->
         <div class="card">
             <h2>📄 版权设置</h2>
             <div class="form-group">
@@ -229,9 +258,7 @@
 <script>
     const API_BASE = "https://bookmarksdate.arley.workers.dev";
     let adminPass = localStorage.getItem("adminPass");
-    let pendingAction = null;
     
-    // 登录验证
     if (!adminPass) {
         const pwd = prompt("🔐 请输入管理员密码");
         if (pwd) { localStorage.setItem("adminPass", pwd); adminPass = pwd; }
@@ -240,7 +267,6 @@
     
     const headers = { 'Authorization': `Bearer ${adminPass}`, 'Content-Type': 'application/json' };
     
-    // 显示提示
     function showToast(msg, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast' + (isError ? ' toast-error' : '');
@@ -249,7 +275,6 @@
         setTimeout(() => toast.remove(), 2500);
     }
     
-    // 确认弹窗
     function showConfirm(title, message, onConfirm) {
         const modal = document.getElementById('confirmModal');
         document.getElementById('confirmTitle').textContent = title;
@@ -281,23 +306,11 @@
         });
     });
     
-    // 更新分类下拉列表
-    function updateCategoryDatalist(bookmarks) {
-        const categories = [];
-        if (bookmarks) {
-            bookmarks.forEach(cat => {
-                if (cat.category) categories.push(cat.category);
-            });
-        }
-        const datalist = document.getElementById('categoryList');
-        datalist.innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">`).join('');
-    }
-    
-    // 加载书签
+    // 书签管理
     async function loadBookmarks() {
         try {
             const res = await fetch(`${API_BASE}/api/admin/bookmarks`, { headers: { 'Authorization': `Bearer ${adminPass}` } });
-            if (res.status === 401) { showToast('登录已过期，请重新登录', true); logout(); return; }
+            if (res.status === 401) { showToast('登录已过期', true); logout(); return; }
             const result = await res.json();
             if (result.success) {
                 renderBookmarks(result.data.bookmarks);
@@ -309,22 +322,27 @@
     function renderBookmarks(bookmarks) {
         const container = document.getElementById('bookmarksList');
         if (!bookmarks || bookmarks.length === 0) {
-            container.innerHTML = '<div class="empty">暂无书签，点击上方添加</div>';
+            container.innerHTML = '<div class="empty">暂无书签</div>';
             return;
         }
         let html = '<table class="bookmark-table"><thead><tr><th>分类</th><th>标题</th><th>网址</th><th>操作</th></tr></thead><tbody>';
         bookmarks.forEach(cat => {
             if (!cat.bookmarks || cat.bookmarks.length === 0) return;
             cat.bookmarks.forEach((bookmark, idx) => {
-                html += `<tr><td>${escapeHtml(cat.category)}</td><td><strong>${escapeHtml(bookmark.name)}</strong>${bookmark.desc ? `<br><small style="color:#888;">${escapeHtml(bookmark.desc)}</small>` : ''}</td><td><small>${escapeHtml(bookmark.url.substring(0, 45))}${bookmark.url.length > 45 ? '...' : ''}</small></td><td><button class="btn btn-danger btn-sm" onclick="confirmDeleteBookmark('${escapeHtml(cat.category)}', ${idx})">🗑️ 删除</button></td></tr>`;
+                html += `<tr><td>${escapeHtml(cat.category)}</td><td><strong>${escapeHtml(bookmark.name)}</strong>${bookmark.desc ? `<br><small style="color:#888;">${escapeHtml(bookmark.desc)}</small>` : ''}</td><td><small>${escapeHtml(bookmark.url.substring(0, 45))}${bookmark.url.length > 45 ? '...' : ''}</small></td><td><button class="btn btn-danger btn-sm" onclick="confirmDeleteBookmark('${escapeHtml(cat.category)}', ${idx})">删除</button></td></tr>`;
             });
         });
-        html += '</tbody></table>';
+        html += '</tbody><tr>';
         container.innerHTML = html;
     }
     
+    function updateCategoryDatalist(bookmarks) {
+        const categories = bookmarks.map(cat => cat.category);
+        document.getElementById('categoryList').innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">`).join('');
+    }
+    
     window.confirmDeleteBookmark = (category, index) => {
-        showConfirm('删除书签', `确定要删除这个书签吗？此操作不可恢复。`, () => deleteBookmark(category, index));
+        showConfirm('删除书签', '确定要删除这个书签吗？', () => deleteBookmark(category, index));
     };
     
     async function deleteBookmark(category, index) {
@@ -341,9 +359,7 @@
         let url = document.getElementById('newUrl').value.trim();
         const desc = document.getElementById('newDesc').value.trim();
         
-        if (!category) { showToast('请填写分类', true); return; }
-        if (!name) { showToast('请填写标题', true); return; }
-        if (!url) { showToast('请填写网址', true); return; }
+        if (!category || !name || !url) { showToast('请填写完整', true); return; }
         if (!url.startsWith('http')) url = 'https://' + url;
         
         try {
@@ -352,7 +368,7 @@
                 body: JSON.stringify({ category, name, url, desc })
             });
             if (res.ok) {
-                showToast('✨ 书签添加成功！');
+                showToast('✨ 添加成功');
                 document.getElementById('newCategory').value = '';
                 document.getElementById('newName').value = '';
                 document.getElementById('newUrl').value = '';
@@ -362,11 +378,11 @@
         } catch (err) { showToast('添加失败', true); }
     };
     
-    // 加载留言
+    // 留言管理
     async function loadMessages() {
         try {
             const res = await fetch(`${API_BASE}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${adminPass}` } });
-            if (res.status === 401) { showToast('登录已过期，请重新登录', true); logout(); return; }
+            if (res.status === 401) { showToast('登录已过期', true); logout(); return; }
             const result = await res.json();
             if (result.success) renderMessages(result.messages);
         } catch (err) { showToast('加载失败', true); }
@@ -380,17 +396,17 @@
         }
         let html = '';
         messages.forEach(msg => {
-            html += `<div class="message-item"><div class="message-info"><span class="message-nickname">${escapeHtml(msg.nickname)}</span><span class="message-time">${new Date(msg.time).toLocaleString()}</span><span class="status-badge status-${msg.status === 'pending' ? 'pending' : 'approved'}">${msg.status === 'pending' ? '⏳ 待审核' : '✅ 已通过'}</span><div class="message-content">${escapeHtml(msg.content)}</div>${msg.recommendUrl ? `<div style="margin-top:0.5rem;">🔗 推荐网址: <a href="${escapeHtml(msg.recommendUrl)}" target="_blank" style="color:#9b59b6;">${escapeHtml(msg.recommendUrl)}</a></div>` : ''}</div><div><button class="btn btn-success btn-sm" onclick="confirmApprove('${msg.id}')">✅ 通过</button> <button class="btn btn-danger btn-sm" onclick="confirmDeleteMessage('${msg.id}')">🗑️ 删除</button></div></div>`;
+            html += `<div class="message-item"><div class="message-info"><span class="message-nickname">${escapeHtml(msg.nickname)}</span><span class="message-time">${new Date(msg.time).toLocaleString()}</span><span class="status-badge status-${msg.status === 'pending' ? 'pending' : 'approved'}">${msg.status === 'pending' ? '待审核' : '已通过'}</span><div class="message-content">${escapeHtml(msg.content)}</div>${msg.recommendUrl ? `<div style="margin-top:0.5rem;">🔗 <a href="${escapeHtml(msg.recommendUrl)}" target="_blank" style="color:#9b59b6;">${escapeHtml(msg.recommendUrl)}</a></div>` : ''}</div><div><button class="btn btn-success btn-sm" onclick="confirmApprove('${msg.id}')">通过</button> <button class="btn btn-danger btn-sm" onclick="confirmDeleteMessage('${msg.id}')">删除</button></div></div>`;
         });
         container.innerHTML = html;
     }
     
     window.confirmApprove = (id) => {
-        showConfirm('审核留言', '确定要通过这条留言吗？通过后将在前台显示。', () => approveMessage(id));
+        showConfirm('审核留言', '确定要通过这条留言吗？', () => approveMessage(id));
     };
     
     window.confirmDeleteMessage = (id) => {
-        showConfirm('删除留言', '确定要删除这条留言吗？此操作不可恢复。', () => deleteMessage(id));
+        showConfirm('删除留言', '确定要删除这条留言吗？', () => deleteMessage(id));
     };
     
     async function approveMessage(id) {
@@ -398,7 +414,7 @@
             const res = await fetch(`${API_BASE}/api/admin/messages/${id}`, {
                 method: 'PUT', headers, body: JSON.stringify({ action: 'approve' })
             });
-            if (res.ok) { showToast('✅ 留言已通过审核'); loadMessages(); }
+            if (res.ok) { showToast('✅ 留言已通过'); loadMessages(); }
             else { showToast('操作失败', true); }
         } catch (err) { showToast('操作失败', true); }
     }
@@ -412,6 +428,74 @@
             else { showToast('操作失败', true); }
         } catch (err) { showToast('操作失败', true); }
     }
+    
+    // 快捷链接管理
+    let quickLinks = [];
+    
+    async function loadQuickLinks() {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/quicklinks`, { headers: { 'Authorization': `Bearer ${adminPass}` } });
+            if (res.status === 401) { showToast('登录已过期', true); logout(); return; }
+            const result = await res.json();
+            if (result.success) {
+                quickLinks = result.quickLinks || [];
+                renderQuickLinks();
+            }
+        } catch (err) { showToast('加载失败', true); }
+    }
+    
+    function renderQuickLinks() {
+        const container = document.getElementById('quickLinksList');
+        if (!quickLinks || quickLinks.length === 0) {
+            container.innerHTML = '<div class="empty">暂无快捷链接，点击上方添加</div>';
+            return;
+        }
+        let html = '';
+        quickLinks.forEach((link, index) => {
+            html += `
+                <div class="quick-link-item">
+                    <input type="text" placeholder="显示文字" value="${escapeHtml(link.name)}" data-index="${index}" data-field="name" class="quick-link-input" style="flex:2;">
+                    <input type="text" placeholder="网址" value="${escapeHtml(link.url)}" data-index="${index}" data-field="url" class="quick-link-input" style="flex:3;">
+                    <button class="btn btn-danger btn-sm" onclick="removeQuickLink(${index})">删除</button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.quick-link-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                const field = input.dataset.field;
+                quickLinks[index][field] = input.value;
+                saveQuickLinks();
+            });
+        });
+    }
+    
+    window.removeQuickLink = (index) => {
+        showConfirm('删除链接', '确定要删除这个快捷链接吗？', () => {
+            quickLinks.splice(index, 1);
+            renderQuickLinks();
+            saveQuickLinks();
+        });
+    };
+    
+    async function saveQuickLinks() {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/quicklinks`, {
+                method: 'PUT', headers,
+                body: JSON.stringify({ quickLinks })
+            });
+            if (res.ok) { showToast('💾 快捷链接已保存'); }
+            else { showToast('保存失败', true); }
+        } catch (err) { showToast('保存失败', true); }
+    }
+    
+    document.getElementById('addQuickLinkBtn').onclick = () => {
+        quickLinks.push({ name: "新链接", url: "https://", icon: "🔗" });
+        renderQuickLinks();
+        saveQuickLinks();
+    };
     
     // 网站设置
     async function loadSiteInfo() {
@@ -432,7 +516,7 @@
         } catch (err) { console.error(err); }
     }
     
-        document.getElementById('saveSiteInfo').onclick = async () => {
+    document.getElementById('saveSiteInfo').onclick = async () => {
         const name = document.getElementById('siteName').value.trim();
         const description = document.getElementById('siteDesc').value.trim();
         if (!name) { showToast('请填写网站名称', true); return; }
@@ -446,7 +530,6 @@
         } catch (err) { showToast('保存失败', true); }
     };
     
-    // 保存版权信息
     document.getElementById('saveCopyrightBtn').onclick = async () => {
         const copyrightYear = document.getElementById('copyrightYear').value.trim();
         const copyrightOwner = document.getElementById('copyrightOwner').value.trim();
@@ -484,6 +567,7 @@
     
     loadBookmarks();
     loadMessages();
+    loadQuickLinks();
     loadSiteInfo();
 </script>
 </body>
