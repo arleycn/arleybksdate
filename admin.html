@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粉贝书签 · 管理后台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #fff5f7 0%, #ffe4ed 100%);
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 2rem; color: #c95c7c; }
+        .message-item {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .message-info { flex: 1; }
+        .message-nickname { font-weight: bold; color: #c95c7c; }
+        .message-time { font-size: 0.7rem; color: #999; margin-left: 1rem; }
+        .message-content { margin-top: 0.5rem; color: #666; }
+        .message-url { font-size: 0.7rem; color: #e8809e; margin-top: 0.5rem; }
+        .message-actions { display: flex; gap: 0.5rem; }
+        .btn {
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            background: #f8cedb;
+            color: #a14261;
+        }
+        .btn-primary { background: #e8809e; color: white; }
+        .btn-danger { background: #ffcccc; color: #c0392b; }
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f8cedb;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .pending { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .approved { background: white; }
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 1rem;
+        }
+        .status-pending { background: #ffc107; color: #333; }
+        .status-approved { background: #28a745; color: white; }
+        .empty { text-align: center; padding: 3rem; color: #999; }
+    </style>
+</head>
+<body>
+<div class="logout-btn" id="logoutBtn">🚪 退出登录</div>
+<div class="container">
+    <h1>🌸 留言管理后台</h1>
+    <div id="messagesList"></div>
+</div>
+
+<script>
+    const API_BASE = "https://bookmarksdate.arley.workers.dev";
+    let adminPass = localStorage.getItem("adminPass");
+
+    if (!adminPass) {
+        const pwd = prompt("请输入管理员密码");
+        if (pwd) {
+            localStorage.setItem("adminPass", pwd);
+            adminPass = pwd;
+        } else {
+            location.href = "/";
+        }
+    }
+
+    async function fetchMessages() {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/messages`, {
+                headers: { 'Authorization': 'Bearer ' + adminPass }
+            });
+            if (res.status === 401) {
+                localStorage.removeItem("adminPass");
+                alert("密码错误或未登录");
+                location.href = "/";
+                return;
+            }
+            const result = await res.json();
+            if (result.success) {
+                renderMessages(result.messages);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function renderMessages(messages) {
+        const container = document.getElementById('messagesList');
+        if (!messages || messages.length === 0) {
+            container.innerHTML = '<div class="empty">暂无留言</div>';
+            return;
+        }
+        let html = '';
+        messages.forEach(msg => {
+            html += `<div class="message-item ${msg.status === 'pending' ? 'pending' : 'approved'}">
+                <div class="message-info">
+                    <div>
+                        <span class="message-nickname">${escapeHtml(msg.nickname)}</span>
+                        <span class="message-time">${new Date(msg.time).toLocaleString()}</span>
+                        <span class="status-badge status-${msg.status === 'pending' ? 'pending' : 'approved'}">${msg.status === 'pending' ? '待审核' : '已通过'}</span>
+                    </div>
+                    <div class="message-content">${escapeHtml(msg.content)}</div>
+                    ${msg.recommendUrl ? `<div class="message-url">🔗 推荐网址: <a href="${escapeHtml(msg.recommendUrl)}" target="_blank">${escapeHtml(msg.recommendUrl)}</a></div>` : ''}
+                </div>
+                <div class="message-actions">
+                    ${msg.status === 'pending' ? `<button class="btn btn-primary" onclick="approveMessage('${msg.id}')">✅ 通过</button>` : ''}
+                    <button class="btn btn-danger" onclick="deleteMessage('${msg.id}')">🗑️ 删除</button>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    async function approveMessage(id) {
+        if (!confirm('通过这条留言？它将显示在首页')) return;
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/messages/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPass },
+                body: JSON.stringify({ action: 'approve' })
+            });
+            if (res.ok) { fetchMessages(); alert('已通过'); }
+        } catch (err) { alert('操作失败'); }
+    }
+
+    async function deleteMessage(id) {
+        if (!confirm('确定删除这条留言吗？')) return;
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/messages/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPass },
+                body: JSON.stringify({ action: 'delete' })
+            });
+            if (res.ok) { fetchMessages(); alert('已删除'); }
+        } catch (err) { alert('操作失败'); }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;';
+        });
+    }
+
+    document.getElementById('logoutBtn').onclick = () => {
+        localStorage.removeItem("adminPass");
+        location.href = "/";
+    };
+
+    fetchMessages();
+</script>
+</body>
+</html>
