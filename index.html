@@ -790,33 +790,58 @@
                         const poweredUrl = info.poweredUrl || '';
                         const icpNumber = info.icpNumber || '';
                         let copyrightHtml = '';
+                        
                         if (owner) {
-                            copyrightHtml += `© ${year} `;
-                            if (ownerUrl) copyrightHtml += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary);">${owner}</a> `;
-                            else copyrightHtml += `${owner} `;
+                            copyrightHtml += `COPYRIGHT © ${year} `;
+                            if (ownerUrl) {
+                                copyrightHtml += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
+                            } else {
+                                copyrightHtml += `<strong>${owner}</strong> `;
+                            }
                         }
+                        
                         if (poweredName) {
                             if (copyrightHtml) copyrightHtml += `| `;
-                            if (poweredUrl) copyrightHtml += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary);">${poweredName}</a> `;
-                            else copyrightHtml += `${poweredName} `;
+                            copyrightHtml += `POWERED BY `;
+                            if (poweredUrl) {
+                                copyrightHtml += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
+                            } else {
+                                copyrightHtml += `<strong>${poweredName}</strong> `;
+                            }
                         }
+                        
+                        
                         if (icpNumber) {
-                            if (copyrightHtml) copyrightHtml += `| 萌ICP备 ${icpNumber}号`;
+                            if (copyrightHtml) copyrightHtml += `| `;
+                            copyrightHtml += `萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
                         }
-                        copyrightContainer.innerHTML = copyrightHtml || `${currentYear} ${siteName} · ${siteDesc}`;
+                        
+                        if (copyrightHtml) {
+                            copyrightContainer.innerHTML = copyrightHtml;
+                        } else {
+                            copyrightContainer.innerHTML = `${currentYear} ${siteName} · ${siteDesc}`;
+                        }
                     } else {
                         copyrightContainer.innerHTML = `${currentYear} ${siteName} · ${siteDesc}`;
                     }
                 }
             } else {
-                if (siteNameEl) siteNameEl.innerHTML = `🌸 Arley's | 书签导航`;
-                if (siteDescEl) siteDescEl.innerHTML = "自用书签导航站，欢迎使用";
-                if (copyrightContainer) copyrightContainer.innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站`;
+                const defaultName = "Arley's | 书签导航";
+                const defaultDesc = "自用书签导航站，欢迎使用";
+                if (siteNameEl) siteNameEl.innerHTML = `🌸 ${defaultName}`;
+                if (siteDescEl) siteDescEl.innerHTML = defaultDesc;
+                if (copyrightContainer) copyrightContainer.innerHTML = `${currentYear} ${defaultName} · ${defaultDesc}`;
             }
         } catch (err) { 
             const currentYear = new Date().getFullYear();
-            const cn = document.getElementById('copyrightContainer');
-            if (cn) cn.innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站`;
+            const defaultName = "Arley's | 书签导航";
+            const defaultDesc = "自用书签导航站，欢迎使用";
+            const siteNameEl = document.getElementById('siteNameDisplay');
+            const siteDescEl = document.getElementById('siteDescDisplay');
+            const copyrightContainer = document.getElementById('copyrightContainer');
+            if (siteNameEl) siteNameEl.innerHTML = `🌸 ${defaultName}`;
+            if (siteDescEl) siteDescEl.innerHTML = defaultDesc;
+            if (copyrightContainer) copyrightContainer.innerHTML = `${currentYear} ${defaultName} · ${defaultDesc}`;
         }
     }
 
