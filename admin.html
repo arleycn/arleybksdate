@@ -575,10 +575,34 @@
         let html = '<table class="quicklink-table"><thead><tr><th>链接名称</th><th>链接地址</th><th>操作</th></tr></thead><tbody>';
         for (let i = 0; i < quickLinks.length; i++) {
             const link = quickLinks[i];
-            html += `<tr><td style="padding: 10px 6px;"><strong>${escapeHtml(link.name || '')}</strong></td><td style="padding: 10px 6px;"><a href="${escapeHtml(link.url || '#')}" target="_blank" style="color:#9b59b6;">${escapeHtml(link.url || '')}</a></td><td style="padding: 10px 6px;"><button class="btn btn-danger btn-sm" onclick="deleteQuickLink(${i})">删除</button></td></tr>`;
+            html += `
+                <tr>
+                    <td style="padding: 10px 6px;">
+                        <input type="text" value="${escapeHtml(link.name || '')}" data-index="${i}" data-field="name" class="quicklink-input" style="width:100%; padding:8px 12px; border-radius:20px; border:1px solid #2a2a3e; background:#1a1a2e; color:#e8e8e8;">
+                    </td>
+                    <td style="padding: 10px 6px;">
+                        <input type="text" value="${escapeHtml(link.url || '')}" data-index="${i}" data-field="url" class="quicklink-input" style="width:100%; padding:8px 12px; border-radius:20px; border:1px solid #2a2a3e; background:#1a1a2e; color:#e8e8e8;">
+                     </td>
+                    <td style="padding: 10px 6px;">
+                        <button class="btn btn-danger btn-sm" onclick="deleteQuickLink(${i})">删除</button>
+                      </td
+                比
+            `;
         }
         html += '</tbody></table>';
         container.innerHTML = html;
+        
+        // 绑定编辑事件
+        document.querySelectorAll('.quicklink-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                const field = this.getAttribute('data-field');
+                if (quickLinks[index]) {
+                    quickLinks[index][field] = this.value;
+                    saveQuickLinks();
+                }
+            });
+        });
     }
     
     window.deleteQuickLink = function(index) {
