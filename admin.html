@@ -170,13 +170,43 @@
             <h2>⚙️ 基本信息</h2>
             <div class="form-group">
                 <label>网站名称</label>
-                <input type="text" id="siteName" placeholder="粉贝书签">
+                <input type="text" id="siteName" placeholder="Arley's | 书签导航">
             </div>
             <div class="form-group">
                 <label>网站描述</label>
-                <input type="text" id="siteDesc" placeholder="一个粉色的小书签导航站">
+                <input type="text" id="siteDesc" placeholder="一个纯静态前后端分离的导航站，网址都是自用收藏的">
             </div>
             <button class="btn btn-primary" id="saveSiteInfo">💾 保存设置</button>
+        </div>
+        
+        <!-- 版权设置卡片 -->
+        <div class="card">
+            <h2>📄 版权设置</h2>
+            <div class="form-group">
+                <label>版权所有年份</label>
+                <input type="text" id="copyrightYear" placeholder="2026">
+            </div>
+            <div class="form-group">
+                <label>版权所有者</label>
+                <input type="text" id="copyrightOwner" placeholder="ARLEY">
+            </div>
+            <div class="form-group">
+                <label>所有者网址</label>
+                <input type="text" id="copyrightUrl" placeholder="https://arley.cn">
+            </div>
+            <div class="form-group">
+                <label>Powered by 名称</label>
+                <input type="text" id="poweredName" placeholder="ArleyBKS">
+            </div>
+            <div class="form-group">
+                <label>Powered by 网址</label>
+                <input type="text" id="poweredUrl" placeholder="https://bm.arley.cn/">
+            </div>
+            <div class="form-group">
+                <label>萌ICP备案号</label>
+                <input type="text" id="icpNumber" placeholder="20222555">
+            </div>
+            <button class="btn btn-primary" id="saveCopyrightBtn">💾 保存版权设置</button>
         </div>
     </div>
 </div>
@@ -387,21 +417,51 @@
             const res = await fetch(`${API_BASE}/api/siteinfo`);
             const result = await res.json();
             if (result.success && result.siteInfo) {
-                document.getElementById('siteName').value = result.siteInfo.name || '';
-                document.getElementById('siteDesc').value = result.siteInfo.description || '';
+                const info = result.siteInfo;
+                document.getElementById('siteName').value = info.name || '';
+                document.getElementById('siteDesc').value = info.description || '';
+                document.getElementById('copyrightYear').value = info.copyrightYear || '2026';
+                document.getElementById('copyrightOwner').value = info.copyrightOwner || 'ARLEY';
+                document.getElementById('copyrightUrl').value = info.copyrightUrl || 'https://arley.cn';
+                document.getElementById('poweredName').value = info.poweredName || 'ArleyBKS';
+                document.getElementById('poweredUrl').value = info.poweredUrl || 'https://bm.arley.cn/';
+                document.getElementById('icpNumber').value = info.icpNumber || '20222555';
             }
         } catch (err) { console.error(err); }
     }
     
-    document.getElementById('saveSiteInfo').onclick = async () => {
+        document.getElementById('saveSiteInfo').onclick = async () => {
         const name = document.getElementById('siteName').value.trim();
         const description = document.getElementById('siteDesc').value.trim();
         if (!name) { showToast('请填写网站名称', true); return; }
         try {
             const res = await fetch(`${API_BASE}/api/admin/siteinfo`, {
-                method: 'PUT', headers, body: JSON.stringify({ name, description })
+                method: 'PUT', headers,
+                body: JSON.stringify({ name, description })
             });
             if (res.ok) { showToast('💾 网站信息已保存'); }
+            else { showToast('保存失败', true); }
+        } catch (err) { showToast('保存失败', true); }
+    };
+    
+    // 保存版权信息
+    document.getElementById('saveCopyrightBtn').onclick = async () => {
+        const copyrightYear = document.getElementById('copyrightYear').value.trim();
+        const copyrightOwner = document.getElementById('copyrightOwner').value.trim();
+        const copyrightUrl = document.getElementById('copyrightUrl').value.trim();
+        const poweredName = document.getElementById('poweredName').value.trim();
+        const poweredUrl = document.getElementById('poweredUrl').value.trim();
+        const icpNumber = document.getElementById('icpNumber').value.trim();
+        
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/siteinfo`, {
+                method: 'PUT', headers,
+                body: JSON.stringify({ 
+                    copyrightYear, copyrightOwner, copyrightUrl,
+                    poweredName, poweredUrl, icpNumber
+                })
+            });
+            if (res.ok) { showToast('💾 版权信息已保存'); }
             else { showToast('保存失败', true); }
         } catch (err) { showToast('保存失败', true); }
     };
