@@ -1,0 +1,115 @@
+:root {
+    --bg-color: #ffffff;
+    --card-bg: #f9f9f9;
+    --text-color: #212529;
+    --border-color: #e9ecef;
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    --link-hover: #ffb7b2;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a2e;
+    --card-bg: #16213e;
+    --text-color: #e0e0e0;
+    --border-color: #2c2c3e;
+    --nav-bg: rgba(26, 26, 46, 0.95);
+    --link-hover: #ff8a7a;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+/* 白天背景图 (简约白粉调) */
+[data-theme="light"] body {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffe0e0" fill-opacity="0.3" d="M0,192L48,197.3C96,203,192,213,288,208C384,203,480,181,576,176C672,171,768,181,864,192C960,203,1056,213,1152,208C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: cover;
+}
+
+/* 暗色背景图 (星空) */
+[data-theme="dark"] body {
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+    background-color: #0f0f1a;
+}
+
+.navbar {
+    background-color: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--text-color) !important;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+[data-theme="dark"] .card-text {
+    color: #adb5bd;
+}
+
+.category-header {
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #ffb7b2;
+    padding-left: 15px;
+}
+
+.btn-outline-secondary {
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--link-hover);
+    border-color: var(--link-hover);
+    color: #212529;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1rem;
+    }
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    .category-header h2 {
+        font-size: 1.5rem;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
