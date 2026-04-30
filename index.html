@@ -4,7 +4,368 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>粉贝书签 · 粉色导航站</title>
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #fff5f7 0%, #ffe4ed 100%);
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', 'Roboto', sans-serif;
+            padding: 1.5rem 1.2rem 3rem;
+            color: #5d3a4b;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, #e8809e, #c95c7c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            color: #b86b84;
+            margin-top: 0.5rem;
+        }
+
+        /* 搜索栏 */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 48px;
+            border: 1.5px solid #ffe0e8;
+            background: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        
+        .search-input:focus {
+            border-color: #f5a3bd;
+            box-shadow: 0 0 0 3px rgba(245, 163, 189, 0.2);
+        }
+        
+        .btn {
+            background: #f8cedb;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #a14261;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #f29bb8;
+            color: white;
+            box-shadow: 0 4px 12px #f5bfd1;
+        }
+        
+        .btn-primary:hover {
+            background: #e881a3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-search {
+            background: #f5bfd1;
+            color: #a14261;
+        }
+        
+        .btn-search:hover {
+            background: #f29bb8;
+            color: white;
+        }
+        
+        /* 分类导航 */
+        .category-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-chip {
+            background: white;
+            border: 1px solid #ffe0e8;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: #c46f8b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .category-chip:hover {
+            background: #f8cedb;
+            transform: translateY(-1px);
+        }
+        
+        .category-chip.active {
+            background: #f29bb8;
+            color: white;
+            border-color: #f29bb8;
+        }
+        
+        /* 分类区域 */
+        .category-section {
+            margin-bottom: 2rem;
+        }
+        
+        .category-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ffe0e8;
+        }
+        
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .category-icon {
+            font-size: 1.5rem;
+        }
+        
+        .category-title h2 {
+            font-size: 1.3rem;
+            color: #c95c7c;
+            font-weight: 600;
+        }
+        
+        .bookmark-count {
+            background: #ffe0e8;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #e67b9b;
+        }
+        
+        /* 书签网格 */
+        .bookmarks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        
+        .bookmark-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem;
+            transition: all 0.25s;
+            box-shadow: 0 8px 20px -10px rgba(176, 70, 100, 0.15);
+            border: 1px solid #ffd9e5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .bookmark-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -12px rgba(176, 70, 100, 0.25);
+        }
+        
+        .bookmark-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .bookmark-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #aa5c79;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .bookmark-url {
+            font-size: 0.65rem;
+            color: #c1849b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 4px;
+        }
+        
+        .bookmark-desc {
+            font-size: 0.6rem;
+            color: #e2b8c8;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .bookmark-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .icon-btn {
+            background: #fff0f4;
+            border: none;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 30px;
+            color: #c46f8b;
+            transition: 0.15s;
+        }
+        
+        .icon-btn:hover {
+            background: #ffe2eb;
+        }
+        
+        /* 添加面板 */
+        .add-panel {
+            background: rgba(255, 248, 250, 0.95);
+            border-radius: 32px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(233, 120, 152, 0.1);
+            border: 1px solid #ffe2ec;
+        }
+        
+        .add-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #c46f8b;
+        }
+        
+        .add-panel-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .add-panel.collapsed .add-panel-content {
+            display: none;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #d56a89;
+            margin-bottom: 3px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1.5px solid #ffe0e8;
+            background: white;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        
+        .input-group input:focus {
+            border-color: #f5a3bd;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 245, 248, 0.7);
+            border-radius: 40px;
+        }
+        
+        .empty-state span {
+            font-size: 3rem;
+        }
+        
+        .empty-state p {
+            color: #bf7d97;
+            margin-top: 0.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #e195b0;
+        }
+        
+        .stats-bar {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #c1849b;
+            margin-bottom: 1rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #eba2bc;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fbd5e2;
+            color: #a13e5e;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            white-space: nowrap;
+            animation: fadeOut 2s ease forwards;
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .hero h1 { font-size: 2rem; }
+            .category-title h2 { font-size: 1.1rem; }
+            .add-panel-content { flex-direction: column; }
+            .bookmarks-grid { grid-template-columns: 1fr; }
+            .toast { white-space: normal; max-width: 90%; text-align: center; }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -15,55 +376,333 @@
 
     <!-- 搜索栏 -->
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 搜索书签标题、描述或网址..." class="search-input">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索书签...">
         <button id="searchBtn" class="btn btn-search">搜索</button>
-        <button id="clearSearchBtn" class="btn btn-clear" style="display:none;">清除</button>
     </div>
 
-    <!-- 快捷分类导航 -->
+    <!-- 分类导航 -->
     <div class="category-nav" id="categoryNav"></div>
 
-    <!-- 添加书签面板（可折叠） -->
-    <div class="add-panel">
+    <!-- 添加书签 -->
+    <div class="add-panel" id="addPanel">
         <div class="add-panel-header" id="addPanelHeader">
             <span>✨ 添加新书签</span>
-            <span class="toggle-icon">▼</span>
+            <span>▼</span>
         </div>
-        <div class="add-panel-content" id="addPanelContent">
+        <div class="add-panel-content">
             <div class="input-group">
                 <label>📂 分类</label>
-                <input type="text" id="categoryInput" placeholder="例如：常用站点" list="categoryList">
-                <datalist id="categoryList"></datalist>
+                <input type="text" id="categoryInput" placeholder="例如：常用站点" list="categoryDatalist">
+                <datalist id="categoryDatalist"></datalist>
             </div>
             <div class="input-group">
-                <label>📖 网站标题</label>
-                <input type="text" id="titleInput" placeholder="例如：粉色博物馆" maxlength="80">
+                <label>📖 标题</label>
+                <input type="text" id="titleInput" placeholder="网站名称">
             </div>
             <div class="input-group">
-                <label>🔗 网址链接</label>
-                <input type="url" id="urlInput" placeholder="https:// 或 http://">
+                <label>🔗 网址</label>
+                <input type="text" id="urlInput" placeholder="https://">
             </div>
-            <div class="input-group">
-                <label>💬 描述（可选）</label>
-                <input type="text" id="descInput" placeholder="简单描述这个网站">
-            </div>
-            <button id="addBtn" class="btn btn-primary">✨ 添加书签</button>
+            <button id="addBtn" class="btn btn-primary">✨ 添加</button>
         </div>
     </div>
 
-    <!-- 统计信息 -->
-    <div class="stats-bar" id="statsInfo">
-        加载中...
-    </div>
-
-    <!-- 书签列表容器 -->
-    <div id="bookmarksContainer" class="bookmarks-container">
-        <div class="loading">🍰 加载中，请稍后...</div>
-    </div>
-    
-    <footer>💕 轻点爱心 · 永久陪伴 | 支持移动端 & 云端存储</footer>
+    <div class="stats-bar" id="statsInfo">加载中...</div>
+    <div id="bookmarksContainer"><div class="loading">🍰 加载中...</div></div>
+    <footer>💕 粉色书签 · 云端同步</footer>
 </div>
 
-<script src="js/app.js"></script>
+<script>
+    // 配置 - 使用您的 Worker 地址
+    const API_BASE = "https://bookmarksdate.arley.workers.dev";
+    
+    let fullData = { menu: [], bookmarks: [] };
+    let currentCategory = "";
+    let searchKeyword = "";
+
+    function showMessage(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = msg;
+        if (isError) toast.style.background = '#ffcccc';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function getCategoryIcon(categoryName) {
+        const iconMap = {
+            '热搜新闻': '🔥',
+            '常用站点': '⭐',
+            '字母站': '💎',
+            '实用工具': '👍',
+            '素材资源': '📷',
+            '开发生产': '📄',
+            '学无止境': '🎓',
+            '系统相关': '💻',
+            '在线追剧': '📺',
+            '搜索引擎': '🔍'
+        };
+        return iconMap[categoryName] || '📌';
+    }
+
+    async function fetchBookmarks() {
+        try {
+            const container = document.getElementById('bookmarksContainer');
+            if (container) container.innerHTML = '<div class="loading">🍰 加载书签中...</div>';
+            
+            const response = await fetch(`${API_BASE}/api/bookmarks`);
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                fullData = result.data;
+            }
+            
+            if (!fullData.bookmarks) fullData.bookmarks = [];
+            
+            renderCategoryNav();
+            renderBookmarks();
+            updateStats();
+            updateCategoryDatalist();
+            
+        } catch (err) {
+            console.error('Fetch error:', err);
+            showMessage('加载失败: ' + err.message, true);
+            document.getElementById('bookmarksContainer').innerHTML = `
+                <div class="empty-state">
+                    <span>⚠️</span>
+                    <p>连接失败，请检查网络</p>
+                    <button class="btn" onclick="location.reload()" style="margin-top: 1rem;">🔄 刷新</button>
+                </div>
+            `;
+        }
+    }
+
+    function renderCategoryNav() {
+        const nav = document.getElementById('categoryNav');
+        const categories = fullData.bookmarks.filter(c => c.bookmarks?.length > 0).map(c => c.category);
+        
+        if (categories.length <= 1) {
+            nav.style.display = 'none';
+            return;
+        }
+        
+        nav.style.display = 'flex';
+        let html = `<span class="category-chip ${!currentCategory ? 'active' : ''}" data-cat="">全部</span>`;
+        categories.forEach(cat => {
+            html += `<span class="category-chip ${currentCategory === cat ? 'active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</span>`;
+        });
+        nav.innerHTML = html;
+        
+        nav.querySelectorAll('.category-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                currentCategory = chip.getAttribute('data-cat');
+                renderCategoryNav();
+                renderBookmarks();
+            });
+        });
+    }
+
+    function renderBookmarks() {
+        const container = document.getElementById('bookmarksContainer');
+        
+        let categories = fullData.bookmarks.filter(c => c.bookmarks?.length > 0);
+        
+        if (currentCategory) {
+            categories = categories.filter(c => c.category === currentCategory);
+        }
+        
+        // 搜索过滤
+        if (searchKeyword) {
+            categories = categories.map(cat => ({
+                ...cat,
+                bookmarks: cat.bookmarks.filter(b => 
+                    b.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                    (b.desc && b.desc.toLowerCase().includes(searchKeyword.toLowerCase())) ||
+                    b.url.toLowerCase().includes(searchKeyword.toLowerCase())
+                )
+            })).filter(cat => cat.bookmarks.length > 0);
+        }
+        
+        if (categories.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span>📭</span>
+                    <p>${searchKeyword ? `没有找到"${escapeHtml(searchKeyword)}"相关书签` : '暂无书签~ 添加一些吧 💗'}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        categories.forEach(cat => {
+            const icon = getCategoryIcon(cat.category);
+            html += `
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <span class="category-icon">${icon}</span>
+                            <h2>${escapeHtml(cat.category)}</h2>
+                            <span class="bookmark-count">${cat.bookmarks.length}</span>
+                        </div>
+                    </div>
+                    <div class="bookmarks-grid">
+            `;
+            
+            cat.bookmarks.forEach((bookmark, idx) => {
+                html += `
+                    <div class="bookmark-card">
+                        <div class="bookmark-info">
+                            <div class="bookmark-title">🔗 ${escapeHtml(bookmark.name)}</div>
+                            <div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url)}</div>
+                            ${bookmark.desc ? `<div class="bookmark-desc">💬 ${escapeHtml(bookmark.desc)}</div>` : ''}
+                        </div>
+                        <div class="bookmark-actions">
+                            <button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">🔗 访问</button>
+                            <button class="icon-btn delete-btn" data-category="${escapeHtml(cat.category)}" data-index="${idx}">🗑️ 删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+        });
+        
+        container.innerHTML = html;
+        
+        // 绑定事件
+        document.querySelectorAll('.visit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let url = btn.getAttribute('data-url');
+                if (url && !url.startsWith('http')) url = 'https://' + url;
+                if (url) window.open(url, '_blank');
+                else showMessage('链接无效', true);
+            });
+        });
+        
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const category = btn.getAttribute('data-category');
+                const index = btn.getAttribute('data-index');
+                if (confirm('确定删除这个书签吗？')) {
+                    await deleteBookmark(category, index);
+                }
+            });
+        });
+    }
+
+    async function addBookmark() {
+        const category = document.getElementById('categoryInput').value.trim();
+        const name = document.getElementById('titleInput').value.trim();
+        let url = document.getElementById('urlInput').value.trim();
+        
+        if (!category) { showMessage('请填写分类', true); return; }
+        if (!name) { showMessage('请填写标题', true); return; }
+        if (!url) { showMessage('请填写网址', true); return; }
+        
+        if (!url.startsWith('http')) url = 'https://' + url;
+        
+        try {
+            const response = await fetch(`${API_BASE}/api/bookmarks`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category, name, url, desc: '' })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('✨ 添加成功');
+                document.getElementById('titleInput').value = '';
+                document.getElementById('urlInput').value = '';
+                await fetchBookmarks();
+            } else {
+                showMessage(result.error || '添加失败', true);
+            }
+        } catch (err) {
+            showMessage('添加失败: ' + err.message, true);
+        }
+    }
+
+    async function deleteBookmark(category, index) {
+        try {
+            const response = await fetch(`${API_BASE}/api/bookmarks/${encodeURIComponent(category)}/${index}`, {
+                method: 'DELETE'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('🗑️ 删除成功');
+                await fetchBookmarks();
+            } else {
+                showMessage(result.error || '删除失败', true);
+            }
+        } catch (err) {
+            showMessage('删除失败: ' + err.message, true);
+        }
+    }
+
+    function updateStats() {
+        const total = fullData.bookmarks.reduce((sum, cat) => sum + (cat.bookmarks?.length || 0), 0);
+        const catCount = fullData.bookmarks.filter(cat => cat.bookmarks?.length > 0).length;
+        document.getElementById('statsInfo').innerHTML = `${catCount} 个分类 · ${total} 个书签`;
+    }
+
+    function updateCategoryDatalist() {
+        const categories = fullData.bookmarks.map(cat => cat.category);
+        const datalist = document.getElementById('categoryDatalist');
+        if (datalist) {
+            datalist.innerHTML = categories.map(cat => `<option value="${escapeHtml(cat)}">`).join('');
+        }
+    }
+
+    function searchBookmarks() {
+        searchKeyword = document.getElementById('searchInput').value.trim();
+        currentCategory = '';
+        renderCategoryNav();
+        renderBookmarks();
+    }
+
+    // 折叠面板
+    function initCollapsible() {
+        const panel = document.getElementById('addPanel');
+        const header = document.getElementById('addPanelHeader');
+        header.addEventListener('click', () => {
+            panel.classList.toggle('collapsed');
+        });
+    }
+
+    // 初始化
+    function init() {
+        initCollapsible();
+        fetchBookmarks();
+        
+        document.getElementById('searchBtn').addEventListener('click', searchBookmarks);
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchBookmarks();
+        });
+        document.getElementById('addBtn').addEventListener('click', addBookmark);
+        
+        // 回车添加
+        ['titleInput', 'urlInput', 'categoryInput'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addBookmark();
+            });
+        });
+    }
+    
+    init();
+</script>
 </body>
 </html>
