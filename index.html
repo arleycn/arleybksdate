@@ -186,8 +186,35 @@
             color: white; 
             transform: translateY(-2px); 
         }
-
-        /* 搜索栏 - 移除冻结 */
+        /* 冻结区域 - 仅 PC 端生效 */
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: transparent;
+            padding-top: 0.5rem;
+            backdrop-filter: blur(4px);
+        }
+        
+        .sticky-wrapper.sticky-shadow {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        body.dark .sticky-wrapper.sticky-shadow {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        /* 移动端禁用冻结 */
+        @media (max-width: 768px) {
+            .sticky-wrapper {
+                position: static;
+                padding-top: 0;
+            }
+            .sticky-wrapper.sticky-shadow {
+                box-shadow: none;
+            }
+        }
+        /* 搜索栏 */
         .search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
         .search-input {
             flex: 1; padding: 10px 16px; border-radius: 40px; border: 1.5px solid var(--border-color);
@@ -204,7 +231,7 @@
         .btn-primary { background: var(--btn-primary); color: white; }
         .btn-primary:hover { filter: brightness(1.05); transform: translateY(-2px); }
 
-        /* 分类导航 - 移除冻结，添加横向滚动 */
+        /* 分类导航，添加横向滚动 */
         .category-nav-wrapper {
             margin-bottom: 1rem;
             overflow-x: auto;
@@ -496,15 +523,17 @@
     </div>
 
     <!-- 搜索栏 -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索书签..." autocomplete="off">
-        <button id="searchBtn" class="btn">搜索</button>
-        <button id="clearSearchBtn" class="btn" style="display:none;">清除</button>
-    </div>
+    <div class="sticky-wrapper" id="stickyWrapper">
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索书签..." autocomplete="off">
+            <button id="searchBtn" class="btn">搜索</button>
+            <button id="clearSearchBtn" class="btn" style="display:none;">清除</button>
+        </div>
 
-    <!-- 分类导航（横向滚动） -->
-    <div class="category-nav-wrapper">
-        <div class="category-nav" id="categoryNav"></div>
+        <!-- 分类导航 -->
+        <div class="category-nav-wrapper">
+            <div class="category-nav" id="categoryNav"></div>
+        </div>
     </div>
 
     <div class="stats-bar" id="statsInfo">加载中...</div>
@@ -597,7 +626,23 @@
         localStorage.setItem("theme", isDark ? "dark" : "light");
         document.getElementById("themeToggle").textContent = isDark ? "☀️ 白天" : "🌙 夜间";
     });
-
+    // 冻结区域滚动阴影效果（仅PC端生效）
+    function initStickyShadow() {
+        const stickyWrapper = document.getElementById('stickyWrapper');
+        if (!stickyWrapper) return;
+        
+        // 移动端不启用阴影效果
+        if (window.innerWidth <= 768) return;
+        
+        window.addEventListener('scroll', () => {
+            const rect = stickyWrapper.getBoundingClientRect();
+            if (rect.top <= 0) {
+                stickyWrapper.classList.add('sticky-shadow');
+            } else {
+                stickyWrapper.classList.remove('sticky-shadow');
+            }
+        });
+    }
     window.addEventListener("scroll", () => {
         const btn = document.getElementById("backToTop");
         if (window.scrollY > 300) btn.style.display = "flex";
@@ -933,6 +978,7 @@
     document.getElementById('clearSearchBtn').onclick = clearSearch;
 
     initTheme();
+    initStickyShadow();
     fetchBookmarks();
     fetchMessages();
     fetchSiteInfo();
