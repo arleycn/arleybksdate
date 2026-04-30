@@ -1,6 +1,8 @@
 let currentEditId = null;
 let adminPassword = localStorage.getItem('admin_password') || '';
-const WORKER_URL = 'https://bookmarksdate.arley.workers.dev'; // 修改这里！
+
+// ========== 重要：修改为你的 Worker 域名 ==========
+const WORKER_URL = 'https://bookmarksdate.arley.workers.dev';  // 改成你的！
 
 // 显示加载状态
 function showLoading() {
@@ -22,7 +24,6 @@ function showUnauthorized(message) {
                 <a href="/" class="btn btn-primary mt-3">返回首页</a>
             </div>
         `;
-        // 隐藏表格和新增按钮
         const table = document.querySelector('.table-responsive');
         const addBtn = document.getElementById('addBtn');
         if (table) table.style.display = 'none';
@@ -83,7 +84,6 @@ async function verifyAndLogin() {
     while (attempts < maxAttempts) {
         let pwd = prompt('请输入管理密码：');
         if (pwd === null) {
-            // 用户取消，跳回首页
             window.location.href = '/';
             return false;
         }
@@ -114,7 +114,6 @@ async function verifyAndLogin() {
         }
     }
     
-    // 验证失败，跳回首页
     alert('验证失败，返回首页');
     window.location.href = '/';
     return false;
@@ -157,7 +156,6 @@ async function loadLinksTable() {
             tbody.appendChild(tr);
         });
         
-        // 绑定编辑按钮事件
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.getAttribute('data-id');
@@ -165,7 +163,6 @@ async function loadLinksTable() {
             });
         });
         
-        // 绑定删除按钮事件
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.getAttribute('data-id');
@@ -186,7 +183,6 @@ async function loadLinksTable() {
         });
     } catch (err) {
         if (err.message === 'UNAUTHORIZED') {
-            // 重新登录
             const relogin = await verifyAndLogin();
             if (relogin) {
                 await loadLinksTable();
@@ -236,7 +232,6 @@ function resetForm() {
     currentEditId = null;
 }
 
-// 保存书签
 document.getElementById('saveBtn')?.addEventListener('click', async () => {
     const id = document.getElementById('editId').value;
     const linkData = {
@@ -265,7 +260,6 @@ document.getElementById('saveBtn')?.addEventListener('click', async () => {
         if (err.message === 'UNAUTHORIZED') {
             const relogin = await verifyAndLogin();
             if (relogin) {
-                // 重试保存
                 if (id) {
                     await authApiRequest(`/api/links/${id}`, 'PUT', linkData);
                 } else {
@@ -285,20 +279,14 @@ document.getElementById('addBtn')?.addEventListener('click', () => {
     resetForm();
 });
 
-// 页面启动
 document.addEventListener('DOMContentLoaded', async () => {
-    // 显示加载状态
     showLoading();
-    
-    // 验证密码
     const isLoggedIn = await verifyAndLogin();
     if (isLoggedIn) {
         await loadLinksTable();
     } else {
         showUnauthorized('需要密码才能访问管理后台');
     }
-    
-    // 同步主题
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 });
