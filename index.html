@@ -706,8 +706,11 @@
     function renderCategoryNav() {
         const nav = document.getElementById('categoryNav');
         const categories = fullData.bookmarks.filter(c => c.bookmarks?.length > 0).map(c => c.category);
-        if (categories.length <= 1) { nav.parentElement.style.display = 'none'; return; }
-        nav.parentElement.style.display = 'block';
+        if (categories.length <= 1) { 
+            if (nav.parentElement) nav.parentElement.style.display = 'none'; 
+            return; 
+        }
+        if (nav.parentElement) nav.parentElement.style.display = 'block';
         let html = `<span class="category-chip ${!currentCategory ? 'active' : ''}" data-cat="">✨ 全部</span>`;
         categories.forEach(cat => { 
             html += `<span class="category-chip ${currentCategory === cat ? 'active' : ''}" data-cat="${escapeHtml(cat)}">${getIcon(cat)} ${escapeHtml(cat)}</span>`;
@@ -715,11 +718,33 @@
         nav.innerHTML = html;
         nav.querySelectorAll('.category-chip').forEach(chip => {
             chip.addEventListener('click', () => { 
-                currentCategory = chip.dataset.cat; 
+                const clickedCategory = chip.dataset.cat;
+                const isSameCategory = (currentCategory === clickedCategory);
+                
+                currentCategory = clickedCategory; 
                 renderCategoryNav(); 
                 renderBookmarks();
-                // 移动端点击后滚动到顶部
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // 只有在切换分类时，且固定栏处于激活状态（已冻结）时才滚动调整
+                if (!isSameCategory) {
+                    setTimeout(() => {
+                        const stickyWrapper = document.querySelector('.sticky-wrapper');
+                        const isStickyActive = stickyWrapper && stickyWrapper.classList.contains('sticky-shadow');
+                        
+                        // 只有固定栏处于激活状态（即已经滚动到顶部冻结）时才调整滚动位置
+                        if (isStickyActive) {
+                            const categorySection = document.querySelector('.category-section');
+                            if (categorySection) {
+                                const stickyHeight = stickyWrapper.offsetHeight;
+                                const elementPosition = categorySection.getBoundingClientRect().top + window.pageYOffset;
+                                window.scrollTo({
+                                    top: elementPosition - stickyHeight - 15,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }, 150);
+                }
             });
         });
     }
