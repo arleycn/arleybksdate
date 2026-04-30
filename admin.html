@@ -57,6 +57,18 @@
         .hidden {
             display: none !important;
         }
+        
+        .table th {
+            background: #f8f9fa;
+        }
+        
+        .bookmark-url {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +107,7 @@
             <div class="card">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="fas fa-link"></i> 所有书签</h4>
-                    <button class="btn btn-primary" onclick="openModal()">
+                    <button class="btn btn-primary" onclick="openAddModal()">
                         <i class="fas fa-plus"></i> 新增书签
                     </button>
                 </div>
@@ -105,7 +117,9 @@
                             <thead>
                                 <tr><th>标题</th><th>URL</th><th>分类</th><th>操作</th></tr>
                             </thead>
-                            <tbody id="bookmarksTable"></tbody>
+                            <tbody id="bookmarksTable">
+                                <tr><td colspan="4" class="text-center">加载中...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -117,7 +131,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">书签信息</h5>
+                        <h5 class="modal-title" id="modalTitle">新增书签</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -166,111 +180,130 @@
             }
             
             try {
+                console.log('验证密码...');
                 const response = await fetch(`${API_URL}/api/verify`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
                 });
                 
+                console.log('验证响应状态:', response.status);
+                
                 if (response.ok) {
                     currentPassword = password;
                     localStorage.setItem('admin_password', password);
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('adminContainer').classList.remove('hidden');
-                    loadBookmarks();
+                    await loadBookmarks();
                 } else {
                     const error = await response.json();
                     alert('密码错误：' + (error.error || '请重试'));
                 }
             } catch (error) {
+                console.error('登录错误:', error);
                 alert('网络错误：' + error.message);
             }
         }
         
         async function loadBookmarks() {
             try {
+                console.log('加载书签列表...');
                 const response = await fetch(`${API_URL}/api/links`);
-                const data = await response.json();
+                console.log('响应状态:', response.status);
                 
-                // 确保 data 是数组
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('获取到的数据:', data);
+                
                 const bookmarks = Array.isArray(data) ? data : [];
+                console.log('书签数量:', bookmarks.length);
                 
                 const tbody = document.getElementById('bookmarksTable');
                 tbody.innerHTML = '';
                 
                 if (bookmarks.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据，点击新增书签</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据，点击"新增书签"添加</td></tr>';
                     return;
                 }
                 
                 bookmarks.forEach(bookmark => {
                     const row = tbody.insertRow();
                     row.innerHTML = `
-                        <td>${escapeHtml(bookmark.title)}</td>
-                        <td><a href="${bookmark.url}" target="_blank" style="max-width: 300px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(bookmark.url.substring(0, 50))}</a></td>
+                        <td><strong>${escapeHtml(bookmark.title)}</strong><br>
+                                <small class="text-muted">${escapeHtml(bookmark.icon || 'fas fa-link')}</small>
+                         </td>
+                        <td><a href="${bookmark.url}" target="_blank" class="bookmark-url">${escapeHtml(bookmark.url)}</a></td>
                         <td>${escapeHtml(bookmark.category || '-')}</td>
                         <td>
                             <button class="btn btn-sm btn-warning" onclick="editBookmark('${bookmark.id}')">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit"></i> 编辑
                             </button>
                             <button class="btn btn-sm btn-danger ms-2" onclick="deleteBookmark('${bookmark.id}')">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash"></i> 删除
                             </button>
-                        </td>
+                         </td>
                     `;
                 });
             } catch (error) {
                 console.error('加载失败:', error);
-                alert('加载失败：' + error.message);
+                const tbody = document.getElementById('bookmarksTable');
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">加载失败：${error.message}</td></tr>`;
             }
         }
         
         async function saveBookmark() {
-    const id = document.getElementById('editId').value;
-    const data = {
-        title: document.getElementById('title').value.trim(),
-        url: document.getElementById('url').value.trim(),
-        category: document.getElementById('category').value.trim(),
-        icon: document.getElementById('icon').value.trim(),
-        description: document.getElementById('description').value.trim()
-    };
-    
-    if (!data.title || !data.url) {
-        alert('标题和URL不能为空');
-        return;
-    }
-    
-    try {
-        const url = id ? `${API_URL}/api/links/${id}` : `${API_URL}/api/links`;
-        const method = id ? 'PUT' : 'POST';
-        
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${currentPassword}`
-            },
-            body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            // 显示成功提示
-            alert(id ? '修改成功！' : '添加成功！');
-            modal.hide();
-            resetForm();
-            await loadBookmarks(); // 重新加载列表
-        } else {
-            alert('保存失败：' + (result.error || '未知错误'));
+            const id = document.getElementById('editId').value;
+            const data = {
+                title: document.getElementById('title').value.trim(),
+                url: document.getElementById('url').value.trim(),
+                category: document.getElementById('category').value.trim(),
+                icon: document.getElementById('icon').value.trim(),
+                description: document.getElementById('description').value.trim()
+            };
+            
+            if (!data.title || !data.url) {
+                alert('标题和URL不能为空');
+                return;
+            }
+            
+            try {
+                const url = id ? `${API_URL}/api/links/${id}` : `${API_URL}/api/links`;
+                const method = id ? 'PUT' : 'POST';
+                
+                console.log('保存书签:', { url, method, data });
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentPassword}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                console.log('保存结果:', result);
+                
+                if (response.ok && result.success) {
+                    alert(id ? '修改成功！' : '添加成功！');
+                    modal.hide();
+                    resetForm();
+                    await loadBookmarks();
+                } else {
+                    alert('保存失败：' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                console.error('保存错误:', error);
+                alert('网络错误：' + error.message);
+            }
         }
-    } catch (error) {
-        alert('网络错误：' + error.message);
-    }
-}
         
         async function editBookmark(id) {
             try {
+                console.log('编辑书签:', id);
                 const response = await fetch(`${API_URL}/api/links`);
                 const data = await response.json();
                 const bookmarks = Array.isArray(data) ? data : [];
@@ -283,11 +316,13 @@
                     document.getElementById('category').value = bookmark.category || '';
                     document.getElementById('icon').value = bookmark.icon || '';
                     document.getElementById('description').value = bookmark.description || '';
+                    document.getElementById('modalTitle').textContent = '编辑书签';
                     modal.show();
                 } else {
                     alert('书签不存在');
                 }
             } catch (error) {
+                console.error('编辑错误:', error);
                 alert('加载失败：' + error.message);
             }
         }
@@ -296,24 +331,30 @@
             if (!confirm('确定删除这个书签吗？')) return;
             
             try {
+                console.log('删除书签:', id);
                 const response = await fetch(`${API_URL}/api/links/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${currentPassword}` }
                 });
                 
-                if (response.ok) {
-                    loadBookmarks();
+                const result = await response.json();
+                console.log('删除结果:', result);
+                
+                if (response.ok && result.success) {
+                    alert('删除成功！');
+                    await loadBookmarks();
                 } else {
-                    const error = await response.json();
-                    alert('删除失败：' + (error.error || '未知错误'));
+                    alert('删除失败：' + (result.error || '未知错误'));
                 }
             } catch (error) {
+                console.error('删除错误:', error);
                 alert('网络错误：' + error.message);
             }
         }
         
-        function openModal() {
+        function openAddModal() {
             resetForm();
+            document.getElementById('modalTitle').textContent = '新增书签';
             modal.show();
         }
         
@@ -346,6 +387,7 @@
         // 初始化模态框
         document.addEventListener('DOMContentLoaded', () => {
             modal = new bootstrap.Modal(document.getElementById('bookmarkModal'));
+            console.log('初始化完成，API地址:', API_URL);
         });
     </script>
 </body>
