@@ -116,3 +116,98 @@
         font-size: 1.2rem;
     }
 }
+/* 添加到现有 CSS 文件末尾 */
+
+/* 快捷分类导航 */
+.category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.category-nav-item {
+    background: rgba(255, 248, 250, 0.8);
+    border: 1px solid #ffe0e8;
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    color: #c46f8b;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.category-nav-item:hover {
+    background: #f8cedb;
+    transform: translateY(-1px);
+}
+
+.category-nav-item.active {
+    background: #f29bb8;
+    color: white;
+    border-color: #f29bb8;
+}
+
+/* 可折叠面板 */
+.add-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 0.5rem;
+}
+
+.toggle-icon {
+    transition: transform 0.3s;
+}
+
+.add-panel-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 1rem;
+}
+
+.add-panel.collapsed .add-panel-content {
+    display: none;
+}
+
+.add-panel.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+/* 清除搜索按钮 */
+.btn-clear {
+    background: #ffe0e8;
+    color: #c46f8b;
+}
+
+.btn-clear:hover {
+    background: #f8cedb;
+}
+
+/* 搜索结果高亮 */
+.search-result .bookmark-title mark {
+    background: #f5bfd1;
+    border-radius: 4px;
+    padding: 0 2px;
+}
+
+/* 滚动条美化 */
+.category-nav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.category-nav::-webkit-scrollbar-track {
+    background: #ffe0e8;
+    border-radius: 4px;
+}
+
+.category-nav::-webkit-scrollbar-thumb {
+    background: #f29bb8;
+    border-radius: 4px;
+}

@@ -15,29 +15,40 @@
 
     <!-- 搜索栏 -->
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 搜索书签..." class="search-input">
+        <input type="text" id="searchInput" placeholder="🔍 搜索书签标题、描述或网址..." class="search-input">
         <button id="searchBtn" class="btn btn-search">搜索</button>
+        <button id="clearSearchBtn" class="btn btn-clear" style="display:none;">清除</button>
     </div>
 
-    <!-- 添加书签面板 -->
+    <!-- 快捷分类导航 -->
+    <div class="category-nav" id="categoryNav"></div>
+
+    <!-- 添加书签面板（可折叠） -->
     <div class="add-panel">
-        <div class="input-group">
-            <label>📂 分类</label>
-            <input type="text" id="categoryInput" placeholder="例如：常用站点" value="常用站点">
+        <div class="add-panel-header" id="addPanelHeader">
+            <span>✨ 添加新书签</span>
+            <span class="toggle-icon">▼</span>
         </div>
-        <div class="input-group">
-            <label>📖 网站标题</label>
-            <input type="text" id="titleInput" placeholder="例如：粉色博物馆" maxlength="80">
+        <div class="add-panel-content" id="addPanelContent">
+            <div class="input-group">
+                <label>📂 分类</label>
+                <input type="text" id="categoryInput" placeholder="例如：常用站点" list="categoryList">
+                <datalist id="categoryList"></datalist>
+            </div>
+            <div class="input-group">
+                <label>📖 网站标题</label>
+                <input type="text" id="titleInput" placeholder="例如：粉色博物馆" maxlength="80">
+            </div>
+            <div class="input-group">
+                <label>🔗 网址链接</label>
+                <input type="url" id="urlInput" placeholder="https:// 或 http://">
+            </div>
+            <div class="input-group">
+                <label>💬 描述（可选）</label>
+                <input type="text" id="descInput" placeholder="简单描述这个网站">
+            </div>
+            <button id="addBtn" class="btn btn-primary">✨ 添加书签</button>
         </div>
-        <div class="input-group">
-            <label>🔗 网址链接</label>
-            <input type="url" id="urlInput" placeholder="https:// 或 http://">
-        </div>
-        <div class="input-group">
-            <label>💬 描述（可选）</label>
-            <input type="text" id="descInput" placeholder="简单描述这个网站">
-        </div>
-        <button id="addBtn" class="btn btn-primary">✨ 添加书签</button>
     </div>
 
     <!-- 统计信息 -->

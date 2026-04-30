@@ -17,6 +17,8 @@ let fullData = {
     menu: [],
     bookmarks: []
 };
+let currentSearchKeyword = '';
+let currentCategory = '';
 
 // ========== 工具函数 ==========
 function showMessage(msg, isError = false) {
@@ -38,61 +40,122 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
+function escapeAttr(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function truncateUrl(url, maxLen = 50) {
     if (!url) return '';
     if (url.length <= maxLen) return url;
     return url.substring(0, maxLen - 3) + '...';
 }
 
-// 获取分类图标（根据分类名称或menu配置）
+// 获取分类图标
 function getCategoryIcon(categoryName, menuList) {
-    const menuItem = menuList.find(m => m.name === categoryName);
+    const menuItem = menuList?.find(m => m.name === categoryName);
     if (menuItem && menuItem.icon) {
-        return menuItem.icon;
+        const iconMap = {
+            'linecons-fire': '🔥',
+            'linecons-star': '⭐',
+            'linecons-diamond': '💎',
+            'linecons-thumbs-up': '👍',
+            'linecons-photo': '📷',
+            'linecons-doc': '📄',
+            'linecons-graduation-cap': '🎓',
+            'linecons-desktop': '💻',
+            'linecons-tv': '📺',
+            'linecons-search': '🔍',
+            'linecons-tag': '📌'
+        };
+        return iconMap[menuItem.icon] || '📌';
     }
-    // 默认图标
-    const iconMap = {
-        '热搜新闻': '🔥',
-        '常用站点': '⭐',
-        '字母站': '💎',
-        '实用工具': '👍',
-        '素材资源': '📷',
-        '开发生产': '📄',
-        '学无止境': '🎓',
-        '系统相关': '💻',
-        '在线追剧': '📺',
-        '搜索引擎': '🔍'
-    };
-    return iconMap[categoryName] || '📌';
+    return '📌';
 }
 
-// ========== 渲染主页面 ==========
+// 高亮搜索关键词
+function highlightText(text, keyword) {
+    if (!keyword || !text) return escapeHtml(text);
+    const escapedText = escapeHtml(text);
+    const escapedKeyword = escapeHtml(keyword);
+    const regex = new RegExp(`(${escapedKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return escapedText.replace(regex, '<mark>$1</mark>');
+}
+
+// ========== 渲染函数 ==========
+function renderCategoryNav() {
+    const navContainer = document.getElementById('categoryNav');
+    if (!navContainer) return;
+    
+    const categories = fullData.bookmarks
+        .filter(cat => cat.bookmarks?.length > 0)
+        .map(cat => cat.category);
+    
+    if (categories.length <= 1) {
+        navContainer.style.display = 'none';
+        return;
+    }
+    
+    navContainer.style.display = 'flex';
+    navContainer.innerHTML = `
+        <span class="category-nav-item ${!currentCategory ? 'active' : ''}" data-category="">全部</span>
+        ${categories.map(cat => `
+            <span class="category-nav-item ${currentCategory === cat ? 'active' : ''}" data-category="${escapeAttr(cat)}">${escapeHtml(cat)}</span>
+        `).join('')}
+    `;
+    
+    // 绑定点击事件
+    navContainer.querySelectorAll('.category-nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            currentCategory = item.getAttribute('data-category');
+            renderCategoryNav();
+            renderPage();
+        });
+    });
+}
+
 function renderPage() {
     const container = document.getElementById('bookmarksContainer');
     if (!container) return;
     
-    if (!fullData.bookmarks || fullData.bookmarks.length === 0) {
+    // 过滤数据
+    let categoriesToShow = fullData.bookmarks.filter(cat => cat.bookmarks?.length > 0);
+    
+    // 分类筛选
+    if (currentCategory) {
+        categoriesToShow = categoriesToShow.filter(cat => cat.category === currentCategory);
+    }
+    
+    if (categoriesToShow.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <span>📭</span>
-                <p>还没有书签~ 添加一些喜欢的网站吧 💗</p>
+                <p>暂无书签~ 添加一些喜欢的网站吧 💗</p>
             </div>
         `;
         return;
     }
     
-    // 渲染所有分类
     let html = '';
     
-    fullData.bookmarks.forEach((categoryData, catIndex) => {
+    categoriesToShow.forEach(categoryData => {
         const categoryName = categoryData.category;
-        const bookmarks = categoryData.bookmarks || [];
+        let bookmarks = categoryData.bookmarks || [];
         const icon = getCategoryIcon(categoryName, fullData.menu);
+        
+        // 搜索过滤
+        if (currentSearchKeyword) {
+            bookmarks = bookmarks.filter(bookmark =>
+                bookmark.name.toLowerCase().includes(currentSearchKeyword.toLowerCase()) ||
+                (bookmark.desc && bookmark.desc.toLowerCase().includes(currentSearchKeyword.toLowerCase())) ||
+                bookmark.url.toLowerCase().includes(currentSearchKeyword.toLowerCase())
+            );
+        }
         
         if (bookmarks.length === 0) return;
         
         html += `
-            <div class="category-section" data-category="${escapeHtml(categoryName)}">
+            <div class="category-section" data-category="${escapeAttr(categoryName)}">
                 <div class="category-header">
                     <div class="category-title">
                         <span class="category-icon">${icon}</span>
@@ -104,23 +167,24 @@ function renderPage() {
         `;
         
         bookmarks.forEach((bookmark, idx) => {
+            const originalIndex = categoryData.bookmarks.findIndex(b => b.name === bookmark.name && b.url === bookmark.url);
             html += `
-                <div class="bookmark-card" data-category="${escapeHtml(categoryName)}" data-index="${idx}">
+                <div class="bookmark-card">
                     <div class="bookmark-info">
                         <div class="bookmark-title">
                             <span class="bookmark-icon">🔗</span>
-                            ${escapeHtml(bookmark.name)}
+                            ${currentSearchKeyword ? highlightText(bookmark.name, currentSearchKeyword) : escapeHtml(bookmark.name)}
                         </div>
-                        <div class="bookmark-url" title="${escapeHtml(bookmark.url)}">
-                            ${escapeHtml(truncateUrl(bookmark.url))}
+                        <div class="bookmark-url" title="${escapeAttr(bookmark.url)}">
+                            ${currentSearchKeyword ? highlightText(truncateUrl(bookmark.url), currentSearchKeyword) : escapeHtml(truncateUrl(bookmark.url))}
                         </div>
-                        ${bookmark.desc ? `<div class="bookmark-desc">💬 ${escapeHtml(bookmark.desc)}</div>` : ''}
+                        ${bookmark.desc ? `<div class="bookmark-desc">💬 ${currentSearchKeyword ? highlightText(bookmark.desc, currentSearchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}
                     </div>
                     <div class="bookmark-actions">
                         <button class="icon-btn visit-btn" data-url="${escapeAttr(bookmark.url)}">
                             🔗 访问
                         </button>
-                        <button class="icon-btn delete-btn" data-category="${escapeHtml(categoryName)}" data-index="${idx}">
+                        <button class="icon-btn delete-btn" data-category="${escapeAttr(categoryName)}" data-index="${originalIndex}">
                             🗑️ 删除
                         </button>
                     </div>
@@ -131,9 +195,17 @@ function renderPage() {
         html += `</div></div>`;
     });
     
-    container.innerHTML = html;
+    if (html === '') {
+        container.innerHTML = `
+            <div class="empty-state">
+                <span>🔍</span>
+                <p>没有找到与 "${escapeHtml(currentSearchKeyword)}" 相关的书签</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = html;
+    }
     
-    // 绑定事件
     bindAllEvents();
 }
 
@@ -168,8 +240,8 @@ async function handleDelete(e) {
     const category = e.currentTarget.getAttribute('data-category');
     const index = e.currentTarget.getAttribute('data-index');
     
-    if (confirm(`确定要删除这个书签吗？`)) {
-        await deleteBookmark(category, index);
+    if (confirm('确定要删除这个书签吗？')) {
+        await deleteBookmark(category, parseInt(index));
     }
 }
 
@@ -180,33 +252,35 @@ async function fetchBookmarks() {
         if (container) container.innerHTML = '<div class="loading">🍥 加载书签中</div>';
         
         const response = await fetch(API.getAll);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         
         const result = await response.json();
         
         if (result.success && result.data) {
             fullData = result.data;
-            if (!fullData.menu) fullData.menu = [];
-            if (!fullData.bookmarks) fullData.bookmarks = [];
-        } else if (result.success && result.bookmarks) {
-            // 兼容旧格式
-            fullData = {
-                menu: result.menu || [],
-                bookmarks: result.bookmarks || []
-            };
+        } else {
+            fullData = { menu: [], bookmarks: [] };
         }
         
-        renderPage();
+        if (!fullData.menu) fullData.menu = [];
+        if (!fullData.bookmarks) fullData.bookmarks = [];
         
-        // 更新统计
+        renderCategoryNav();
+        renderPage();
         updateStats();
+        updateCategoryDatalist();
+        
     } catch (err) {
         console.error('Fetch error:', err);
         showMessage('加载书签失败，请检查网络连接', true);
+        
         document.getElementById('bookmarksContainer').innerHTML = `
             <div class="empty-state">
                 <span>⚠️</span>
-                <p>无法连接到粉色云端<br>请检查网络后刷新重试</p>
+                <p>无法连接到粉色云端</p>
                 <button class="btn" onclick="location.reload()" style="margin-top: 1rem;">🔄 刷新重试</button>
             </div>
         `;
@@ -215,7 +289,7 @@ async function fetchBookmarks() {
 
 async function addBookmark(category, name, url, desc = '') {
     if (!category || !category.trim()) {
-        showMessage('请选择或输入分类', true);
+        showMessage('请填写分类', true);
         return false;
     }
     if (!name || !name.trim()) {
@@ -291,82 +365,52 @@ function updateStats() {
     }
 }
 
+function updateCategoryDatalist() {
+    const categories = fullData.bookmarks.map(cat => cat.category);
+    const datalist = document.getElementById('categoryList');
+    if (datalist) {
+        datalist.innerHTML = categories.map(cat => `<option value="${escapeAttr(cat)}">`).join('');
+    }
+}
+
 // ========== 搜索功能 ==========
 function searchBookmarks(keyword) {
-    if (!keyword.trim()) {
-        renderPage();
-        return;
+    currentSearchKeyword = keyword.trim();
+    currentCategory = '';
+    
+    const clearBtn = document.getElementById('clearSearchBtn');
+    if (clearBtn) {
+        clearBtn.style.display = currentSearchKeyword ? 'inline-block' : 'none';
     }
     
-    const lowerKeyword = keyword.toLowerCase();
-    const container = document.getElementById('bookmarksContainer');
+    renderCategoryNav();
+    renderPage();
+}
+
+function clearSearch() {
+    currentSearchKeyword = '';
+    currentCategory = '';
     
-    let html = '';
-    let hasResults = false;
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
     
-    fullData.bookmarks.forEach(categoryData => {
-        const categoryName = categoryData.category;
-        const matchedBookmarks = (categoryData.bookmarks || []).filter(bookmark =>
-            bookmark.name.toLowerCase().includes(lowerKeyword) ||
-            (bookmark.desc && bookmark.desc.toLowerCase().includes(lowerKeyword)) ||
-            bookmark.url.toLowerCase().includes(lowerKeyword)
-        );
-        
-        if (matchedBookmarks.length > 0) {
-            hasResults = true;
-            const icon = getCategoryIcon(categoryName, fullData.menu);
-            
-            html += `
-                <div class="category-section">
-                    <div class="category-header">
-                        <div class="category-title">
-                            <span class="category-icon">${icon}</span>
-                            <h2>${escapeHtml(categoryName)}</h2>
-                            <span class="bookmark-count">${matchedBookmarks.length}</span>
-                        </div>
-                    </div>
-                    <div class="bookmarks-grid">
-            `;
-            
-            matchedBookmarks.forEach((bookmark, idx) => {
-                html += `
-                    <div class="bookmark-card search-result">
-                        <div class="bookmark-info">
-                            <div class="bookmark-title">
-                                <span class="bookmark-icon">🔗</span>
-                                ${escapeHtml(bookmark.name)}
-                            </div>
-                            <div class="bookmark-url" title="${escapeHtml(bookmark.url)}">
-                                ${escapeHtml(truncateUrl(bookmark.url))}
-                            </div>
-                            ${bookmark.desc ? `<div class="bookmark-desc">💬 ${escapeHtml(bookmark.desc)}</div>` : ''}
-                        </div>
-                        <div class="bookmark-actions">
-                            <button class="icon-btn visit-btn" data-url="${escapeAttr(bookmark.url)}">🔗 访问</button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `</div></div>`;
-        }
+    if (searchInput) searchInput.value = '';
+    if (clearBtn) clearBtn.style.display = 'none';
+    
+    renderCategoryNav();
+    renderPage();
+}
+
+// ========== 可折叠面板 ==========
+function initCollapsiblePanel() {
+    const panel = document.querySelector('.add-panel');
+    const header = document.getElementById('addPanelHeader');
+    
+    if (!panel || !header) return;
+    
+    header.addEventListener('click', () => {
+        panel.classList.toggle('collapsed');
     });
-    
-    if (!hasResults) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <span>🔍</span>
-                <p>没有找到与 "${escapeHtml(keyword)}" 相关的书签</p>
-            </div>
-        `;
-    } else {
-        container.innerHTML = html;
-        // 重新绑定访问按钮
-        document.querySelectorAll('.visit-btn').forEach(btn => {
-            btn.removeEventListener('click', handleVisit);
-            btn.addEventListener('click', handleVisit);
-        });
-    }
 }
 
 // ========== 初始化 ==========
@@ -378,6 +422,7 @@ function initEventListeners() {
     const descInput = document.getElementById('descInput');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
     
     if (addBtn) {
         addBtn.addEventListener('click', async () => {
@@ -395,7 +440,6 @@ function initEventListeners() {
         });
     }
     
-    // 搜索功能
     if (searchBtn && searchInput) {
         searchBtn.addEventListener('click', () => {
             searchBookmarks(searchInput.value);
@@ -408,9 +452,12 @@ function initEventListeners() {
         });
     }
     
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', clearSearch);
+    }
+    
     // 回车添加
-    const inputs = [titleInput, urlInput];
-    inputs.forEach(inp => {
+    [titleInput, urlInput, categoryInput, descInput].forEach(inp => {
         if (inp) {
             inp.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && addBtn) addBtn.click();
@@ -419,33 +466,10 @@ function initEventListeners() {
     });
 }
 
-// 初始化分类下拉框
-function initCategorySelect() {
-    const categoryInput = document.getElementById('categoryInput');
-    if (!categoryInput) return;
-    
-    // 从已有的分类中获取列表
-    const categories = fullData.bookmarks.map(cat => cat.category);
-    const uniqueCategories = [...new Set(categories)];
-    
-    if (uniqueCategories.length > 0) {
-        // 可以添加 datalist 建议
-        const datalist = document.createElement('datalist');
-        datalist.id = 'categoryList';
-        uniqueCategories.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            datalist.appendChild(option);
-        });
-        document.body.appendChild(datalist);
-        categoryInput.setAttribute('list', 'categoryList');
-    }
-}
-
 async function init() {
+    initCollapsiblePanel();
     await fetchBookmarks();
     initEventListeners();
-    initCategorySelect();
 }
 
 document.addEventListener('DOMContentLoaded', init);
