@@ -490,6 +490,7 @@
         <div class="tool-buttons">
             <button class="tool-btn" id="themeToggle">🌙 夜间</button>
             <button class="tool-btn" id="messageBtn">💬 推荐</button>
+            <button class="tool-btn" id="oldVersionBtn">📁 旧版入口</button>
             <button class="tool-btn" id="adminBtn">🔐 管理</button>
         </div>
     </div>
@@ -603,7 +604,9 @@
         else btn.style.display = "none";
     });
     document.getElementById("backToTop").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
-
+    document.getElementById('oldVersionBtn').onclick = () => {
+        window.open('/oldbookmarks/', '_blank');
+    };
     function showMessage(msg, isError = false) {
         const toast = document.createElement('div');
         toast.textContent = msg;
