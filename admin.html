@@ -7,68 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
-        }
-        
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .navbar-brand, .navbar a {
-            color: white !important;
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .table th {
-            background: #f8f9fa;
-        }
-        
-        .bookmark-url {
-            max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .navbar-brand, .navbar a { color: white !important; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .login-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .hidden { display: none !important; }
+        .icon-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .icon-option { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 24px; transition: all 0.2s; }
+        .icon-option:hover { border-color: #667eea; transform: scale(1.05); }
+        .icon-option.selected { border-color: #667eea; background: #667eea20; }
+        .debug-panel { background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; margin-top: 20px; max-height: 300px; overflow: auto; }
+        .debug-panel pre { margin: 0; color: #d4d4d4; white-space: pre-wrap; }
     </style>
 </head>
 <body>
@@ -84,9 +36,7 @@
                 <input type="password" id="passwordInput" class="form-control form-control-lg" placeholder="密码" autofocus>
             </div>
             <button class="btn btn-primary btn-lg w-100" onclick="login()">登录</button>
-            <div class="text-center mt-3">
-                <a href="/">返回首页</a>
-            </div>
+            <div class="text-center mt-3"><a href="/">返回首页</a></div>
         </div>
     </div>
     
@@ -94,12 +44,8 @@
     <div id="adminContainer" class="hidden">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="/">
-                    <i class="fas fa-bookmark"></i> 管理后台
-                </a>
-                <a href="/" class="btn btn-light">
-                    <i class="fas fa-home"></i> 返回首页
-                </a>
+                <a class="navbar-brand" href="/"><i class="fas fa-bookmark"></i> 管理后台</a>
+                <a href="/" class="btn btn-light"><i class="fas fa-home"></i> 返回首页</a>
             </div>
         </nav>
         
@@ -107,20 +53,18 @@
             <div class="card">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="fas fa-link"></i> 所有书签</h4>
-                    <button class="btn btn-primary" onclick="openAddModal()">
-                        <i class="fas fa-plus"></i> 新增书签
-                    </button>
+                    <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> 新增书签</button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead>
-                                <tr><th>标题</th><th>URL</th><th>分类</th><th>操作</th></tr>
-                            </thead>
-                            <tbody id="bookmarksTable">
-                                <tr><td colspan="4" class="text-center">加载中...</td></tr>
-                            </tbody>
+                            <thead><tr><th>图标</th><th>标题</th><th>URL</th><th>分类</th><th>操作</th></tr></thead>
+                            <tbody id="bookmarksTable"><tr><td colspan="5" class="text-center">加载中...</td></tr></tbody>
                         </table>
+                    </div>
+                    <div class="debug-panel">
+                        <strong>🔍 调试信息：</strong>
+                        <pre id="debugInfo">等待数据...</pre>
                     </div>
                 </div>
             </div>
@@ -128,7 +72,7 @@
         
         <!-- 书签编辑模态框 -->
         <div class="modal fade" id="bookmarkModal" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalTitle">新增书签</h5>
@@ -150,7 +94,34 @@
                         </div>
                         <div class="mb-3">
                             <label>图标 (FontAwesome类名)</label>
-                            <input type="text" id="icon" class="form-control" placeholder="fas fa-code">
+                            <input type="text" id="icon" class="form-control" placeholder="fas fa-link" list="iconSuggestions">
+                            <datalist id="iconSuggestions">
+                                <option>fab fa-google</option><option>fab fa-github</option><option>fab fa-firefox</option>
+                                <option>fab fa-youtube</option><option>fab fa-bilibili</option><option>fab fa-twitter</option>
+                                <option>fab fa-facebook</option><option>fab fa-instagram</option><option>fab fa-windows</option>
+                                <option>fab fa-apple</option><option>fab fa-android</option><option>fas fa-code</option>
+                                <option>fas fa-database</option><option>fas fa-cloud</option><option>fas fa-server</option>
+                                <option>fas fa-music</option><option>fas fa-video</option><option>fas fa-book</option>
+                                <option>fas fa-shopping-cart</option><option>fas fa-envelope</option><option>fas fa-star</option>
+                                <option>fas fa-heart</option><option>fas fa-camera</option><option>fas fa-gamepad</option>
+                            </datalist>
+                        </div>
+                        <div class="mb-3">
+                            <label>常用图标快捷选择（点击即可）</label>
+                            <div class="icon-list" id="quickIcons">
+                                <div class="icon-option" data-icon="fab fa-google"><i class="fab fa-google"></i></div>
+                                <div class="icon-option" data-icon="fab fa-github"><i class="fab fa-github"></i></div>
+                                <div class="icon-option" data-icon="fab fa-firefox"><i class="fab fa-firefox"></i></div>
+                                <div class="icon-option" data-icon="fab fa-youtube"><i class="fab fa-youtube"></i></div>
+                                <div class="icon-option" data-icon="fab fa-bilibili"><i class="fab fa-bilibili"></i></div>
+                                <div class="icon-option" data-icon="fas fa-code"><i class="fas fa-code"></i></div>
+                                <div class="icon-option" data-icon="fas fa-database"><i class="fas fa-database"></i></div>
+                                <div class="icon-option" data-icon="fas fa-cloud"><i class="fas fa-cloud"></i></div>
+                                <div class="icon-option" data-icon="fas fa-music"><i class="fas fa-music"></i></div>
+                                <div class="icon-option" data-icon="fas fa-video"><i class="fas fa-video"></i></div>
+                                <div class="icon-option" data-icon="fas fa-book"><i class="fas fa-book"></i></div>
+                                <div class="icon-option" data-icon="fas fa-star"><i class="fas fa-star"></i></div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label>描述</label>
@@ -172,95 +143,108 @@
         let currentPassword = '';
         let modal = null;
         
+        function updateDebugInfo(title, data) {
+            const debugEl = document.getElementById('debugInfo');
+            if (debugEl) {
+                debugEl.innerHTML = `[${new Date().toLocaleTimeString()}] ${title}\n${JSON.stringify(data, null, 2)}`;
+            }
+            console.log(title, data);
+        }
+        
+        // 初始化快速图标选择
+        function initQuickIcons() {
+            document.querySelectorAll('.icon-option').forEach(iconDiv => {
+                iconDiv.addEventListener('click', () => {
+                    const iconClass = iconDiv.getAttribute('data-icon');
+                    document.getElementById('icon').value = iconClass;
+                    // 高亮选中效果
+                    document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
+                    iconDiv.classList.add('selected');
+                });
+            });
+        }
+        
         async function login() {
             const password = document.getElementById('passwordInput').value;
-            if (!password) {
-                alert('请输入密码');
-                return;
-            }
+            if (!password) { alert('请输入密码'); return; }
             
             try {
-                console.log('验证密码...');
+                updateDebugInfo('正在验证密码...', {});
                 const response = await fetch(`${API_URL}/api/verify`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
                 });
                 
-                console.log('验证响应状态:', response.status);
-                
                 if (response.ok) {
                     currentPassword = password;
                     localStorage.setItem('admin_password', password);
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('adminContainer').classList.remove('hidden');
+                    updateDebugInfo('登录成功', {});
                     await loadBookmarks();
+                    initQuickIcons();
                 } else {
                     const error = await response.json();
+                    updateDebugInfo('登录失败', error);
                     alert('密码错误：' + (error.error || '请重试'));
                 }
             } catch (error) {
-                console.error('登录错误:', error);
+                updateDebugInfo('登录错误', { message: error.message });
                 alert('网络错误：' + error.message);
             }
         }
         
         async function loadBookmarks() {
             try {
-                console.log('加载书签列表...');
+                updateDebugInfo('正在加载书签...', { url: `${API_URL}/api/links` });
                 const response = await fetch(`${API_URL}/api/links`);
-                console.log('响应状态:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
                 const data = await response.json();
-                console.log('获取到的数据:', data);
+                
+                updateDebugInfo('原始返回数据', { type: typeof data, isArray: Array.isArray(data), data: data });
                 
                 const bookmarks = Array.isArray(data) ? data : [];
-                console.log('书签数量:', bookmarks.length);
+                updateDebugInfo('解析后', { count: bookmarks.length });
                 
                 const tbody = document.getElementById('bookmarksTable');
                 tbody.innerHTML = '';
                 
                 if (bookmarks.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据，点击"新增书签"添加</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无数据，点击"新增书签"添加</td></tr>';
                     return;
                 }
                 
                 bookmarks.forEach(bookmark => {
                     const row = tbody.insertRow();
                     row.innerHTML = `
-                        <td><strong>${escapeHtml(bookmark.title)}</strong><br>
-                                <small class="text-muted">${escapeHtml(bookmark.icon || 'fas fa-link')}</small>
-                         </td>
-                        <td><a href="${bookmark.url}" target="_blank" class="bookmark-url">${escapeHtml(bookmark.url)}</a></td>
+                        <td><i class="${bookmark.icon || 'fas fa-link'} fa-lg"></i></td>
+                        <td><strong>${escapeHtml(bookmark.title)}</strong><br><small class="text-muted">${escapeHtml(bookmark.id)}</small></td>
+                        <td><a href="${bookmark.url}" target="_blank" style="max-width:250px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(bookmark.url)}</a></td>
                         <td>${escapeHtml(bookmark.category || '-')}</td>
                         <td>
-                            <button class="btn btn-sm btn-warning" onclick="editBookmark('${bookmark.id}')">
-                                <i class="fas fa-edit"></i> 编辑
-                            </button>
-                            <button class="btn btn-sm btn-danger ms-2" onclick="deleteBookmark('${bookmark.id}')">
-                                <i class="fas fa-trash"></i> 删除
-                            </button>
-                         </td>
+                            <button class="btn btn-sm btn-warning" onclick="editBookmark('${bookmark.id}')"><i class="fas fa-edit"></i> 编辑</button>
+                            <button class="btn btn-sm btn-danger ms-2" onclick="deleteBookmark('${bookmark.id}')"><i class="fas fa-trash"></i> 删除</button>
+                        </td>
                     `;
                 });
+                
+                updateDebugInfo('渲染完成', { count: bookmarks.length });
             } catch (error) {
-                console.error('加载失败:', error);
+                updateDebugInfo('加载失败', { message: error.message });
                 const tbody = document.getElementById('bookmarksTable');
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">加载失败：${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">加载失败：${error.message}</td></tr>`;
             }
         }
         
         async function saveBookmark() {
             const id = document.getElementById('editId').value;
+            const iconValue = document.getElementById('icon').value.trim();
+            
             const data = {
                 title: document.getElementById('title').value.trim(),
                 url: document.getElementById('url').value.trim(),
                 category: document.getElementById('category').value.trim(),
-                icon: document.getElementById('icon').value.trim(),
+                icon: iconValue || 'fas fa-link',  // 默认图标
                 description: document.getElementById('description').value.trim()
             };
             
@@ -269,11 +253,11 @@
                 return;
             }
             
+            updateDebugInfo('保存书签', { id: id || '新增', data });
+            
             try {
                 const url = id ? `${API_URL}/api/links/${id}` : `${API_URL}/api/links`;
                 const method = id ? 'PUT' : 'POST';
-                
-                console.log('保存书签:', { url, method, data });
                 
                 const response = await fetch(url, {
                     method: method,
@@ -285,7 +269,7 @@
                 });
                 
                 const result = await response.json();
-                console.log('保存结果:', result);
+                updateDebugInfo('保存结果', result);
                 
                 if (response.ok && result.success) {
                     alert(id ? '修改成功！' : '添加成功！');
@@ -296,14 +280,14 @@
                     alert('保存失败：' + (result.error || '未知错误'));
                 }
             } catch (error) {
-                console.error('保存错误:', error);
+                updateDebugInfo('保存错误', { message: error.message });
                 alert('网络错误：' + error.message);
             }
         }
         
         async function editBookmark(id) {
             try {
-                console.log('编辑书签:', id);
+                updateDebugInfo('编辑书签', { id });
                 const response = await fetch(`${API_URL}/api/links`);
                 const data = await response.json();
                 const bookmarks = Array.isArray(data) ? data : [];
@@ -314,7 +298,7 @@
                     document.getElementById('title').value = bookmark.title;
                     document.getElementById('url').value = bookmark.url;
                     document.getElementById('category').value = bookmark.category || '';
-                    document.getElementById('icon').value = bookmark.icon || '';
+                    document.getElementById('icon').value = bookmark.icon || 'fas fa-link';
                     document.getElementById('description').value = bookmark.description || '';
                     document.getElementById('modalTitle').textContent = '编辑书签';
                     modal.show();
@@ -322,24 +306,21 @@
                     alert('书签不存在');
                 }
             } catch (error) {
-                console.error('编辑错误:', error);
+                updateDebugInfo('编辑错误', { message: error.message });
                 alert('加载失败：' + error.message);
             }
         }
         
         async function deleteBookmark(id) {
             if (!confirm('确定删除这个书签吗？')) return;
-            
             try {
-                console.log('删除书签:', id);
+                updateDebugInfo('删除书签', { id });
                 const response = await fetch(`${API_URL}/api/links/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${currentPassword}` }
                 });
-                
                 const result = await response.json();
-                console.log('删除结果:', result);
-                
+                updateDebugInfo('删除结果', result);
                 if (response.ok && result.success) {
                     alert('删除成功！');
                     await loadBookmarks();
@@ -347,47 +328,30 @@
                     alert('删除失败：' + (result.error || '未知错误'));
                 }
             } catch (error) {
-                console.error('删除错误:', error);
+                updateDebugInfo('删除错误', { message: error.message });
                 alert('网络错误：' + error.message);
             }
         }
         
-        function openAddModal() {
-            resetForm();
-            document.getElementById('modalTitle').textContent = '新增书签';
-            modal.show();
-        }
+        function openAddModal() { resetForm(); document.getElementById('modalTitle').textContent = '新增书签'; modal.show(); }
         
         function resetForm() {
             document.getElementById('editId').value = '';
             document.getElementById('title').value = '';
             document.getElementById('url').value = '';
             document.getElementById('category').value = '';
-            document.getElementById('icon').value = '';
+            document.getElementById('icon').value = 'fas fa-link';
             document.getElementById('description').value = '';
+            document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
         }
         
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        // 检查是否已登录
         const savedPassword = localStorage.getItem('admin_password');
-        if (savedPassword) {
-            document.getElementById('passwordInput').value = savedPassword;
-            login();
-        }
-        
-        // 初始化模态框
-        document.addEventListener('DOMContentLoaded', () => {
-            modal = new bootstrap.Modal(document.getElementById('bookmarkModal'));
-            console.log('初始化完成，API地址:', API_URL);
+        if (savedPassword) { document.getElementById('passwordInput').value = savedPassword; login(); }
+        document.addEventListener('DOMContentLoaded', () => { 
+            modal = new bootstrap.Modal(document.getElementById('bookmarkModal')); 
+            updateDebugInfo('初始化完成', { apiUrl: API_URL });
         });
     </script>
 </body>
