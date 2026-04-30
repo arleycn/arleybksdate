@@ -1,426 +1,118 @@
-/* ============================================
-   粉贝书签 - 粉色主题样式
-   ============================================ */
+/* ========== 新增样式 ========== */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    background: linear-gradient(145deg, #fff5f7 0%, #ffe4ed 100%);
-    font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', 'Roboto', sans-serif;
-    padding: 1.5rem 1.2rem 3rem;
-    color: #5d3a4b;
-    min-height: 100vh;
-}
-
-.container {
-    max-width: 1300px;
-    margin: 0 auto;
-}
-
-/* ========== 头部区域 ========== */
-.hero {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    position: relative;
-}
-
-.hero h1 {
-    font-size: 2.6rem;
-    background: linear-gradient(135deg, #e8809e, #c95c7c);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    letter-spacing: -0.5px;
-    display: inline-block;
-    font-weight: 700;
-    animation: fadeInDown 0.6s ease;
-}
-
-.hero p {
-    font-size: 1rem;
-    color: #b86b84;
-    margin-top: 0.5rem;
-    font-weight: 500;
-    animation: fadeInUp 0.6s ease;
-}
-
-/* ========== 添加书签面板 ========== */
-.add-panel {
-    background: rgba(255, 248, 250, 0.95);
-    backdrop-filter: blur(2px);
-    border-radius: 48px;
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 12px 28px rgba(233, 120, 152, 0.15);
-    border: 1px solid #ffe2ec;
+/* 搜索栏 */
+.search-bar {
     display: flex;
-    flex-wrap: wrap;
     gap: 12px;
-    align-items: flex-end;
-    animation: fadeIn 0.5s ease;
+    margin-bottom: 1.5rem;
 }
 
-.input-group {
+.search-input {
     flex: 1;
-    min-width: 160px;
-}
-
-.input-group label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #d56a89;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 40px;
+    padding: 12px 20px;
+    border-radius: 48px;
     border: 1.5px solid #ffe0e8;
     background: white;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    font-size: 0.95rem;
     outline: none;
-    color: #4f2e3b;
+    transition: all 0.2s;
 }
 
-.input-group input:focus {
+.search-input:focus {
     border-color: #f5a3bd;
     box-shadow: 0 0 0 3px rgba(245, 163, 189, 0.3);
 }
 
-.input-group input::placeholder {
-    color: #e2b8c8;
-}
-
-/* ========== 按钮样式 ========== */
-.btn {
+.btn-search {
     background: #f8cedb;
-    border: none;
-    padding: 12px 28px;
-    border-radius: 40px;
-    font-weight: 700;
-    font-size: 0.9rem;
     color: #a14261;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid #ffeef3;
 }
 
-.btn-primary {
-    background: #f29bb8;
-    color: white;
-    box-shadow: 0 6px 14px #f5bfd1;
-    border: none;
+.btn-search:hover {
+    background: #f5bfd1;
 }
 
-.btn-primary:hover {
-    background: #e881a3;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(231, 111, 144, 0.3);
-}
-
-.btn-primary:active {
-    transform: translateY(0);
-}
-
-/* ========== 书签网格 ========== */
-.bookmarks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.2rem;
-}
-
-.bookmark-card {
-    background: white;
-    border-radius: 32px;
-    padding: 1.2rem;
-    transition: all 0.25s;
-    box-shadow: 0 12px 24px -12px rgba(176, 70, 100, 0.2);
-    border: 1px solid #ffd9e5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    animation: fadeInUp 0.4s ease;
-}
-
-.bookmark-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 30px -12px rgba(176, 70, 100, 0.3);
-}
-
-.bookmark-info {
-    flex: 3;
-    min-width: 150px;
-    overflow: hidden;
-}
-
-.bookmark-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: #aa5c79;
-    word-break: break-word;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.bookmark-title::before {
-    content: "📌";
-    font-size: 1rem;
-}
-
-.bookmark-url {
-    font-size: 0.7rem;
+/* 统计栏 */
+.stats-bar {
+    text-align: center;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
     color: #c1849b;
+    background: rgba(255, 248, 250, 0.6);
+    border-radius: 40px;
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 分类区域 */
+.category-section {
+    margin-bottom: 2.5rem;
+}
+
+.category-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ffe0e8;
+}
+
+.category-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-icon {
+    font-size: 1.5rem;
+}
+
+.category-title h2 {
+    font-size: 1.3rem;
+    color: #c95c7c;
+    font-weight: 600;
+}
+
+.bookmark-count {
+    background: #ffe0e8;
+    padding: 2px 10px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    color: #e67b9b;
+    font-weight: 500;
+}
+
+/* 书签描述 */
+.bookmark-desc {
+    font-size: 0.65rem;
+    color: #e2b8c8;
+    margin-top: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 6px;
-    font-family: monospace;
 }
 
-/* ========== 操作按钮 ========== */
-.bookmark-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+.bookmark-icon {
+    font-size: 0.9rem;
 }
 
-.icon-btn {
-    background: #fff0f4;
-    border: none;
-    font-size: 0.85rem;
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 40px;
-    transition: 0.15s;
-    color: #c46f8b;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: 500;
+/* 书签容器 */
+.bookmarks-container {
+    margin-top: 0.5rem;
 }
 
-.icon-btn:hover {
-    background: #ffe2eb;
-    transform: scale(0.96);
-}
-
-.icon-btn:active {
-    transform: scale(0.94);
-}
-
-.delete-btn {
-    color: #e67b9b;
-}
-
-.delete-btn:hover {
-    background: #fdd8e3;
-}
-
-/* ========== 空状态 ========== */
-.empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    background: rgba(255, 245, 248, 0.7);
-    border-radius: 60px;
-    margin-top: 2rem;
-    grid-column: 1 / -1;
-}
-
-.empty-state span {
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-    color: #bf7d97;
-    font-weight: 500;
-}
-
-/* ========== 加载状态 ========== */
-.loading {
-    text-align: center;
-    padding: 2rem;
-    color: #e195b0;
-    font-size: 1.1rem;
-    grid-column: 1 / -1;
-}
-
-.loading::after {
-    content: "...";
-    animation: dots 1.5s steps(4, end) infinite;
-}
-
-/* ========== Toast 提示 ========== */
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fbd5e2;
-    color: #a13e5e;
-    padding: 10px 22px;
-    border-radius: 100px;
-    font-weight: 500;
-    font-size: 0.85rem;
-    z-index: 1000;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(12px);
-    animation: fadeInOut 2.3s ease;
-    white-space: nowrap;
-    max-width: 90vw;
-    white-space: normal;
-    text-align: center;
-}
-
-.toast-error {
-    background: #ffcccc;
-    color: #c0392b;
-}
-
-/* ========== 页脚 ========== */
-footer {
-    text-align: center;
-    margin-top: 3rem;
-    font-size: 0.75rem;
-    color: #eba2bc;
-    padding: 1rem;
-}
-
-/* ========== 动画 ========== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px);
-    }
-    15% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-    85% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px);
-    }
-}
-
-@keyframes dots {
-    0%, 20% {
-        content: ".";
-    }
-    40% {
-        content: "..";
-    }
-    60%, 100% {
-        content: "...";
-    }
-}
-
-/* ========== 响应式设计 ========== */
-@media (max-width: 768px) {
-    body {
-        padding: 1rem 1rem 2rem;
-    }
-
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .hero p {
-        font-size: 0.85rem;
-    }
-}
-
+/* 响应式调整 */
 @media (max-width: 640px) {
-    body {
-        padding: 1rem 0.8rem 2rem;
-    }
-
-    .add-panel {
+    .search-bar {
         flex-direction: column;
-        align-items: stretch;
-        border-radius: 32px;
-        padding: 1rem;
     }
-
-    .btn-primary {
-        margin-top: 0.5rem;
+    
+    .category-title h2 {
+        font-size: 1.1rem;
     }
-
-    .bookmark-card {
-        padding: 1rem;
+    
+    .category-icon {
+        font-size: 1.2rem;
     }
-
-    .bookmark-title {
-        font-size: 1rem;
-    }
-
-    .icon-btn {
-        padding: 5px 10px;
-        font-size: 0.75rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .bookmarks-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .bookmark-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
-}
-
-/* 暗色模式适配（可选） */
-@media (prefers-color-scheme: dark) {
-    /* 保持粉色主题，不跟随系统暗色 */
 }

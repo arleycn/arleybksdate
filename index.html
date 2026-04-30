@@ -13,7 +13,18 @@
         <p>收藏每一份心动 · 你的粉甜导航站</p>
     </div>
 
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 搜索书签..." class="search-input">
+        <button id="searchBtn" class="btn btn-search">搜索</button>
+    </div>
+
+    <!-- 添加书签面板 -->
     <div class="add-panel">
+        <div class="input-group">
+            <label>📂 分类</label>
+            <input type="text" id="categoryInput" placeholder="例如：常用站点" value="常用站点">
+        </div>
         <div class="input-group">
             <label>📖 网站标题</label>
             <input type="text" id="titleInput" placeholder="例如：粉色博物馆" maxlength="80">
@@ -22,12 +33,23 @@
             <label>🔗 网址链接</label>
             <input type="url" id="urlInput" placeholder="https:// 或 http://">
         </div>
+        <div class="input-group">
+            <label>💬 描述（可选）</label>
+            <input type="text" id="descInput" placeholder="简单描述这个网站">
+        </div>
         <button id="addBtn" class="btn btn-primary">✨ 添加书签</button>
     </div>
 
-    <div id="bookmarksContainer" class="bookmarks-grid">
+    <!-- 统计信息 -->
+    <div class="stats-bar" id="statsInfo">
+        加载中...
+    </div>
+
+    <!-- 书签列表容器 -->
+    <div id="bookmarksContainer" class="bookmarks-container">
         <div class="loading">🍰 加载中，请稍后...</div>
     </div>
+    
     <footer>💕 轻点爱心 · 永久陪伴 | 支持移动端 & 云端存储</footer>
 </div>
 

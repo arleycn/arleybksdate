@@ -1,48 +1,33 @@
 /**
- * 粉贝书签 - 前端交互逻辑
- * 支持添加、删除、访问书签，与 Cloudflare Worker 后端通信
+ * 粉贝书签 - 适配您的数据结构
  */
 
 // ========== 配置 ==========
-// 请替换为您的 Worker 域名
 const API_BASE = "https://arleybksdate.arley.workers.dev";
 
 const API = {
     getAll: `${API_BASE}/api/bookmarks`,
     add: `${API_BASE}/api/bookmarks`,
-    delete: (id) => `${API_BASE}/api/bookmarks/${id}`,
+    delete: (category, index) => `${API_BASE}/api/bookmarks/${encodeURIComponent(category)}/${index}`,
     health: `${API_BASE}/api/health`
 };
 
-// 全局状态
-let bookmarksList = [];
+// 全局数据
+let fullData = {
+    menu: [],
+    bookmarks: []
+};
 
 // ========== 工具函数 ==========
-
-/**
- * 显示提示消息
- * @param {string} msg - 提示内容
- * @param {boolean} isError - 是否为错误消息
- */
 function showMessage(msg, isError = false) {
     const toast = document.createElement('div');
     toast.className = 'toast';
-    if (isError) {
-        toast.classList.add('toast-error');
-    }
+    if (isError) toast.classList.add('toast-error');
     toast.textContent = msg;
     document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 2300);
+    setTimeout(() => toast.remove(), 2300);
 }
 
-/**
- * 转义 HTML 特殊字符
- * @param {string} str - 需要转义的字符串
- * @returns {string} 转义后的字符串
- */
 function escapeHtml(str) {
     if (!str) return '';
     return str
@@ -53,58 +38,40 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-/**
- * 转义属性值
- * @param {string} str - 需要转义的字符串
- * @returns {string} 转义后的字符串
- */
-function escapeAttr(str) {
-    if (!str) return '';
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-/**
- * 截断过长的 URL
- * @param {string} url - 原始 URL
- * @param {number} maxLen - 最大长度
- * @returns {string} 截断后的 URL
- */
-function truncateUrl(url, maxLen = 45) {
+function truncateUrl(url, maxLen = 50) {
     if (!url) return '';
     if (url.length <= maxLen) return url;
     return url.substring(0, maxLen - 3) + '...';
 }
 
-/**
- * 验证并格式化 URL
- * @param {string} url - 原始 URL
- * @returns {string} 格式化后的 URL
- */
-function formatUrl(url) {
-    let trimmedUrl = url.trim();
-    if (!trimmedUrl) return '';
-    if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
-        trimmedUrl = 'https://' + trimmedUrl;
+// 获取分类图标（根据分类名称或menu配置）
+function getCategoryIcon(categoryName, menuList) {
+    const menuItem = menuList.find(m => m.name === categoryName);
+    if (menuItem && menuItem.icon) {
+        return menuItem.icon;
     }
-    return trimmedUrl;
+    // 默认图标
+    const iconMap = {
+        '热搜新闻': '🔥',
+        '常用站点': '⭐',
+        '字母站': '💎',
+        '实用工具': '👍',
+        '素材资源': '📷',
+        '开发生产': '📄',
+        '学无止境': '🎓',
+        '系统相关': '💻',
+        '在线追剧': '📺',
+        '搜索引擎': '🔍'
+    };
+    return iconMap[categoryName] || '📌';
 }
 
-// ========== 渲染函数 ==========
-
-/**
- * 渲染书签列表
- * @param {Array} bookmarks - 书签数组
- */
-function renderBookmarks(bookmarks) {
+// ========== 渲染主页面 ==========
+function renderPage() {
     const container = document.getElementById('bookmarksContainer');
     if (!container) return;
     
-    if (!bookmarks || bookmarks.length === 0) {
+    if (!fullData.bookmarks || fullData.bookmarks.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <span>📭</span>
@@ -114,147 +81,166 @@ function renderBookmarks(bookmarks) {
         return;
     }
     
-    container.innerHTML = bookmarks.map(bookmark => `
-        <div class="bookmark-card" data-id="${escapeAttr(bookmark.id)}">
-            <div class="bookmark-info">
-                <div class="bookmark-title">${escapeHtml(bookmark.title)}</div>
-                <div class="bookmark-url" title="${escapeAttr(bookmark.url)}">${escapeHtml(truncateUrl(bookmark.url))}</div>
-            </div>
-            <div class="bookmark-actions">
-                <button class="icon-btn visit-btn" data-url="${escapeAttr(bookmark.url)}">
-                    🔗 访问
-                </button>
-                <button class="icon-btn delete-btn" data-id="${escapeAttr(bookmark.id)}">
-                    🗑️ 删除
-                </button>
-            </div>
-        </div>
-    `).join('');
+    // 渲染所有分类
+    let html = '';
     
-    // 绑定访问事件
-    bindVisitEvents();
+    fullData.bookmarks.forEach((categoryData, catIndex) => {
+        const categoryName = categoryData.category;
+        const bookmarks = categoryData.bookmarks || [];
+        const icon = getCategoryIcon(categoryName, fullData.menu);
+        
+        if (bookmarks.length === 0) return;
+        
+        html += `
+            <div class="category-section" data-category="${escapeHtml(categoryName)}">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon">${icon}</span>
+                        <h2>${escapeHtml(categoryName)}</h2>
+                        <span class="bookmark-count">${bookmarks.length}</span>
+                    </div>
+                </div>
+                <div class="bookmarks-grid">
+        `;
+        
+        bookmarks.forEach((bookmark, idx) => {
+            html += `
+                <div class="bookmark-card" data-category="${escapeHtml(categoryName)}" data-index="${idx}">
+                    <div class="bookmark-info">
+                        <div class="bookmark-title">
+                            <span class="bookmark-icon">🔗</span>
+                            ${escapeHtml(bookmark.name)}
+                        </div>
+                        <div class="bookmark-url" title="${escapeHtml(bookmark.url)}">
+                            ${escapeHtml(truncateUrl(bookmark.url))}
+                        </div>
+                        ${bookmark.desc ? `<div class="bookmark-desc">💬 ${escapeHtml(bookmark.desc)}</div>` : ''}
+                    </div>
+                    <div class="bookmark-actions">
+                        <button class="icon-btn visit-btn" data-url="${escapeAttr(bookmark.url)}">
+                            🔗 访问
+                        </button>
+                        <button class="icon-btn delete-btn" data-category="${escapeHtml(categoryName)}" data-index="${idx}">
+                            🗑️ 删除
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    });
     
-    // 绑定删除事件
-    bindDeleteEvents();
+    container.innerHTML = html;
+    
+    // 绑定事件
+    bindAllEvents();
 }
 
-/**
- * 绑定访问按钮事件
- */
-function bindVisitEvents() {
+function bindAllEvents() {
+    // 访问按钮
     document.querySelectorAll('.visit-btn').forEach(btn => {
         btn.removeEventListener('click', handleVisit);
         btn.addEventListener('click', handleVisit);
     });
-}
-
-/**
- * 处理访问点击
- * @param {Event} e - 事件对象
- */
-function handleVisit(e) {
-    e.stopPropagation();
-    const url = e.currentTarget.getAttribute('data-url');
-    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-        window.open(url, '_blank', 'noopener noreferrer');
-    } else {
-        showMessage('链接格式不正确，无法访问', true);
-    }
-}
-
-/**
- * 绑定删除按钮事件
- */
-function bindDeleteEvents() {
+    
+    // 删除按钮
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.removeEventListener('click', handleDelete);
         btn.addEventListener('click', handleDelete);
     });
 }
 
-/**
- * 处理删除点击
- * @param {Event} e - 事件对象
- */
-async function handleDelete(e) {
+function handleVisit(e) {
     e.stopPropagation();
-    const id = e.currentTarget.getAttribute('data-id');
-    if (id && confirm('确定要删除这个书签吗？')) {
-        await deleteBookmarkById(id);
+    const url = e.currentTarget.getAttribute('data-url');
+    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+        window.open(url, '_blank', 'noopener noreferrer');
+    } else if (url) {
+        window.open('https://' + url, '_blank', 'noopener noreferrer');
+    } else {
+        showMessage('链接格式不正确', true);
     }
 }
 
-// ========== API 请求函数 ==========
+async function handleDelete(e) {
+    e.stopPropagation();
+    const category = e.currentTarget.getAttribute('data-category');
+    const index = e.currentTarget.getAttribute('data-index');
+    
+    if (confirm(`确定要删除这个书签吗？`)) {
+        await deleteBookmark(category, index);
+    }
+}
 
-/**
- * 获取所有书签
- */
+// ========== API 请求 ==========
 async function fetchBookmarks() {
     try {
         const container = document.getElementById('bookmarksContainer');
-        if (container) {
-            container.innerHTML = '<div class="loading">🍥 加载书签中</div>';
+        if (container) container.innerHTML = '<div class="loading">🍥 加载书签中</div>';
+        
+        const response = await fetch(API.getAll);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            fullData = result.data;
+            if (!fullData.menu) fullData.menu = [];
+            if (!fullData.bookmarks) fullData.bookmarks = [];
+        } else if (result.success && result.bookmarks) {
+            // 兼容旧格式
+            fullData = {
+                menu: result.menu || [],
+                bookmarks: result.bookmarks || []
+            };
         }
         
-        const response = await fetch(API.getAll, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        renderPage();
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        bookmarksList = data.bookmarks || [];
-        renderBookmarks(bookmarksList);
+        // 更新统计
+        updateStats();
     } catch (err) {
         console.error('Fetch error:', err);
         showMessage('加载书签失败，请检查网络连接', true);
-        
-        const container = document.getElementById('bookmarksContainer');
-        if (container) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <span>⚠️</span>
-                    <p>无法连接到粉色云端<br>请检查网络后刷新重试</p>
-                    <button class="btn" onclick="location.reload()" style="margin-top: 1rem;">🔄 刷新重试</button>
-                </div>
-            `;
-        }
+        document.getElementById('bookmarksContainer').innerHTML = `
+            <div class="empty-state">
+                <span>⚠️</span>
+                <p>无法连接到粉色云端<br>请检查网络后刷新重试</p>
+                <button class="btn" onclick="location.reload()" style="margin-top: 1rem;">🔄 刷新重试</button>
+            </div>
+        `;
     }
 }
 
-/**
- * 添加新书签
- * @param {string} title - 书签标题
- * @param {string} url - 书签网址
- * @returns {Promise<boolean>} 是否添加成功
- */
-async function addBookmark(title, url) {
-    if (!title || !title.trim()) {
+async function addBookmark(category, name, url, desc = '') {
+    if (!category || !category.trim()) {
+        showMessage('请选择或输入分类', true);
+        return false;
+    }
+    if (!name || !name.trim()) {
         showMessage('请填写书签标题~', true);
         return false;
     }
-    
     if (!url || !url.trim()) {
         showMessage('网址不能留空~', true);
         return false;
     }
     
-    const formattedUrl = formatUrl(url);
+    let finalUrl = url.trim();
+    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+        finalUrl = 'https://' + finalUrl;
+    }
     
     try {
         const response = await fetch(API.add, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                title: title.trim(),
-                url: formattedUrl
+                category: category.trim(),
+                name: name.trim(),
+                url: finalUrl,
+                desc: desc.trim() || ''
             })
         });
         
@@ -268,26 +254,16 @@ async function addBookmark(title, url) {
             throw new Error(result.error || '添加失败');
         }
     } catch (err) {
-        console.error('Add bookmark error:', err);
+        console.error(err);
         showMessage('添加失败: ' + err.message, true);
         return false;
     }
 }
 
-/**
- * 删除书签
- * @param {string} id - 书签 ID
- * @returns {Promise<boolean>} 是否删除成功
- */
-async function deleteBookmarkById(id) {
-    if (!id) return false;
-    
+async function deleteBookmark(category, index) {
     try {
-        const response = await fetch(API.delete(id), {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await fetch(API.delete(category, index), {
+            method: 'DELETE'
         });
         
         if (response.ok) {
@@ -295,89 +271,181 @@ async function deleteBookmarkById(id) {
             await fetchBookmarks();
             return true;
         } else {
-            const errData = await response.json().catch(() => ({}));
+            const errData = await response.json();
             throw new Error(errData.error || '删除失败');
         }
     } catch (err) {
-        console.error('Delete bookmark error:', err);
+        console.error(err);
         showMessage('删除出错，请稍后重试', true);
         return false;
     }
 }
 
-/**
- * 检查后端健康状态
- */
-async function checkHealth() {
-    try {
-        const response = await fetch(API.health);
-        if (response.ok) {
-            const data = await response.json();
-            console.log('后端状态:', data);
-            return true;
-        }
-    } catch (err) {
-        console.warn('健康检查失败:', err);
+function updateStats() {
+    const totalBookmarks = fullData.bookmarks.reduce((sum, cat) => sum + (cat.bookmarks?.length || 0), 0);
+    const totalCategories = fullData.bookmarks.filter(cat => cat.bookmarks?.length > 0).length;
+    
+    const statsEl = document.getElementById('statsInfo');
+    if (statsEl) {
+        statsEl.innerHTML = `${totalCategories} 个分类 · ${totalBookmarks} 个书签`;
     }
-    return false;
+}
+
+// ========== 搜索功能 ==========
+function searchBookmarks(keyword) {
+    if (!keyword.trim()) {
+        renderPage();
+        return;
+    }
+    
+    const lowerKeyword = keyword.toLowerCase();
+    const container = document.getElementById('bookmarksContainer');
+    
+    let html = '';
+    let hasResults = false;
+    
+    fullData.bookmarks.forEach(categoryData => {
+        const categoryName = categoryData.category;
+        const matchedBookmarks = (categoryData.bookmarks || []).filter(bookmark =>
+            bookmark.name.toLowerCase().includes(lowerKeyword) ||
+            (bookmark.desc && bookmark.desc.toLowerCase().includes(lowerKeyword)) ||
+            bookmark.url.toLowerCase().includes(lowerKeyword)
+        );
+        
+        if (matchedBookmarks.length > 0) {
+            hasResults = true;
+            const icon = getCategoryIcon(categoryName, fullData.menu);
+            
+            html += `
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <span class="category-icon">${icon}</span>
+                            <h2>${escapeHtml(categoryName)}</h2>
+                            <span class="bookmark-count">${matchedBookmarks.length}</span>
+                        </div>
+                    </div>
+                    <div class="bookmarks-grid">
+            `;
+            
+            matchedBookmarks.forEach((bookmark, idx) => {
+                html += `
+                    <div class="bookmark-card search-result">
+                        <div class="bookmark-info">
+                            <div class="bookmark-title">
+                                <span class="bookmark-icon">🔗</span>
+                                ${escapeHtml(bookmark.name)}
+                            </div>
+                            <div class="bookmark-url" title="${escapeHtml(bookmark.url)}">
+                                ${escapeHtml(truncateUrl(bookmark.url))}
+                            </div>
+                            ${bookmark.desc ? `<div class="bookmark-desc">💬 ${escapeHtml(bookmark.desc)}</div>` : ''}
+                        </div>
+                        <div class="bookmark-actions">
+                            <button class="icon-btn visit-btn" data-url="${escapeAttr(bookmark.url)}">🔗 访问</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+        }
+    });
+    
+    if (!hasResults) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <span>🔍</span>
+                <p>没有找到与 "${escapeHtml(keyword)}" 相关的书签</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = html;
+        // 重新绑定访问按钮
+        document.querySelectorAll('.visit-btn').forEach(btn => {
+            btn.removeEventListener('click', handleVisit);
+            btn.addEventListener('click', handleVisit);
+        });
+    }
 }
 
 // ========== 初始化 ==========
-
-/**
- * 初始化页面事件监听
- */
 function initEventListeners() {
     const addBtn = document.getElementById('addBtn');
     const titleInput = document.getElementById('titleInput');
     const urlInput = document.getElementById('urlInput');
+    const categoryInput = document.getElementById('categoryInput');
+    const descInput = document.getElementById('descInput');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
     
     if (addBtn) {
         addBtn.addEventListener('click', async () => {
-            const title = titleInput.value;
+            const category = categoryInput ? categoryInput.value : '常用站点';
+            const name = titleInput.value;
             const url = urlInput.value;
+            const desc = descInput ? descInput.value : '';
             
-            const success = await addBookmark(title, url);
+            const success = await addBookmark(category, name, url, desc);
             if (success) {
-                titleInput.value = '';
-                urlInput.value = '';
+                if (titleInput) titleInput.value = '';
+                if (urlInput) urlInput.value = '';
+                if (descInput) descInput.value = '';
             }
         });
     }
     
-    // 回车键添加
-    if (titleInput) {
-        titleInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && addBtn) {
-                e.preventDefault();
-                addBtn.click();
+    // 搜索功能
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', () => {
+            searchBookmarks(searchInput.value);
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchBookmarks(searchInput.value);
             }
         });
     }
     
-    if (urlInput) {
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && addBtn) {
-                e.preventDefault();
-                addBtn.click();
-            }
+    // 回车添加
+    const inputs = [titleInput, urlInput];
+    inputs.forEach(inp => {
+        if (inp) {
+            inp.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && addBtn) addBtn.click();
+            });
+        }
+    });
+}
+
+// 初始化分类下拉框
+function initCategorySelect() {
+    const categoryInput = document.getElementById('categoryInput');
+    if (!categoryInput) return;
+    
+    // 从已有的分类中获取列表
+    const categories = fullData.bookmarks.map(cat => cat.category);
+    const uniqueCategories = [...new Set(categories)];
+    
+    if (uniqueCategories.length > 0) {
+        // 可以添加 datalist 建议
+        const datalist = document.createElement('datalist');
+        datalist.id = 'categoryList';
+        uniqueCategories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            datalist.appendChild(option);
         });
+        document.body.appendChild(datalist);
+        categoryInput.setAttribute('list', 'categoryList');
     }
 }
 
-/**
- * 应用启动
- */
 async function init() {
-    // 可选：检查后端健康状态
-    await checkHealth();
-    
-    // 加载书签
     await fetchBookmarks();
-    
-    // 绑定事件
     initEventListeners();
+    initCategorySelect();
 }
 
-// 当 DOM 加载完成后启动应用
 document.addEventListener('DOMContentLoaded', init);
