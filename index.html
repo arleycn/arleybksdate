@@ -435,8 +435,8 @@
 <body>
 <div class="container">
     <div class="hero">
-        <h1>🌸 Arley's | 书签导航</h1>
-        <p>自用书签导航站，欢迎使用</p>
+    <h1 id="siteNameDisplay">🌸 Arley's | 书签导航</h1>
+    <p id="siteDescDisplay">自用书签导航站，欢迎使用</p>
     </div>
 
     <div class="toolbar">
@@ -729,62 +729,103 @@
         }
     }
 
-    // 获取网站信息
+        // 获取网站信息
     async function fetchSiteInfo() {
         try {
             const res = await fetch(`${API_BASE}/api/siteinfo`);
             const result = await res.json();
             const currentYear = new Date().getFullYear();
             
+            // 获取元素
+            const siteNameEl = document.getElementById('siteNameDisplay');
+            const siteDescEl = document.getElementById('siteDescDisplay');
+            const copyrightContainer = document.getElementById('copyrightContainer');
+            
             if (result.success && result.siteInfo) {
                 const info = result.siteInfo;
                 
-                // 判断是否有完整版权信息
-                const hasCopyright = info.copyrightYear || info.copyrightOwner || info.poweredName || info.icpNumber;
+                // 更新 hero 区域的网站名称和描述
+                const siteName = info.name || "Arley's | 书签导航";
+                const siteDesc = info.description || "自用书签导航站，欢迎使用";
                 
-                if (hasCopyright) {
-                    // 有版权信息时显示完整版权栏
-                    const year = info.copyrightYear || currentYear;
-                    const owner = info.copyrightOwner || 'ARLEY';
-                    const ownerUrl = info.copyrightUrl || '#';
-                    const poweredName = info.poweredName || 'ArleyBKS';
-                    const poweredUrl = info.poweredUrl || '#';
-                    const icpNumber = info.icpNumber || '';
+                if (siteNameEl) {
+                    siteNameEl.innerHTML = `🌸 ${siteName}`;
+                }
+                if (siteDescEl) {
+                    siteDescEl.innerHTML = siteDesc;
+                }
+                
+                // 更新 footer 版权信息
+                const defaultFooterText = `${currentYear} ${siteName} · ${siteDesc}`;
+                
+                if (copyrightContainer) {
+                    // 判断是否有完整版权信息
+                    const hasCopyright = info.copyrightYear || info.copyrightOwner || info.poweredName || info.icpNumber;
                     
-                    let copyrightHtml = `COPYRIGHT © ${year} `;
-                    if (owner && ownerUrl && ownerUrl !== '#') {
-                        copyrightHtml += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
-                    } else if (owner) {
-                        copyrightHtml += `<strong>${owner}</strong> `;
-                    }
-                    
-                    if (poweredName) {
-                        copyrightHtml += `| POWERED BY `;
-                        if (poweredUrl && poweredUrl !== '#') {
-                            copyrightHtml += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
-                        } else {
-                            copyrightHtml += `<strong>${poweredName}</strong> `;
+                    if (hasCopyright) {
+                        const year = info.copyrightYear || currentYear;
+                        const owner = info.copyrightOwner || '';
+                        const ownerUrl = info.copyrightUrl || '';
+                        const poweredName = info.poweredName || '';
+                        const poweredUrl = info.poweredUrl || '';
+                        const icpNumber = info.icpNumber || '';
+                        
+                        let copyrightHtml = '';
+                        
+                        if (owner) {
+                            copyrightHtml += `COPYRIGHT © ${year} `;
+                            if (ownerUrl) {
+                                copyrightHtml += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
+                            } else {
+                                copyrightHtml += `<strong>${owner}</strong> `;
+                            }
                         }
+                        
+                        if (poweredName) {
+                            if (copyrightHtml) copyrightHtml += `| `;
+                            copyrightHtml += `POWERED BY `;
+                            if (poweredUrl) {
+                                copyrightHtml += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
+                            } else {
+                                copyrightHtml += `<strong>${poweredName}</strong> `;
+                            }
+                        }
+                        
+                        if (icpNumber) {
+                            if (copyrightHtml) copyrightHtml += `| `;
+                            copyrightHtml += `萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
+                        }
+                        
+                        if (copyrightHtml) {
+                            copyrightContainer.innerHTML = copyrightHtml;
+                        } else {
+                            copyrightContainer.innerHTML = defaultFooterText;
+                        }
+                    } else {
+                        copyrightContainer.innerHTML = defaultFooterText;
                     }
-                    
-                    if (icpNumber) {
-                        copyrightHtml += `| 萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
-                    }
-                    
-                    document.getElementById('copyrightContainer').innerHTML = copyrightHtml;
-                } else {
-                    // 无版权信息时显示默认描述
-                    const defaultName = info.name || "Arley's | 书签导航";
-                    const defaultDesc = info.description || "一个纯静态前后端分离的导航站，网址都是自用收藏的";
-                    document.getElementById('copyrightContainer').innerHTML = `${currentYear} ${defaultName} · ${defaultDesc}`;
                 }
             } else {
                 // 无数据时的默认显示
-                document.getElementById('copyrightContainer').innerHTML = `${currentYear} Arley's | 书签导航 · 一个纯静态前后端分离的导航站，网址都是自用收藏的`;
+                const defaultName = "Arley's | 书签导航";
+                const defaultDesc = "自用书签导航站，欢迎使用";
+                
+                if (siteNameEl) siteNameEl.innerHTML = `🌸 ${defaultName}`;
+                if (siteDescEl) siteDescEl.innerHTML = defaultDesc;
+                if (copyrightContainer) copyrightContainer.innerHTML = `${currentYear} ${defaultName} · ${defaultDesc}`;
             }
         } catch (err) { 
             const currentYear = new Date().getFullYear();
-            document.getElementById('copyrightContainer').innerHTML = `${currentYear} Arley's | 书签导航 · 一个纯静态前后端分离的导航站，网址都是自用收藏的`;
+            const defaultName = "Arley's | 书签导航";
+            const defaultDesc = "自用书签导航站，欢迎使用";
+            
+            const siteNameEl = document.getElementById('siteNameDisplay');
+            const siteDescEl = document.getElementById('siteDescDisplay');
+            const copyrightContainer = document.getElementById('copyrightContainer');
+            
+            if (siteNameEl) siteNameEl.innerHTML = `🌸 ${defaultName}`;
+            if (siteDescEl) siteDescEl.innerHTML = defaultDesc;
+            if (copyrightContainer) copyrightContainer.innerHTML = `${currentYear} ${defaultName} · ${defaultDesc}`;
         }
     }
 
