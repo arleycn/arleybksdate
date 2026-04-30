@@ -2,44 +2,223 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>书签导航 | WebStack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书签导航</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* 白天主题 */
+        body.light-theme {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        /* 夜间主题 */
+        body.dark-theme {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        body.dark-theme .navbar {
+            background: rgba(26, 26, 46, 0.95);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: #667eea !important;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .category-title {
+            margin: 30px 0 20px 0;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+            color: #fff;
+        }
+        
+        body.light-theme .category-title {
+            color: #333;
+        }
+        
+        body.dark-theme .category-title {
+            color: #fff;
+        }
+        
+        .theme-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .theme-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: rotate(15deg);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+            margin-top: 50px;
+        }
+        
+        body.light-theme footer {
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 14px;
+            }
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
 </head>
-<body data-theme="light">
+<body class="light-theme">
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class="fas fa-bookmark"></i> 我的书签导航
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin.html"><i class="fas fa-cog"></i> 管理</a>
-                    </li>
-                    <li class="nav-item">
-                        <button id="themeToggle" class="btn btn-outline-secondary ms-2"><i class="fas fa-moon"></i></button>
-                    </li>
-                </ul>
+            <div class="ms-auto">
+                <a href="/admin.html" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-cog"></i> 管理
+                </a>
+                <button class="theme-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
 
-    <main class="container my-4">
-        <div id="categoriesContainer"></div>
-    </main>
+    <div class="container" id="content">
+        <div class="text-center" style="padding: 50px;">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+        </div>
+    </div>
 
-    <footer class="text-center py-3">
-        <p class="mb-0">© 2026 书签导航 | 基于 WebStack</p>
+    <footer>
+        <p>© 2026 书签导航 | 基于 WebStack</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/js/main.js"></script>
+    <script>
+        const API_URL = 'https://bookmarksdate.arley.workers.dev';
+        
+        async function loadBookmarks() {
+            try {
+                const response = await fetch(`${API_URL}/api/links`);
+                const bookmarks = await response.json();
+                displayBookmarks(bookmarks);
+            } catch (error) {
+                console.error('加载失败:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="alert alert-danger text-center">
+                        <i class="fas fa-exclamation-triangle"></i> 加载失败，请稍后重试
+                    </div>
+                `;
+            }
+        }
+        
+        function displayBookmarks(bookmarks) {
+            // 按分类分组
+            const groups = {};
+            bookmarks.forEach(bookmark => {
+                const category = bookmark.category || '未分类';
+                if (!groups[category]) groups[category] = [];
+                groups[category].push(bookmark);
+            });
+            
+            let html = '';
+            for (const [category, items] of Object.entries(groups)) {
+                html += `<h3 class="category-title"><i class="fas fa-folder-open"></i> ${category}</h3>`;
+                html += `<div class="row g-4 mb-5">`;
+                items.forEach(item => {
+                    html += `
+                        <div class="col-md-4 col-lg-3 col-sm-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="${item.icon || 'fas fa-link'} fa-2x me-2" style="color: #667eea;"></i>
+                                        <h5 class="card-title mb-0">${escapeHtml(item.title)}</h5>
+                                    </div>
+                                    <p class="card-text text-muted">${escapeHtml(item.description || '')}</p>
+                                    <a href="${item.url}" target="_blank" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            
+            document.getElementById('content').innerHTML = html || '<div class="alert alert-info">暂无书签，请添加</div>';
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 主题切换
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.className = savedTheme === 'light' ? 'light-theme' : 'dark-theme';
+            const btn = document.getElementById('themeToggle');
+            const icon = btn.querySelector('i');
+            icon.className = savedTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            
+            btn.addEventListener('click', () => {
+                const isLight = document.body.classList.contains('light-theme');
+                const newTheme = isLight ? 'dark' : 'light';
+                document.body.className = newTheme === 'light' ? 'light-theme' : 'dark-theme';
+                icon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+        
+        loadBookmarks();
+        initTheme();
+    </script>
 </body>
 </html>
