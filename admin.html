@@ -226,45 +226,48 @@
         }
         
         async function saveBookmark() {
-            const id = document.getElementById('editId').value;
-            const data = {
-                title: document.getElementById('title').value.trim(),
-                url: document.getElementById('url').value.trim(),
-                category: document.getElementById('category').value.trim(),
-                icon: document.getElementById('icon').value.trim(),
-                description: document.getElementById('description').value.trim()
-            };
-            
-            if (!data.title || !data.url) {
-                alert('标题和URL不能为空');
-                return;
-            }
-            
-            try {
-                const url = id ? `${API_URL}/api/links/${id}` : `${API_URL}/api/links`;
-                const method = id ? 'PUT' : 'POST';
-                
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentPassword}`
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    modal.hide();
-                    resetForm();
-                    loadBookmarks();
-                } else {
-                    const error = await response.json();
-                    alert('保存失败：' + (error.error || '未知错误'));
-                }
-            } catch (error) {
-                alert('网络错误：' + error.message);
-            }
+    const id = document.getElementById('editId').value;
+    const data = {
+        title: document.getElementById('title').value.trim(),
+        url: document.getElementById('url').value.trim(),
+        category: document.getElementById('category').value.trim(),
+        icon: document.getElementById('icon').value.trim(),
+        description: document.getElementById('description').value.trim()
+    };
+    
+    if (!data.title || !data.url) {
+        alert('标题和URL不能为空');
+        return;
+    }
+    
+    try {
+        const url = id ? `${API_URL}/api/links/${id}` : `${API_URL}/api/links`;
+        const method = id ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentPassword}`
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // 显示成功提示
+            alert(id ? '修改成功！' : '添加成功！');
+            modal.hide();
+            resetForm();
+            await loadBookmarks(); // 重新加载列表
+        } else {
+            alert('保存失败：' + (result.error || '未知错误'));
         }
+    } catch (error) {
+        alert('网络错误：' + error.message);
+    }
+}
         
         async function editBookmark(id) {
             try {
