@@ -377,7 +377,85 @@
         .stats-bar { text-align: center; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 1rem; }
         .empty-state { text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 40px; backdrop-filter: blur(4px); }
         .loading { text-align: center; padding: 2rem; color: var(--text-secondary); }
+        
+        /* 个人快捷入口 */
+        .quick-links {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .quick-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .quick-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .quick-item {
+            background: var(--btn-bg);
+            padding: 5px 15px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        
+        .quick-item:hover {
+            background: var(--btn-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* 冻结区域 */
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: transparent;
+            padding-top: 0.5rem;
+            backdrop-filter: blur(4px);
+        }
+        
+        /* 页面滚动时给冻结区域添加阴影 */
+        .sticky-wrapper.sticky-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        body.dark .sticky-wrapper.sticky-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
 
+        /* 滚动偏移 - 用于锚点跳转时避免被固定栏遮挡 */
+        html {
+            scroll-padding-top: 120px;
+            scroll-behavior: smooth;
+        }
+        
+        @media (max-width: 640px) {
+            html {
+                scroll-padding-top: 150px;
+            }
+        }
+        
         /* 返回顶部 */
         .back-to-top {
             position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px;
@@ -445,13 +523,16 @@
         <button class="tool-btn" id="adminBtn">🔐 管理后台</button>
     </div>
 
-    <div class="search-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索书签标题、描述或网址..." autocomplete="off">
-        <button id="searchBtn" class="btn">搜索</button>
-        <button id="clearSearchBtn" class="btn" style="display:none;">清除</button>
-    </div>
+    <!-- 冻结区域 -->
+    <div class="sticky-wrapper" id="stickyWrapper">
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索书签标题、描述或网址..." autocomplete="off">
+            <button id="searchBtn" class="btn">搜索</button>
+            <button id="clearSearchBtn" class="btn" style="display:none;">清除</button>
+        </div>
 
-    <div class="category-nav" id="categoryNav"></div>
+        <div class="category-nav" id="categoryNav"></div>
+    </div>
 
     <div class="stats-bar" id="statsInfo">加载中...</div>
     <div id="bookmarksContainer"><div class="loading">🍰 加载中...</div></div>
@@ -550,6 +631,21 @@
         }
     }
     
+    // 冻结区域滚动阴影效果
+    function initStickyShadow() {
+        const stickyWrapper = document.getElementById('stickyWrapper');
+        if (!stickyWrapper) return;
+        
+        window.addEventListener('scroll', () => {
+            const rect = stickyWrapper.getBoundingClientRect();
+            if (rect.top <= 0) {
+                stickyWrapper.classList.add('sticky-shadow');
+            } else {
+                stickyWrapper.classList.remove('sticky-shadow');
+            }
+        });
+    }
+
     document.getElementById("themeToggle").addEventListener("click", () => {
         document.body.classList.toggle("dark");
         const isDark = document.body.classList.contains("dark");
@@ -631,9 +727,33 @@
         nav.innerHTML = html;
         nav.querySelectorAll('.category-chip').forEach(chip => {
             chip.addEventListener('click', () => { 
-                currentCategory = chip.dataset.cat; 
+                const clickedCategory = chip.dataset.cat;
+                const isSameCategory = (currentCategory === clickedCategory);
+                
+                currentCategory = clickedCategory; 
                 renderCategoryNav(); 
-                renderBookmarks(); 
+                renderBookmarks();
+                
+                // 只有在切换分类时，且固定栏处于激活状态（已冻结）时才滚动调整
+                if (!isSameCategory) {
+                    setTimeout(() => {
+                        const stickyWrapper = document.querySelector('.sticky-wrapper');
+                        const isStickyActive = stickyWrapper && stickyWrapper.classList.contains('sticky-shadow');
+                        
+                        // 只有固定栏处于激活状态（即已经滚动到顶部冻结）时才调整滚动位置
+                        if (isStickyActive) {
+                            const categorySection = document.querySelector('.category-section');
+                            if (categorySection) {
+                                const stickyHeight = stickyWrapper.offsetHeight;
+                                const elementPosition = categorySection.getBoundingClientRect().top + window.pageYOffset;
+                                window.scrollTo({
+                                    top: elementPosition - stickyHeight - 15,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }, 100);
+                }
             });
         });
     }
@@ -901,6 +1021,25 @@
         window.open('admin.html', '_blank');
     };
 
+    // 处理页面加载时的锚点跳转
+    function handleHashScroll() {
+        if (window.location.hash) {
+            setTimeout(() => {
+                const targetId = window.location.hash.substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const stickyWrapper = document.querySelector('.sticky-wrapper');
+                    const stickyHeight = stickyWrapper ? stickyWrapper.offsetHeight : 100;
+                    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    window.scrollTo({
+                        top: elementPosition - stickyHeight - 15,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 300);
+        }
+    }
+
     // 搜索事件
     document.getElementById('searchBtn').onclick = searchBookmarks;
     document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') searchBookmarks(); };
@@ -908,9 +1047,14 @@
 
     // 初始化
     initTheme();
+    initStickyShadow();
     fetchBookmarks();
     fetchMessages();
     fetchSiteInfo();
+    handleHashScroll();
+    
+    // 监听 hash 变化
+    window.addEventListener('hashchange', handleHashScroll);
 </script>
 </body>
 </html>
