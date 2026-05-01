@@ -238,7 +238,8 @@
                 </div>
                 <div class="form-group">
                     <label>📂 小分类（可选）</label>
-                    <input type="text" id="newSubcategory" placeholder="留空则直接添加到分类下">
+                    <input type="text" id="newSubcategory" placeholder="留空则直接添加到分类下" list="newSubcategoryList">
+                    <datalist id="newSubcategoryList"></datalist>
                 </div>
                 <div class="form-group">
                     <label>📖 标题</label>
@@ -538,10 +539,23 @@
             if (result.success) {
                 bookmarksData = result.data;
                 renderBookmarks();
+                updateNewSubcategoryDatalist(document.getElementById('newCategory').value);
             }
         } catch (err) { showToast('加载失败', true); }
     }
-    
+    // 更新添加书签时的小分类下拉列表
+    function updateNewSubcategoryDatalist(category) {
+        const bookmarks = bookmarksData.bookmarks || [];
+        const catData = bookmarks.find(c => c.category === category);
+        const allSubcategories = [];
+        if (catData && catData.subcategories) {
+            catData.subcategories.forEach(sub => {
+                if (sub.name) allSubcategories.push(sub.name);
+            });
+        }
+        const datalist = document.getElementById('newSubcategoryList');
+        datalist.innerHTML = allSubcategories.map(s => `<option value="${escapeHtml(s)}">`).join('');
+    }    
     // 保存书签数据到服务器
     async function saveBookmarksData() {
         try {
@@ -1014,7 +1028,13 @@
         if (!str) return '';
         return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
     }
-    
+    // 监听大分类变化，更新小分类下拉列表
+    const newCategorySelect = document.getElementById('newCategory');
+    if (newCategorySelect) {
+        newCategorySelect.addEventListener('change', function() {
+            updateNewSubcategoryDatalist(this.value);
+        });
+    }
     if (adminPass) { loadAllData(); }
 </script>
 </body>
