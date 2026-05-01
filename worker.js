@@ -1,3 +1,4 @@
+// worker.js - 部署到 https://arleybks.arley.cn/
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -155,28 +156,31 @@ export default {
       try {
         const { category, subcategory, name, url, desc } = await request.json();
         if (!category || !name || !url) {
-          return new Response(JSON.stringify({ success: false, error: "参数不完整" }), { status: 400, headers: getCorsHeaders(request) });
+          return new Response(JSON.stringify({ success: false, error: "参数不完整：分类、标题、网址为必填" }), { status: 400, headers: getCorsHeaders(request) });
         }
         
         let bookmarks = await redisCommand("GET", "bookmarks");
         if (!bookmarks) bookmarks = [];
         if (typeof bookmarks === "string") bookmarks = JSON.parse(bookmarks);
         
+        // 查找或创建分类
         let categoryData = bookmarks.find(c => c.category === category);
         if (!categoryData) {
           categoryData = { category: category, subcategories: [] };
           bookmarks.push(categoryData);
         }
         
-        if (subcategory) {
+        // 如果有子分类
+        if (subcategory && subcategory.trim()) {
           let subcategoryData = categoryData.subcategories.find(s => s.name === subcategory);
           if (!subcategoryData) {
             subcategoryData = { name: subcategory, bookmarks: [] };
             categoryData.subcategories.push(subcategoryData);
           }
           subcategoryData.bookmarks.push({ name: name.trim(), url: url.trim(), desc: desc || "" });
-        } else {
-          // 无子分类，直接添加到 category 的 bookmarks 数组
+        } 
+        // 无子分类，直接添加到分类下
+        else {
           if (!categoryData.bookmarks) categoryData.bookmarks = [];
           categoryData.bookmarks.push({ name: name.trim(), url: url.trim(), desc: desc || "" });
         }
@@ -184,6 +188,7 @@ export default {
         await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks));
         return new Response(JSON.stringify({ success: true, message: "添加成功" }), { status: 200, headers: getCorsHeaders(request) });
       } catch (err) {
+        console.error("添加书签错误:", err);
         return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500, headers: getCorsHeaders(request) });
       }
     }
