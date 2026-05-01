@@ -43,7 +43,7 @@
 
         body {
             background: linear-gradient(145deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', 'Roboto', sans-serif;
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
             padding: 0.8rem;
             color: var(--text-primary);
             min-height: 100vh;
@@ -51,7 +51,6 @@
             position: relative;
         }
         
-        /* PC端背景图 */
         body::before {
             content: "";
             position: fixed;
@@ -69,7 +68,6 @@
             pointer-events: none;
         }
         
-        /* 移动端背景图 */
         @media (max-width: 768px) {
             body::before {
                 background-image: url('images/bgmobile.jpg');
@@ -78,7 +76,6 @@
             body { padding: 0.6rem; }
         }
         
-        /* 暗色模式背景叠加 */
         body.dark::after {
             content: "";
             position: fixed;
@@ -103,6 +100,7 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -117,6 +115,7 @@
             from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         /* 头部 */
         .hero {
             text-align: center; 
@@ -138,7 +137,7 @@
         body.dark .hero h1 { background: linear-gradient(135deg, #d99bb8, #b86b9e); background-clip: text; -webkit-background-clip: text; }
         .hero p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.3rem; }
 
-        /* 工具栏 - 左右布局 */
+        /* 工具栏 */
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -163,7 +162,7 @@
             font-size: 0.75rem;
             color: var(--text-secondary);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             backdrop-filter: blur(4px);
             display: inline-flex;
             align-items: center;
@@ -190,7 +189,7 @@
             font-size: 0.75rem;
             cursor: pointer;
             color: var(--text-secondary);
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             backdrop-filter: blur(4px);
             display: inline-flex;
             align-items: center;
@@ -202,12 +201,14 @@
             color: white; 
             transform: translateY(-2px); 
         }
+
         /* 搜索栏 */
         .search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
         .search-input {
             flex: 1; padding: 10px 16px; border-radius: 40px; border: 1.5px solid var(--border-color);
             background: var(--card-bg); font-size: 0.85rem; outline: none; color: var(--text-primary);
             backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
         }
         .search-input:focus { border-color: #f5a3bd; box-shadow: 0 0 0 2px rgba(245, 163, 189, 0.2); }
         .btn {
@@ -219,7 +220,7 @@
         .btn-primary { background: var(--btn-primary); color: white; }
         .btn-primary:hover { filter: brightness(1.05); transform: translateY(-2px); }
 
-        /* 分类导航，添加横向滚动 */
+        /* 分类导航 */
         .category-nav-wrapper {
             margin-bottom: 1rem;
             overflow-x: auto;
@@ -242,20 +243,39 @@
             font-size: 0.8rem; 
             color: var(--text-secondary); 
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
             backdrop-filter: blur(4px);
             white-space: nowrap;
         }
         .category-chip:hover, .category-chip.active { background: var(--btn-primary); color: white; }
         .category-chip:active { transform: scale(0.94); }
 
-        /* 书签区域 */
-        .category-section { margin-bottom: 1.5rem; }
+        /* 书签区域 - 两层结构 */
+        .category-section { margin-bottom: 2rem; }
         .category-header { margin-bottom: 0.8rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-color); }
         .category-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .category-icon { font-size: 1.2rem; }
-        .category-title h2 { font-size: 1.1rem; color: var(--text-secondary); }
-        .bookmark-count { background: var(--border-color); padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; }
+        .category-title h2 { font-size: 1.2rem; color: var(--text-secondary); }
+        
+        .subcategory-section { margin-bottom: 1.5rem; }
+        .subcategory-header { 
+            margin-bottom: 0.6rem; 
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--btn-primary);
+        }
+        .subcategory-title { 
+            font-size: 1rem; 
+            color: var(--text-secondary); 
+            font-weight: 600;
+            display: inline-block;
+        }
+        .subcategory-count { 
+            background: var(--border-color); 
+            padding: 2px 8px; 
+            border-radius: 30px; 
+            font-size: 0.6rem; 
+            margin-left: 8px;
+        }
 
         .bookmarks-grid { 
             display: grid; 
@@ -424,6 +444,7 @@
             max-width: 340px;
             text-align: center;
             border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         .reward-modal-content h3 { font-size: 1.1rem; margin-bottom: 0.8rem; }
         .reward-qrcode { background: white; padding: 0.8rem; border-radius: 16px; margin: 0.8rem 0; }
@@ -440,6 +461,7 @@
         .modal-content {
             background: var(--card-bg); border-radius: 28px; padding: 1.2rem; width: 90%; max-width: 400px;
             border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         .modal-content h3 { margin-bottom: 1rem; font-size: 1.1rem; text-align: center; }
         .modal-content input, .modal-content textarea {
@@ -474,13 +496,12 @@
             100% { opacity: 0; visibility: hidden; }
         }
 
-        /* 移动端专属调整 */
         @media (max-width: 640px) {
             .hero h1 { font-size: 1.5rem; }
             .toolbar { flex-direction: column; align-items: stretch; }
             .quick-items { justify-content: center; }
             .tool-buttons { justify-content: center; }
-            .bookmarks-grid { gap: 0.6rem; }
+            .bookmarks-grid { gap: 0.6rem; grid-template-columns: 1fr; }
             .bookmark-card { padding: 0.6rem; }
             .bookmark-title { font-size: 0.8rem; }
             .footer-content { padding: 0.8rem; }
@@ -489,6 +510,7 @@
             .back-to-top { bottom: 15px; right: 15px; width: 36px; height: 36px; font-size: 1rem; }
             .category-chip { padding: 5px 12px; font-size: 0.75rem; }
             .tool-btn, .quick-item { padding: 5px 12px; font-size: 0.7rem; }
+            .subcategory-title { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -512,11 +534,14 @@
         </div>
     </div>
 
+    <!-- 搜索栏 -->
     <div class="search-bar">
         <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索书签..." autocomplete="off">
         <button id="searchBtn" class="btn">搜索</button>
         <button id="clearSearchBtn" class="btn" style="display:none;">清除</button>
     </div>
+
+    <!-- 分类导航 -->
     <div class="category-nav-wrapper">
         <div class="category-nav" id="categoryNav"></div>
     </div>
@@ -621,6 +646,7 @@
     document.getElementById('oldVersionBtn').onclick = () => {
         window.open('/oldbookmarks/', '_blank');
     };
+    
     function showMessage(msg, isError = false) {
         const toast = document.createElement('div');
         toast.textContent = msg;
@@ -634,26 +660,10 @@
         return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
     }
 
-    function highlightText(text, keyword) {
-        if (!keyword || !text) return escapeHtml(text);
-        const escapedText = escapeHtml(text);
-        const escapedKeyword = escapeHtml(keyword);
-        const regex = new RegExp(`(${escapedKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        return escapedText.replace(regex, '<mark>$1</mark>');
-    }
-
     const iconMap = { 
         '热搜新闻': '🔥', '常用站点': '⭐', '字母站': '💎', '实用工具': '👍', 
         '素材资源': '📷', '开发生产': '📄', '学无止境': '🎓', '系统相关': '💻', 
-        '在线追剧': '📺', '搜索引擎': '🔍', '壁纸下载': '🖼️', '在线改图': '🎨',
-        '在线工具箱': '🧰', '在线转格': '🔄', '在线生成': '✨', '其他在线': '🔧',
-        '上传下载': '📥', '软件精选': '💎', '浏览器插件': '🔌', '虚拟信息': '🆔',
-        'PNG免扣': '🖼️', 'PPT下载': '📊', '其他资源': '📚', '设计灵感': '💡',
-        '云服务': '☁️', '开发文档': '📖', '模板资源': '🎨', 'Github': '🐙',
-        '自学编程': '💻', '学习吧': '📚', '休闲娱乐': '🎮', '系统下载': '💿',
-        '系统美化': '✨', '系统工具': '🛠️', '4K优选': '🎬', '在线综合': '📺',
-        '在线动漫': '🎨', '在线港台': '🇭🇰', '影视搜索': '🔍', '小说搜索': '📖',
-        '以图搜图': '🖼️'
+        '在线追剧': '📺', '搜索引擎': '🔍'
     };
     function getIcon(cat) { return iconMap[cat] || '📌'; }
 
@@ -661,7 +671,10 @@
         try {
             const res = await fetch(`${API_BASE}/api/bookmarks`);
             const result = await res.json();
-            if (result.success && result.data) fullData = result.data;
+            if (result.success && result.data) {
+                fullData = result.data;
+            }
+            if (!fullData.menu) fullData.menu = [];
             if (!fullData.bookmarks) fullData.bookmarks = [];
             renderCategoryNav();
             renderBookmarks();
@@ -674,7 +687,7 @@
 
     function renderCategoryNav() {
         const nav = document.getElementById('categoryNav');
-        const categories = fullData.bookmarks.filter(c => c.bookmarks?.length > 0).map(c => c.category);
+        const categories = fullData.menu || [];
         if (categories.length <= 1) { 
             if (nav.parentElement) nav.parentElement.style.display = 'none'; 
             return; 
@@ -682,7 +695,7 @@
         if (nav.parentElement) nav.parentElement.style.display = 'block';
         let html = `<span class="category-chip ${!currentCategory ? 'active' : ''}" data-cat="">✨ 全部</span>`;
         categories.forEach(cat => { 
-            html += `<span class="category-chip ${currentCategory === cat ? 'active' : ''}" data-cat="${escapeHtml(cat)}">${getIcon(cat)} ${escapeHtml(cat)}</span>`;
+            html += `<span class="category-chip ${currentCategory === cat.name ? 'active' : ''}" data-cat="${escapeHtml(cat.name)}">${getIcon(cat.name)} ${escapeHtml(cat.name)}</span>`;
         });
         nav.innerHTML = html;
         nav.querySelectorAll('.category-chip').forEach(chip => {
@@ -696,41 +709,64 @@
 
     function renderBookmarks() {
         const container = document.getElementById('bookmarksContainer');
-        let categories = fullData.bookmarks.filter(c => c.bookmarks?.length > 0);
-        if (currentCategory) categories = categories.filter(c => c.category === currentCategory);
+        let categories = fullData.bookmarks || [];
         
-        if (searchKeyword) {
-            categories = categories.map(cat => ({ 
-                ...cat, 
-                bookmarks: cat.bookmarks.filter(b => 
-                    b.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-                    (b.desc && b.desc.toLowerCase().includes(searchKeyword.toLowerCase())) ||
-                    b.url.toLowerCase().includes(searchKeyword.toLowerCase())
-                ) 
-            })).filter(cat => cat.bookmarks.length > 0);
+        if (currentCategory) {
+            categories = categories.filter(c => c.category === currentCategory);
         }
         
-        if (categories.length === 0) {
+        if (searchKeyword) {
+            // 搜索过滤 - 支持两层结构
+            categories = categories.map(cat => ({
+                ...cat,
+                subcategories: (cat.subcategories || []).map(sub => ({
+                    ...sub,
+                    bookmarks: (sub.bookmarks || []).filter(b => 
+                        b.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                        (b.desc && b.desc.toLowerCase().includes(searchKeyword.toLowerCase())) ||
+                        b.url.toLowerCase().includes(searchKeyword.toLowerCase())
+                    )
+                })).filter(sub => sub.bookmarks.length > 0)
+            })).filter(cat => cat.subcategories && cat.subcategories.length > 0);
+        }
+        
+        if (!categories || categories.length === 0) {
             container.innerHTML = `<div class="empty-state"><span>📭</span><p>${searchKeyword ? `没有找到"${escapeHtml(searchKeyword)}"` : '暂无书签'}</p></div>`;
             return;
         }
         
         let html = '';
         categories.forEach(cat => {
-            html += `<div class="category-section"><div class="category-header"><div class="category-title"><span class="category-icon">${getIcon(cat.category)}</span><h2>${escapeHtml(cat.category)}</h2><span class="bookmark-count">${cat.bookmarks.length}</span></div></div><div class="bookmarks-grid">`;
-            cat.bookmarks.forEach(bookmark => {
-                const displayName = searchKeyword ? highlightText(bookmark.name, searchKeyword) : escapeHtml(bookmark.name);
-                const displayUrl = searchKeyword ? highlightText(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url, searchKeyword) : escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url);
-                html += `<div class="bookmark-card"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
+            const subcategories = cat.subcategories || [];
+            if (subcategories.length === 0) return;
+            
+            html += `<div class="category-section"><div class="category-header"><div class="category-title"><span class="category-icon">${getIcon(cat.category)}</span><h2>${escapeHtml(cat.category)}</h2></div></div>`;
+            
+            subcategories.forEach(sub => {
+                const bookmarks = sub.bookmarks || [];
+                if (bookmarks.length === 0) return;
+                
+                html += `<div class="subcategory-section"><div class="subcategory-header"><span class="subcategory-title">📂 ${escapeHtml(sub.name)}</span><span class="subcategory-count">${bookmarks.length}</span></div><div class="bookmarks-grid">`;
+                
+                bookmarks.forEach(bookmark => {
+                    const displayName = searchKeyword ? highlightText(bookmark.name, searchKeyword) : escapeHtml(bookmark.name);
+                    const displayUrl = searchKeyword ? highlightText(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url, searchKeyword) : escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url);
+                    html += `<div class="bookmark-card"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
+                });
+                
+                html += `</div></div>`;
             });
-            html += `</div></div>`;
+            html += `</div>`;
         });
+        
         container.innerHTML = html;
+        
         // 添加书签卡片动画延迟
         const cards = document.querySelectorAll('.bookmark-card');
         cards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.03}s`;
         });
+        
         document.querySelectorAll('.visit-btn').forEach(btn => {
             btn.addEventListener('click', () => { 
                 let url = btn.dataset.url; 
@@ -738,6 +774,14 @@
                 window.open(url, '_blank'); 
             });
         });
+    }
+    
+    function highlightText(text, keyword) {
+        if (!keyword || !text) return escapeHtml(text);
+        const escapedText = escapeHtml(text);
+        const escapedKeyword = escapeHtml(keyword);
+        const regex = new RegExp(`(${escapedKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return escapedText.replace(regex, '<mark>$1</mark>');
     }
 
     async function fetchMessages() {
@@ -815,34 +859,20 @@
                         
                         if (owner) {
                             copyrightHtml += `COPYRIGHT © ${year} `;
-                            if (ownerUrl) {
-                                copyrightHtml += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
-                            } else {
-                                copyrightHtml += `<strong>${owner}</strong> `;
-                            }
+                            if (ownerUrl) copyrightHtml += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
+                            else copyrightHtml += `<strong>${owner}</strong> `;
                         }
-                        
                         if (poweredName) {
                             if (copyrightHtml) copyrightHtml += `| `;
                             copyrightHtml += `POWERED BY `;
-                            if (poweredUrl) {
-                                copyrightHtml += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
-                            } else {
-                                copyrightHtml += `<strong>${poweredName}</strong> `;
-                            }
+                            if (poweredUrl) copyrightHtml += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
+                            else copyrightHtml += `<strong>${poweredName}</strong> `;
                         }
-                        
-                        
                         if (icpNumber) {
                             if (copyrightHtml) copyrightHtml += `| `;
                             copyrightHtml += `萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
                         }
-                        
-                        if (copyrightHtml) {
-                            copyrightContainer.innerHTML = copyrightHtml;
-                        } else {
-                            copyrightContainer.innerHTML = `${currentYear} ${siteName} · ${siteDesc}`;
-                        }
+                        copyrightContainer.innerHTML = copyrightHtml || `${currentYear} ${siteName} · ${siteDesc}`;
                     } else {
                         copyrightContainer.innerHTML = `${currentYear} ${siteName} · ${siteDesc}`;
                     }
@@ -891,8 +921,16 @@
     }
 
     function updateStats() {
-        const total = fullData.bookmarks.reduce((sum, cat) => sum + (cat.bookmarks?.length || 0), 0);
-        const catCount = fullData.bookmarks.filter(cat => cat.bookmarks?.length > 0).length;
+        let total = 0;
+        let catCount = 0;
+        const bookmarks = fullData.bookmarks || [];
+        bookmarks.forEach(cat => {
+            const subcategories = cat.subcategories || [];
+            subcategories.forEach(sub => {
+                total += (sub.bookmarks || []).length;
+            });
+            catCount++;
+        });
         document.getElementById('statsInfo').innerHTML = `${catCount} 个分类 · ${total} 个书签`;
     }
 

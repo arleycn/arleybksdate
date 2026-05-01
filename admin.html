@@ -38,7 +38,7 @@
         }
         .form-group input:focus, .form-group select:focus { border-color: #9b59b6; }
         .form-row { display: flex; gap: 0.8rem; flex-wrap: wrap; }
-        .form-row .form-group { flex: 1; min-width: 120px; }
+        .form-row .form-group { flex: 1; min-width: 140px; }
         
         .btn {
             padding: 8px 20px; border-radius: 30px; border: none;
@@ -48,9 +48,9 @@
         .btn-primary { background: #9b59b6; color: white; }
         .btn-primary:hover { background: #8e44ad; transform: translateY(-2px); }
         .btn-danger { background: #c0392b; color: white; }
-        .btn-danger:hover { background: #e74c3c; transform: translateY(-2px); }
+        .btn-danger:hover { background: #e74c3c; }
         .btn-success { background: #27ae60; color: white; }
-        .btn-success:hover { background: #2ecc71; transform: translateY(-2px); }
+        .btn-success:hover { background: #2ecc71; }
         .btn-sm { padding: 5px 12px; font-size: 0.75rem; }
         
         .message-item {
@@ -68,22 +68,21 @@
         .status-pending { background: #f39c12; color: #333; }
         .status-approved { background: #27ae60; color: white; }
         
-        .bookmark-table, .quicklink-table {
+        .bookmark-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
         }
-        .bookmark-table th, .bookmark-table td,
-        .quicklink-table th, .quicklink-table td {
+        .bookmark-table th, .bookmark-table td {
             padding: 10px 6px;
             text-align: left;
             border-bottom: 1px solid #2a2a3e;
         }
-        .bookmark-table th, .quicklink-table th {
+        .bookmark-table th {
             color: #c9b6d0;
             font-weight: 500;
         }
-        .bookmark-table tr:hover, .quicklink-table tr:hover {
+        .bookmark-table tr:hover {
             background: rgba(155, 89, 182, 0.1);
         }
         
@@ -114,10 +113,10 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: #1a1a2e; border-radius: 20px; padding: 1.5rem; width: 90%; max-width: 350px;
+            background: #1a1a2e; border-radius: 20px; padding: 1.5rem; width: 90%; max-width: 400px;
             border: 1px solid #9b59b6; text-align: center;
         }
-        .modal-content h3 { margin-bottom: 1rem; color: #d99bb8; font-size: 1.2rem; }
+        .modal-content h3 { margin-bottom: 1rem; color: #d99bb8; }
         .modal-content p { margin-bottom: 1.2rem; }
         .modal-buttons { display: flex; gap: 0.8rem; justify-content: center; }
         
@@ -141,8 +140,7 @@
             .form-row { flex-direction: column; gap: 0.5rem; }
             .btn { padding: 6px 14px; font-size: 0.75rem; }
             .tab { padding: 6px 14px; font-size: 0.75rem; }
-            .bookmark-table th, .bookmark-table td,
-            .quicklink-table th, .quicklink-table td { padding: 8px 4px; font-size: 0.75rem; }
+            .bookmark-table th, .bookmark-table td { padding: 8px 4px; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -163,9 +161,24 @@
             <h2>➕ 添加书签</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📂 分类</label>
-                    <input type="text" id="newCategory" list="categoryList" placeholder="选择或输入新分类">
-                    <datalist id="categoryList"></datalist>
+                    <label>📂 大分类</label>
+                    <select id="newCategory">
+                        <option value="热搜新闻">热搜新闻</option>
+                        <option value="常用站点">常用站点</option>
+                        <option value="字母站">字母站</option>
+                        <option value="实用工具">实用工具</option>
+                        <option value="素材资源">素材资源</option>
+                        <option value="开发生产">开发生产</option>
+                        <option value="学无止境">学无止境</option>
+                        <option value="系统相关">系统相关</option>
+                        <option value="在线追剧">在线追剧</option>
+                        <option value="搜索引擎">搜索引擎</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📂 小分类（子分类）</label>
+                    <input type="text" id="newSubcategory" placeholder="例如：在线工具箱" list="subcategoryList">
+                    <datalist id="subcategoryList"></datalist>
                 </div>
                 <div class="form-group">
                     <label>📖 标题</label>
@@ -283,6 +296,92 @@
     const API_BASE = "https://arleybks.arley.cn";
     let adminPass = localStorage.getItem("adminPass");
     
+    function showLoginModal() {
+        let loginModal = document.getElementById('loginModal');
+        if (!loginModal) {
+            loginModal = document.createElement('div');
+            loginModal.id = 'loginModal';
+            loginModal.className = 'modal';
+            loginModal.innerHTML = `
+                <div class="modal-content" style="max-width: 350px;">
+                    <h3>🔐 管理员登录</h3>
+                    <input type="password" id="loginPasswordInput" placeholder="请输入管理密码" style="width:100%; padding:12px; border-radius:30px; border:1px solid #2a2a3e; background:#1a1a2e; color:#e8e8e8; margin-bottom:1rem;">
+                    <div id="loginErrorMsg" style="color:#e74c3c; font-size:0.75rem; margin-bottom:0.8rem; display:none;"></div>
+                    <div class="modal-buttons">
+                        <button class="btn" id="loginCancelBtn">取消</button>
+                        <button class="btn btn-primary" id="loginConfirmBtn">登录</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loginModal);
+            
+            document.getElementById('loginCancelBtn').onclick = () => {
+                loginModal.classList.remove('active');
+                window.location.href = "/";
+            };
+            document.getElementById('loginConfirmBtn').onclick = async () => {
+                const pwd = document.getElementById('loginPasswordInput').value;
+                const errorMsg = document.getElementById('loginErrorMsg');
+                const loginBtn = document.getElementById('loginConfirmBtn');
+                
+                if (!pwd) {
+                    errorMsg.textContent = '请输入密码';
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+                
+                loginBtn.textContent = '登录中...';
+                loginBtn.disabled = true;
+                errorMsg.style.display = 'none';
+                
+                try {
+                    const res = await fetch(`${API_BASE}/api/login`, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: pwd }) 
+                    });
+                    const result = await res.json();
+                    
+                    if (result.success) {
+                        localStorage.setItem('adminPass', pwd);
+                        adminPass = pwd;
+                        showToast('✅ 登录成功');
+                        loginModal.classList.remove('active');
+                        loadBookmarks();
+                        loadMessages();
+                        loadQuickLinks();
+                        loadSiteInfo();
+                    } else {
+                        errorMsg.textContent = '密码错误，请重试';
+                        errorMsg.style.display = 'block';
+                        loginBtn.textContent = '登录';
+                        loginBtn.disabled = false;
+                        document.getElementById('loginPasswordInput').value = '';
+                    }
+                } catch (err) {
+                    errorMsg.textContent = '网络错误，请重试';
+                    errorMsg.style.display = 'block';
+                    loginBtn.textContent = '登录';
+                    loginBtn.disabled = false;
+                }
+            };
+            document.getElementById('loginPasswordInput').onkeypress = (e) => {
+                if (e.key === 'Enter') document.getElementById('loginConfirmBtn').click();
+            };
+        }
+        loginModal.classList.add('active');
+        setTimeout(() => {
+            const input = document.getElementById('loginPasswordInput');
+            if (input) input.focus();
+        }, 100);
+    }
+    
+    if (!adminPass) {
+        showLoginModal();
+    }
+    
+    const headers = { 'Authorization': `Bearer ${adminPass}`, 'Content-Type': 'application/json' };
+    
     function showToast(msg, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast' + (isError ? ' toast-error' : '');
@@ -312,111 +411,6 @@
         document.getElementById('confirmCancel').addEventListener('click', confirmCancel);
     }
     
-    // ========== 美观登录弹窗 ==========
-    function showLoginModal() {
-        let loginModal = document.getElementById('loginModal');
-        if (!loginModal) {
-            loginModal = document.createElement('div');
-            loginModal.id = 'loginModal';
-            loginModal.className = 'modal';
-            loginModal.innerHTML = `
-                <div class="modal-content" style="max-width: 350px;">
-                    <h3 style="margin-bottom: 1rem;">🔐 管理员登录</h3>
-                    <input type="password" id="loginPasswordInput" placeholder="请输入管理密码" style="width:100%; padding:12px; border-radius:30px; border:1px solid #2a2a3e; background:#1a1a2e; color:#e8e8e8; margin-bottom:1rem; outline:none;">
-                    <div id="loginErrorMsg" style="color:#e74c3c; font-size:0.75rem; margin-bottom:0.8rem; display:none;"></div>
-                    <div class="modal-buttons" style="display: flex; gap: 0.8rem; justify-content: center;">
-                        <button class="btn" id="loginCancelBtn">取消</button>
-                        <button class="btn btn-primary" id="loginConfirmBtn">登录</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(loginModal);
-            
-            document.getElementById('loginCancelBtn').onclick = () => {
-                loginModal.classList.remove('active');
-                // 返回到主页
-                window.location.href = "/";
-            };
-            
-            document.getElementById('loginConfirmBtn').onclick = async () => {
-                const pwd = document.getElementById('loginPasswordInput').value;
-                const errorMsg = document.getElementById('loginErrorMsg');
-                const loginBtn = document.getElementById('loginConfirmBtn');
-                
-                if (!pwd) {
-                    errorMsg.textContent = '请输入密码';
-                    errorMsg.style.display = 'block';
-                    return;
-                }
-                
-                loginBtn.textContent = '登录中...';
-                loginBtn.disabled = true;
-                errorMsg.style.display = 'none';
-                
-                try {
-                    const res = await fetch(`${API_BASE}/api/login`, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ password: pwd }) 
-                    });
-                    const result = await res.json();
-                    
-                    if (result.success) {
-                        localStorage.setItem('adminPass', pwd);
-                        adminPass = pwd;
-                        showToast('✅ 登录成功', false);
-                        loginModal.classList.remove('active');
-                        loadBookmarks();
-                        loadMessages();
-                        loadQuickLinks();
-                        loadSiteInfo();
-                    } else {
-                        errorMsg.textContent = '密码错误，请重试';
-                        errorMsg.style.display = 'block';
-                        loginBtn.textContent = '登录';
-                        loginBtn.disabled = false;
-                        document.getElementById('loginPasswordInput').value = '';
-                        document.getElementById('loginPasswordInput').focus();
-                    }
-                } catch (err) {
-                    errorMsg.textContent = '网络错误，请重试';
-                    errorMsg.style.display = 'block';
-                    loginBtn.textContent = '登录';
-                    loginBtn.disabled = false;
-                }
-            };
-            
-            document.getElementById('loginPasswordInput').onkeypress = (e) => {
-                if (e.key === 'Enter') {
-                    document.getElementById('loginConfirmBtn').click();
-                }
-            };
-        }
-        
-        const pwdInput = document.getElementById('loginPasswordInput');
-        const errorMsg = document.getElementById('loginErrorMsg');
-        const loginBtn = document.getElementById('loginConfirmBtn');
-        if (pwdInput) pwdInput.value = '';
-        if (errorMsg) errorMsg.style.display = 'none';
-        if (loginBtn) {
-            loginBtn.textContent = '登录';
-            loginBtn.disabled = false;
-        }
-        
-        loginModal.classList.add('active');
-        setTimeout(() => {
-            const input = document.getElementById('loginPasswordInput');
-            if (input) input.focus();
-        }, 100);
-    }
-    
-    // 如果没有保存的密码，显示登录弹窗
-    if (!adminPass) {
-        showLoginModal();
-    }
-    
-    const headers = { 'Authorization': `Bearer ${adminPass}`, 'Content-Type': 'application/json' };
-    
     // Tabs
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -427,70 +421,105 @@
         });
     });
     
-    // ========== 书签管理 ==========
+    // ========== 书签管理（两层结构）==========
+    let fullBookmarksData = { menu: [], bookmarks: [] };
+    
     async function loadBookmarks() {
         try {
             const res = await fetch(`${API_BASE}/api/admin/bookmarks`, { headers: { 'Authorization': `Bearer ${adminPass}` } });
-            if (res.status === 401) { showToast('登录已过期，请重新登录', true); logout(); return; }
+            if (res.status === 401) { showToast('登录已过期', true); logout(); return; }
             const result = await res.json();
             if (result.success) {
-                renderBookmarks(result.data.bookmarks);
-                updateCategoryDatalist(result.data.bookmarks);
+                fullBookmarksData = result.data;
+                renderBookmarks();
+                updateSubcategoryDatalist();
             }
         } catch (err) { showToast('加载失败', true); }
     }
     
-    function renderBookmarks(bookmarks) {
+    function renderBookmarks() {
         const container = document.getElementById('bookmarksList');
+        const bookmarks = fullBookmarksData.bookmarks || [];
+        
         if (!bookmarks || bookmarks.length === 0) {
             container.innerHTML = '<div class="empty">暂无书签</div>';
             return;
         }
-        let html = '<table class="bookmark-table"><thead><tr><th>分类</th><th>标题</th><th>网址</th><th>操作</th></tr></thead><tbody>';
+        
+        let html = '';
         bookmarks.forEach(cat => {
-            if (!cat.bookmarks || cat.bookmarks.length === 0) return;
-            cat.bookmarks.forEach((bookmark, idx) => {
-                html += `<tr><td style="padding: 10px 6px;">${escapeHtml(cat.category)}</td><td style="padding: 10px 6px;"><strong>${escapeHtml(bookmark.name)}</strong>${bookmark.desc ? `<br><small style="color:#888;">${escapeHtml(bookmark.desc)}</small>` : ''}</td><td style="padding: 10px 6px;"><small>${escapeHtml(bookmark.url.substring(0, 45))}${bookmark.url.length > 45 ? '...' : ''}</small></td><td style="padding: 10px 6px;"><button class="btn btn-danger btn-sm" onclick="confirmDeleteBookmark('${escapeHtml(cat.category)}', ${idx})">删除</button></td></tr>`;
+            const subcategories = cat.subcategories || [];
+            if (subcategories.length === 0) return;
+            
+            subcategories.forEach(sub => {
+                const bookmarksList = sub.bookmarks || [];
+                bookmarksList.forEach((bookmark, idx) => {
+                    html += `
+                        <div style="background: #1a1a2e; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem;">
+                            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                                <div>
+                                    <span style="color: #d99bb8;">📁 ${escapeHtml(cat.category)}</span> / 
+                                    <span style="color: #9b59b6;">📂 ${escapeHtml(sub.name)}</span>
+                                    <div><strong>${escapeHtml(bookmark.name)}</strong></div>
+                                    <div style="font-size: 0.75rem; color: #888;">${escapeHtml(bookmark.url)}</div>
+                                    ${bookmark.desc ? `<div style="font-size: 0.7rem; color: #666;">${escapeHtml(bookmark.desc)}</div>` : ''}
+                                </div>
+                                <button class="btn btn-danger btn-sm" onclick="deleteBookmark('${escapeHtml(cat.category)}', '${escapeHtml(sub.name)}', ${idx})">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
             });
         });
-        html += '</tbody></table>';
-        container.innerHTML = html;
+        
+        if (html === '') {
+            container.innerHTML = '<div class="empty">暂无书签</div>';
+        } else {
+            container.innerHTML = html;
+        }
     }
     
-    function updateCategoryDatalist(bookmarks) {
-        const categories = bookmarks.map(cat => cat.category);
-        document.getElementById('categoryList').innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">`).join('');
+    function updateSubcategoryDatalist() {
+        const allSubcategories = new Set();
+        const bookmarks = fullBookmarksData.bookmarks || [];
+        bookmarks.forEach(cat => {
+            const subcategories = cat.subcategories || [];
+            subcategories.forEach(sub => {
+                allSubcategories.add(sub.name);
+            });
+        });
+        const datalist = document.getElementById('subcategoryList');
+        datalist.innerHTML = Array.from(allSubcategories).map(s => `<option value="${escapeHtml(s)}">`).join('');
     }
     
-    window.confirmDeleteBookmark = (category, index) => {
-        showConfirm('删除书签', '确定要删除这个书签吗？', () => deleteBookmark(category, index));
+    window.deleteBookmark = async (category, subcategory, index) => {
+        showConfirm('删除书签', '确定要删除这个书签吗？', async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/bookmarks/${encodeURIComponent(category)}/${encodeURIComponent(subcategory)}/${index}`, { method: 'DELETE', headers });
+                if (res.ok) { showToast('✅ 书签已删除'); loadBookmarks(); }
+                else { showToast('删除失败', true); }
+            } catch (err) { showToast('删除失败', true); }
+        });
     };
     
-    async function deleteBookmark(category, index) {
-        try {
-            const res = await fetch(`${API_BASE}/api/admin/bookmarks/${encodeURIComponent(category)}/${index}`, { method: 'DELETE', headers });
-            if (res.ok) { showToast('✅ 书签已删除'); loadBookmarks(); }
-            else { showToast('删除失败', true); }
-        } catch (err) { showToast('删除失败', true); }
-    }
-    
     document.getElementById('addBookmarkBtn').onclick = async () => {
-        const category = document.getElementById('newCategory').value.trim();
+        const category = document.getElementById('newCategory').value;
+        const subcategory = document.getElementById('newSubcategory').value.trim();
         const name = document.getElementById('newName').value.trim();
         let url = document.getElementById('newUrl').value.trim();
         const desc = document.getElementById('newDesc').value.trim();
         
-        if (!category || !name || !url) { showToast('请填写完整', true); return; }
+        if (!category || !subcategory || !name || !url) { showToast('请填写完整', true); return; }
         if (!url.startsWith('http')) url = 'https://' + url;
         
         try {
             const res = await fetch(`${API_BASE}/api/admin/bookmarks`, {
                 method: 'POST', headers,
-                body: JSON.stringify({ category, name, url, desc })
+                body: JSON.stringify({ category, subcategory, name, url, desc })
             });
             if (res.ok) {
                 showToast('✨ 添加成功');
-                document.getElementById('newCategory').value = '';
+                document.getElementById('newSubcategory').value = '';
                 document.getElementById('newName').value = '';
                 document.getElementById('newUrl').value = '';
                 document.getElementById('newDesc').value = '';
@@ -517,7 +546,7 @@
         }
         let html = '';
         messages.forEach(msg => {
-            html += `<div class="message-item"><div class="message-info"><span class="message-nickname">${escapeHtml(msg.nickname)}</span><span class="message-time">${new Date(msg.time).toLocaleString()}</span><span class="status-badge status-${msg.status === 'pending' ? 'pending' : 'approved'}">${msg.status === 'pending' ? '待审核' : '已通过'}</span><div class="message-content">${escapeHtml(msg.content)}</div>${msg.recommendUrl ? `<div style="margin-top:0.3rem;">🔗 <a href="${escapeHtml(msg.recommendUrl)}" target="_blank" style="color:#9b59b6;">${escapeHtml(msg.recommendUrl)}</a></div>` : ''}</div><div><button class="btn btn-success btn-sm" onclick="confirmApprove('${msg.id}')">通过</button> <button class="btn btn-danger btn-sm" onclick="confirmDeleteMessage('${msg.id}')">删除</button></div></div>`;
+            html += `<div class="message-item"><div class="message-info"><span class="message-nickname">${escapeHtml(msg.nickname)}</span><span class="message-time">${new Date(msg.time).toLocaleString()}</span><span class="status-badge status-${msg.status === 'pending' ? 'pending' : 'approved'}">${msg.status === 'pending' ? '待审核' : '已通过'}</span><div class="message-content">${escapeHtml(msg.content)}</div>${msg.recommendUrl ? `<div>🔗 <a href="${escapeHtml(msg.recommendUrl)}" target="_blank" style="color:#9b59b6;">${escapeHtml(msg.recommendUrl)}</a></div>` : ''}</div><div><button class="btn btn-success btn-sm" onclick="confirmApprove('${msg.id}')">通过</button> <button class="btn btn-danger btn-sm" onclick="confirmDeleteMessage('${msg.id}')">删除</button></div></div>`;
         });
         container.innerHTML = html;
     }
@@ -525,7 +554,6 @@
     window.confirmApprove = (id) => {
         showConfirm('审核留言', '确定要通过这条留言吗？', () => approveMessage(id));
     };
-    
     window.confirmDeleteMessage = (id) => {
         showConfirm('删除留言', '确定要删除这条留言吗？', () => deleteMessage(id));
     };
@@ -571,42 +599,12 @@
             container.innerHTML = '<div class="empty">暂无快捷链接，请添加</div>';
             return;
         }
-        
-        let html = '<table class="quicklink-table"><thead><tr><th style="width:35%">链接名称</th><th style="width:50%">链接地址</th><th style="width:15%">操作</th></tr></thead><tbody>';
-        for (let i = 0; i < quickLinks.length; i++) {
-            const link = quickLinks[i];
-            html += `
-                <tr>
-                    <td style="padding: 10px 6px;">
-                        <input type="text" value="${escapeHtml(link.name || '')}" data-index="${i}" data-field="name" class="quicklink-input" style="width:100%; padding:8px 12px; border-radius:20px; border:1px solid #2a2a3e; background:#1a1a2e; color:#e8e8e8;">
-                    </td>
-                    <td style="padding: 10px 6px;">
-                        <input type="text" value="${escapeHtml(link.url || '')}" data-index="${i}" data-field="url" class="quicklink-input" style="width:100%; padding:8px 12px; border-radius:20px; border:1px solid #2a2a3e; background:#1a1a2e; color:#e8e8e8;">
-                    </td>
-                    <td style="padding: 10px 6px;">
-                        <button class="btn btn-danger btn-sm" onclick="deleteQuickLink(${i})">删除</button>
-                    </td>
-                </tr>
-            `;
-        }
+        let html = '<table class="bookmark-table"><thead><tr><th>链接名称</th><th>链接地址</th><th>操作</th></tr></thead><tbody>';
+        quickLinks.forEach((link, i) => {
+            html += `<tr><td><strong>${escapeHtml(link.name || '')}</strong></td><td><a href="${escapeHtml(link.url || '#')}" target="_blank">${escapeHtml(link.url || '')}</a></td><td><button class="btn btn-danger btn-sm" onclick="deleteQuickLink(${i})">删除</button></td></tr>`;
+        });
         html += '</tbody></table>';
         container.innerHTML = html;
-        
-        // 绑定编辑事件
-        document.querySelectorAll('.quicklink-input').forEach(input => {
-            input.removeEventListener('change', handleQuickLinkChange);
-            input.addEventListener('change', handleQuickLinkChange);
-        });
-    }
-    
-    // 新增：处理编辑变化
-    function handleQuickLinkChange(e) {
-        const index = parseInt(e.target.getAttribute('data-index'));
-        const field = e.target.getAttribute('data-field');
-        if (quickLinks[index]) {
-            quickLinks[index][field] = e.target.value;
-            saveQuickLinks();
-        }
     }
     
     window.deleteQuickLink = function(index) {
@@ -623,28 +621,18 @@
                 method: 'PUT', headers,
                 body: JSON.stringify({ quickLinks })
             });
-            if (res.ok) { 
-                showToast('💾 快捷链接已保存');
-                await loadQuickLinks();
-            } else { 
-                showToast('保存失败', true); 
-            }
+            if (res.ok) { showToast('💾 快捷链接已保存'); await loadQuickLinks(); }
+            else { showToast('保存失败', true); }
         } catch (err) { showToast('保存失败', true); }
     }
     
     document.getElementById('addQuickLinkBtn').onclick = async () => {
         const name = document.getElementById('newQuickLinkName').value.trim();
         let url = document.getElementById('newQuickLinkUrl').value.trim();
-        
-        if (!name) { showToast('请填写链接名称', true); return; }
-        if (!url) { showToast('请填写链接地址', true); return; }
-        if (!url.startsWith('http') && !url.startsWith('mailto:')) {
-            url = 'https://' + url;
-        }
-        
-        quickLinks.push({ name: name, url: url, icon: "🔗" });
+        if (!name || !url) { showToast('请填写完整', true); return; }
+        if (!url.startsWith('http') && !url.startsWith('mailto:')) url = 'https://' + url;
+        quickLinks.push({ name, url, icon: "🔗" });
         await saveQuickLinks();
-        
         document.getElementById('newQuickLinkName').value = '';
         document.getElementById('newQuickLinkUrl').value = '';
     };
@@ -693,10 +681,7 @@
         try {
             const res = await fetch(`${API_BASE}/api/admin/siteinfo`, {
                 method: 'PUT', headers,
-                body: JSON.stringify({ 
-                    copyrightYear, copyrightOwner, copyrightUrl,
-                    poweredName, poweredUrl, icpNumber
-                })
+                body: JSON.stringify({ copyrightYear, copyrightOwner, copyrightUrl, poweredName, poweredUrl, icpNumber })
             });
             if (res.ok) { showToast('💾 版权信息已保存'); }
             else { showToast('保存失败', true); }
@@ -706,7 +691,7 @@
     function logout() {
         localStorage.removeItem("adminPass");
         adminPass = null;
-        showToast('已退出登录', false);
+        showToast('已退出登录');
         showLoginModal();
     }
     
@@ -719,7 +704,6 @@
         return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
     }
     
-    // 初始化（如果已有密码才加载数据）
     if (adminPass) {
         loadBookmarks();
         loadMessages();
