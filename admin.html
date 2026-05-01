@@ -412,7 +412,21 @@
             }
         } catch (err) { showToast('加载失败', true); }
     }
-    
+    // 保存书签数据到服务器
+    async function saveBookmarksData() {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/bookmarks`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify({ bookmarks: bookmarksData.bookmarks })
+            });
+            if (!res.ok) throw new Error('保存失败');
+            return true;
+        } catch (err) {
+            showToast('保存失败', true);
+            throw err;
+        }
+    }
     function renderBookmarks() {
         const container = document.getElementById('bookmarksList');
         const bookmarks = bookmarksData.bookmarks || [];
@@ -432,14 +446,17 @@
                         html += `
                             <div style="background: #1a1a2e; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem;">
                                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                                    <div>
+                                    <div style="flex: 1;">
                                         <span style="color: #d99bb8;">📁 ${escapeHtml(cat.category)}</span> / 
                                         <span style="color: #9b59b6;">📂 ${escapeHtml(sub.name)}</span>
                                         <div><strong>${escapeHtml(bookmark.name)}</strong></div>
-                                        <div style="font-size: 0.75rem; color: #888;">${escapeHtml(bookmark.url)}</div>
+                                        <div style="font-size: 0.75rem; color: #888; word-break: break-all;">${escapeHtml(bookmark.url)}</div>
                                         ${bookmark.desc ? `<div style="font-size: 0.7rem; color: #666;">${escapeHtml(bookmark.desc)}</div>` : ''}
                                     </div>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteBookmark('${escapeHtml(cat.category)}', '${escapeHtml(sub.name)}', ${idx})">删除</button>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn btn-primary btn-sm" onclick="editBookmark('${escapeHtml(cat.category)}', '${escapeHtml(sub.name)}', ${idx})">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteBookmark('${escapeHtml(cat.category)}', '${escapeHtml(sub.name)}', ${idx})">删除</button>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -452,13 +469,16 @@
                     html += `
                         <div style="background: #1a1a2e; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem;">
                             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                                <div>
+                                <div style="flex: 1;">
                                     <span style="color: #d99bb8;">📁 ${escapeHtml(cat.category)}</span>
                                     <div><strong>${escapeHtml(bookmark.name)}</strong></div>
-                                    <div style="font-size: 0.75rem; color: #888;">${escapeHtml(bookmark.url)}</div>
+                                    <div style="font-size: 0.75rem; color: #888; word-break: break-all;">${escapeHtml(bookmark.url)}</div>
                                     ${bookmark.desc ? `<div style="font-size: 0.7rem; color: #666;">${escapeHtml(bookmark.desc)}</div>` : ''}
                                 </div>
-                                <button class="btn btn-danger btn-sm" onclick="deleteBookmarkDirect('${escapeHtml(cat.category)}', ${idx})">删除</button>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-primary btn-sm" onclick="editBookmarkDirect('${escapeHtml(cat.category)}', ${idx})">编辑</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteBookmarkDirect('${escapeHtml(cat.category)}', ${idx})">删除</button>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -483,7 +503,65 @@
             } catch (err) { showToast('删除失败', true); }
         });
     };
+    // 编辑有子分类的书签
+    window.editBookmark = async (category, subcategory, index) => {
+        const bookmarks = bookmarksData.bookmarks || [];
+        const catData = bookmarks.find(c => c.category === category);
+        if (!catData) { showToast('分类不存在', true); return; }
+        const subData = catData.subcategories.find(s => s.name === subcategory);
+        if (!subData) { showToast('子分类不存在', true); return; }
+        const bookmark = subData.bookmarks[index];
+        if (!bookmark) { showToast('书签不存在', true); return; }
+        
+        const newName = prompt('编辑标题:', bookmark.name);
+        if (newName === null) return;
+        const newUrl = prompt('编辑网址:', bookmark.url);
+        if (newUrl === null) return;
+        const newDesc = prompt('编辑描述:', bookmark.desc || '');
+        
+        bookmark.name = newName.trim();
+        let url = newUrl.trim();
+        if (!url.startsWith('http')) url = 'https://' + url;
+        bookmark.url = url;
+        bookmark.desc = newDesc || '';
+        
+        try {
+            await saveBookmarksData();
+            loadBookmarks();
+            showToast('✅ 书签已更新');
+        } catch (err) {
+            showToast('保存失败', true);
+        }
+    };
     
+    // 编辑无子分类的书签
+    window.editBookmarkDirect = async (category, index) => {
+        const bookmarks = bookmarksData.bookmarks || [];
+        const catData = bookmarks.find(c => c.category === category);
+        if (!catData || !catData.bookmarks) { showToast('书签不存在', true); return; }
+        const bookmark = catData.bookmarks[index];
+        if (!bookmark) { showToast('书签不存在', true); return; }
+        
+        const newName = prompt('编辑标题:', bookmark.name);
+        if (newName === null) return;
+        const newUrl = prompt('编辑网址:', bookmark.url);
+        if (newUrl === null) return;
+        const newDesc = prompt('编辑描述:', bookmark.desc || '');
+        
+        bookmark.name = newName.trim();
+        let url = newUrl.trim();
+        if (!url.startsWith('http')) url = 'https://' + url;
+        bookmark.url = url;
+        bookmark.desc = newDesc || '';
+        
+        try {
+            await saveBookmarksData();
+            loadBookmarks();
+            showToast('✅ 书签已更新');
+        } catch (err) {
+            showToast('保存失败', true);
+        }
+    };
     document.getElementById('addBookmarkBtn').onclick = async () => {
         const category = document.getElementById('newCategory').value;
         const subcategory = document.getElementById('newSubcategory').value.trim();
@@ -613,13 +691,32 @@
                 <tr>
                     <td><strong>${escapeHtml(link.name || '')}</strong></td>
                     <td><a href="${escapeHtml(link.url || '#')}" target="_blank" style="color:#9b59b6;">${escapeHtml(link.url || '')}</a></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteQuickLink(${i})">删除</button></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="editQuickLink(${i})">编辑</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteQuickLink(${i})">删除</button>
+                    </td>
                 </tr>
             `;
         });
         html += '</tbody></table>';
         container.innerHTML = html;
     }
+    
+    // 编辑快捷链接
+    window.editQuickLink = async (index) => {
+        const link = quickLinks[index];
+        if (!link) { showToast('链接不存在', true); return; }
+        const newName = prompt('编辑链接名称:', link.name);
+        if (newName === null) return;
+        let newUrl = prompt('编辑链接地址:', link.url);
+        if (newUrl === null) return;
+        if (!newUrl.startsWith('http') && !newUrl.startsWith('mailto:')) {
+            newUrl = 'https://' + newUrl;
+        }
+        quickLinks[index] = { name: newName.trim(), url: newUrl, icon: "🔗" };
+        await saveQuickLinks();
+        showToast('✅ 快捷链接已更新');
+    };
     
     window.deleteQuickLink = function(index) {
         showConfirm('删除链接', '确定要删除这个快捷链接吗？', async () => {
