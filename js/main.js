@@ -12,9 +12,9 @@ function hideGlobalLoader() {
     }
 }
 
-window.addEventListener('load', function() {
-    setTimeout(hideGlobalLoader, 300);
-});
+// window.addEventListener('load', function() {
+//     setTimeout(hideGlobalLoader, 300);
+// });
 
 setTimeout(function() {
     if (globalLoader && globalLoader.style.display !== 'none') {
@@ -46,14 +46,21 @@ document.getElementById("themeToggle").addEventListener("click", () => {
 function checkScrollAndAnimate() {
     const btn = document.getElementById('backToTop');
     if (!btn) return;
-    if (window.scrollY > 200) {
-        btn.style.display = 'flex';
-        btn.style.animation = 'fadeInUp 0.3s ease forwards';
+    
+    if (window.scrollY > 300) {
+        if (btn.style.display !== 'flex') {
+            btn.style.display = 'flex';
+            btn.style.animation = 'none';
+            btn.offsetHeight;
+            btn.style.animation = 'fadeInUp 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards';
+        }
     } else {
-        btn.style.animation = 'fadeOut 0.2s ease forwards';
-        setTimeout(() => {
-            if (window.scrollY <= 200) btn.style.display = 'none';
-        }, 200);
+        if (btn.style.display === 'flex') {
+            btn.style.animation = 'fadeOutDown 0.25s ease forwards';
+            setTimeout(() => {
+                if (window.scrollY <= 300) btn.style.display = 'none';
+            }, 250);
+        }
     }
 }
 
@@ -61,7 +68,34 @@ window.addEventListener('scroll', checkScrollAndAnimate);
 window.addEventListener('load', checkScrollAndAnimate);
 window.addEventListener('touchend', checkScrollAndAnimate);
 
-document.getElementById("backToTop").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+document.getElementById("backToTop").onclick = function() {
+    const btn = this;
+    btn.style.transform = 'scale(0.92)';
+    setTimeout(() => {
+        btn.style.transform = '';
+    }, 150);
+    
+    const startY = window.scrollY;
+    const duration = 500;
+    const startTime = performance.now();
+    
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+    
+    function scrollAnimation(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = easeInOutCubic(progress);
+        window.scrollTo(0, startY * (1 - easeProgress));
+        
+        if (progress < 1) {
+            requestAnimationFrame(scrollAnimation);
+        }
+    }
+    
+    requestAnimationFrame(scrollAnimation);
+};
 document.getElementById('oldVersionBtn').onclick = () => {
     window.open('/oldbookmarks/', '_blank');
 };
@@ -106,9 +140,13 @@ async function fetchBookmarks() {
         renderCategoryNav();
         renderBookmarks();
         updateStats();
+        // 数据加载完成，隐藏加载动画
+        hideGlobalLoader();
     } catch (err) {
         console.error(err);
         document.getElementById('bookmarksContainer').innerHTML = '<div class="empty-state"><span>⚠️</span><p>连接失败</p><button class="btn" onclick="location.reload()" style="margin-top:0.8rem;">刷新</button></div>';
+        // 出错时也隐藏加载动画
+        hideGlobalLoader();
     }
 }
 
