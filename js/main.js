@@ -1,3 +1,4 @@
+console.log(" %c Bookmarks By Arley %c https://arley.cn/ ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px;");
 // ========== 全局加载动画控制 ==========
 const globalLoader = document.getElementById('globalLoader');
 
@@ -472,7 +473,6 @@ document.getElementById('adminBtn').onclick = () => { window.open('admin.html', 
 document.getElementById('searchBtn').onclick = searchBookmarks;
 document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') searchBookmarks(); };
 document.getElementById('clearSearchBtn').onclick = clearSearch;
-console.log(" %c Bookmarks By Arley %c https://arley.cn/ ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px;")
 // 初始化
 initTheme();
 fetchBookmarks();
