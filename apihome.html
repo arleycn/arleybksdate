@@ -196,6 +196,10 @@
             margin-right: 6px;
             animation: pulse 1.5s infinite;
         }
+        .status-badge.error {
+            background: #ef4444;
+            animation: none;
+        }
         .auth-panel {
             background: white;
             border-radius: 1rem;
@@ -249,6 +253,15 @@
             background: #fee2e2;
             color: #991b1b;
         }
+        .error-banner {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #991b1b;
+        }
         @keyframes pulse {
             0% { opacity: 0.4; }
             100% { opacity: 1; }
@@ -271,11 +284,14 @@
             <div class="stat-item"><div class="stat-number" id="statBookmarks">—</div><div class="stat-label">书签总数</div></div>
             <div class="stat-item"><div class="stat-number" id="statMessages">—</div><div class="stat-label">留言总数</div></div>
             <div class="stat-item"><div class="stat-number" id="statQuick">—</div><div class="stat-label">快捷链接</div></div>
-            <div class="stat-item"><div class="stat-number" id="statStatus"><span class="status-badge"></span>活跃</div><div class="stat-label">API状态</div></div>
+            <div class="stat-item"><div class="stat-number" id="statStatus"><span class="status-badge"></span>检测中</div><div class="stat-label">API状态</div></div>
         </div>
     </div>
 
-    <!-- 鉴权面板 - 内嵌风格 -->
+    <!-- 错误提示区域 -->
+    <div id="errorBanner" style="display: none;" class="error-banner"></div>
+
+    <!-- 鉴权面板 -->
     <div class="auth-panel">
         <div class="auth-info">
             <span>🔐</span>
@@ -283,7 +299,7 @@
             <span id="authStatusBadge" class="auth-status-badge inactive">未登录</span>
         </div>
         <div class="auth-input-group">
-            <input type="password" id="adminPasswordInput" placeholder="输入管理员密码" value="">
+            <input type="password" id="adminPasswordInput" placeholder="输入管理员密码" value="123456">
             <button id="loginBtn" class="primary" style="padding: 0.45rem 1.2rem;">登录</button>
             <button id="logoutBtn" class="secondary" style="padding: 0.45rem 1.2rem;">退出</button>
         </div>
@@ -355,7 +371,7 @@
             <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/admin/bookmarks</span><span class="badge-auth">需鉴权</span></div>
             <div class="card-body">
                 <div class="desc">获取完整书签数据结构（需要管理员密码）</div>
-                <button class="primary" data-test="adminBookmarksGet" id="adminBookmarksBtn">📋 获取管理数据</button>
+                <button class="primary" data-test="adminBookmarksGet">📋 获取管理数据</button>
                 <div id="respAdminBookmarks" class="response"></div>
             </div>
         </div>
@@ -365,7 +381,7 @@
             <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/admin/messages</span><span class="badge-auth">需鉴权</span></div>
             <div class="card-body">
                 <div class="desc">获取所有留言（含待审核）</div>
-                <button class="primary" data-test="adminMessages" id="adminMessagesBtn">📋 获取所有留言</button>
+                <button class="primary" data-test="adminMessages">📋 获取所有留言</button>
                 <div id="respAdminMessages" class="response"></div>
             </div>
         </div>
@@ -375,7 +391,7 @@
             <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/admin/quicklinks</span><span class="badge-auth">需鉴权</span></div>
             <div class="card-body">
                 <div class="desc">获取快捷链接完整数据</div>
-                <button class="primary" data-test="adminQuicklinksGet" id="adminQuicklinksBtn">🔗 获取快捷链接</button>
+                <button class="primary" data-test="adminQuicklinksGet">🔗 获取快捷链接</button>
                 <div id="respAdminQuicklinks" class="response"></div>
             </div>
         </div>
@@ -394,6 +410,15 @@
     let savedPassword = localStorage.getItem(STORAGE_KEY) || '';
     
     document.getElementById('baseHost').innerText = API_BASE;
+    
+    function showError(message) {
+        const banner = document.getElementById('errorBanner');
+        banner.innerHTML = message;
+        banner.style.display = 'block';
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 5000);
+    }
     
     // 更新鉴权状态显示
     function updateAuthStatus() {
@@ -415,32 +440,29 @@
     function login() {
         const password = document.getElementById('adminPasswordInput').value.trim();
         if (!password) {
-            alert('请输入管理员密码');
+            showError('❌ 请输入管理员密码');
             return;
         }
         savedPassword = password;
         localStorage.setItem(STORAGE_KEY, savedPassword);
         updateAuthStatus();
-        alert('登录成功，密码已保存到本地');
+        showError('✅ 登录成功，密码已保存到本地');
     }
     
     // 退出登录
     function logout() {
-        if (confirm('确定要退出登录吗？保存的密码将被清除。')) {
-            savedPassword = '';
-            localStorage.removeItem(STORAGE_KEY);
-            updateAuthStatus();
-            alert('已退出登录');
-        }
+        savedPassword = '';
+        localStorage.removeItem(STORAGE_KEY);
+        updateAuthStatus();
+        showError('🔓 已退出登录');
     }
     
     // 需要鉴权的请求（使用保存的密码）
     async function apiFetchWithAuth(endpoint) {
         const url = `${API_BASE}${endpoint}`;
         
-        // 如果没有登录，提示先登录
         if (!savedPassword) {
-            alert('请先在顶部输入管理员密码并点击"登录"');
+            showError('⚠️ 请先在顶部输入管理员密码并点击"登录"');
             return { status: 401, ok: false, data: { error: '未登录，请先进行鉴权' } };
         }
         
@@ -453,9 +475,8 @@
                 }
             });
             
-            // 如果返回401，说明密码错误
             if (resp.status === 401) {
-                alert('密码错误，请重新登录');
+                showError('❌ 密码错误，请重新登录');
                 savedPassword = '';
                 localStorage.removeItem(STORAGE_KEY);
                 updateAuthStatus();
@@ -467,6 +488,7 @@
             try { data = JSON.parse(text); } catch(e) { data = { raw: text, parseError: true }; }
             return { status: resp.status, ok: resp.ok, data };
         } catch (err) {
+            showError(`❌ 请求失败: ${err.message}`);
             return { status: 0, ok: false, data: { error: err.message } };
         }
     }
@@ -497,6 +519,18 @@
     
     async function updateStats() {
         try {
+            // 测试健康检查
+            const health = await apiFetch('/health');
+            const statusEl = document.getElementById('statStatus');
+            
+            if (health.ok && health.data?.status === 'ok') {
+                statusEl.innerHTML = '<span class="status-badge"></span>活跃';
+            } else {
+                statusEl.innerHTML = '<span class="status-badge error"></span>异常';
+                showError('⚠️ API 服务连接异常，请检查网络或后端服务');
+            }
+            
+            // 获取书签统计
             const bookRes = await apiFetch('/api/bookmarks');
             let total = 0;
             if (bookRes.ok && bookRes.data?.data?.bookmarks) {
@@ -509,31 +543,38 @@
                         });
                     }
                 });
+                document.getElementById('statBookmarks').innerText = total;
+            } else {
+                document.getElementById('statBookmarks').innerText = '?';
             }
-            document.getElementById('statBookmarks').innerText = total;
             
+            // 获取留言统计
             const msgRes = await apiFetch('/api/messages');
             let msgCount = 0;
             if (msgRes.ok && Array.isArray(msgRes.data?.messages)) {
                 msgCount = msgRes.data.messages.length;
+                document.getElementById('statMessages').innerText = msgCount;
+            } else {
+                document.getElementById('statMessages').innerText = '?';
             }
-            document.getElementById('statMessages').innerText = msgCount;
             
+            // 获取快捷链接统计
             const qlRes = await apiFetch('/api/quicklinks');
             let qlCount = 0;
             if (qlRes.ok && Array.isArray(qlRes.data?.quickLinks)) {
                 qlCount = qlRes.data.quickLinks.length;
-            }
-            document.getElementById('statQuick').innerText = qlCount;
-            
-            const health = await apiFetch('/health');
-            if (health.ok && health.data?.status === 'ok') {
-                document.getElementById('statStatus').innerHTML = '<span class="status-badge"></span>活跃';
+                document.getElementById('statQuick').innerText = qlCount;
             } else {
-                document.getElementById('statStatus').innerHTML = '<span style="color:#ef4444;">● 异常</span>';
+                document.getElementById('statQuick').innerText = '?';
             }
+            
         } catch(e) {
-            console.warn(e);
+            console.warn('统计更新失败:', e);
+            showError(`⚠️ 统计数据加载失败: ${e.message}`);
+            document.getElementById('statStatus').innerHTML = '<span class="status-badge error"></span>异常';
+            document.getElementById('statBookmarks').innerText = '?';
+            document.getElementById('statMessages').innerText = '?';
+            document.getElementById('statQuick').innerText = '?';
         }
     }
     
@@ -562,6 +603,7 @@
         document.querySelector('[data-test="healthCheck"]')?.addEventListener('click', async () => {
             const res = await apiFetch('/health');
             renderResponse('respHealth', res);
+            updateStats();
         });
         
         document.querySelector('[data-test="rootInfo"]')?.addEventListener('click', async () => {
@@ -594,9 +636,13 @@
         });
     }
     
+    // 初始化
     bindEvents();
     updateStats();
     updateAuthStatus();
+    
+    // 定期检查API状态（每30秒）
+    setInterval(updateStats, 30000);
 </script>
 </body>
 </html>
