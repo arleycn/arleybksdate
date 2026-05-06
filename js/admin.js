@@ -725,3 +725,35 @@ if (newCategorySelect) {
 }
 
 if (adminPass) { loadAllData(); }
+// ========== 主题切换功能（白天/黑夜） ==========
+function initAdminTheme() {
+    const savedTheme = localStorage.getItem('adminTheme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if (themeBtn) themeBtn.textContent = '☀️ 白天模式';
+    } else {
+        document.body.classList.remove('dark');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if (themeBtn) themeBtn.textContent = '🌙 夜间模式';
+    }
+}
+
+function toggleAdminTheme() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('adminTheme', isDark ? 'dark' : 'light');
+    const themeBtn = document.getElementById('themeToggleBtn');
+    if (themeBtn) {
+        themeBtn.textContent = isDark ? '☀️ 白天模式' : '🌙 夜间模式';
+    }
+}
+
+// 绑定主题切换按钮事件
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleAdminTheme);
+}
+
+// 初始化主题
+initAdminTheme();

@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
+<!-- 添加主题切换按钮 -->
+<div class="theme-toggle-btn" id="themeToggleBtn" style="position: fixed; top: 1rem; left: 1rem; z-index: 101;">🌙 夜间模式</div>
+
 <div class="container">
     <h1>🌸 Arley's | 管理后台</h1>
 
@@ -139,13 +142,14 @@
             <button class="btn btn-primary" id="saveCopyrightBtn">💾 保存版权设置</button>
         </div>
     </div>
-</div>
-<!-- 404反馈管理 -->
-<div id="tab-feedback404" class="tab-content">
-    <div class="card">
-        <h2>🚫 404错误反馈记录</h2>
-        <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">用户访问失效页面时提交的反馈，帮助您发现死链</p>
-        <div id="feedback404List"><div class="empty">加载中...</div></div>
+
+    <!-- 404反馈管理 -->
+    <div id="tab-feedback404" class="tab-content">
+        <div class="card">
+            <h2>🚫 404错误反馈记录</h2>
+            <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:1rem;">用户访问失效页面时提交的反馈，帮助您发现死链</p>
+            <div id="feedback404List"><div class="empty">加载中...</div></div>
+        </div>
     </div>
 </div>
 
