@@ -335,7 +335,7 @@ export default {
 				});
 			}
 		}
-		// 更新书签（完整替换）
+		// 更新书签
 		if (path === "/api/admin/bookmarks" && method === "PUT") {
 			if (!isAuthorized(request)) {
 				return new Response(JSON.stringify({
@@ -591,10 +591,7 @@ export default {
 			}
 		}
 
-		// 在留言 API 后面添加（大约在第 310 行之后）
-
 		// ========== 404反馈 API ==========
-
 		// 获取404反馈列表（管理员）
 		if (path === "/api/admin/404feedback" && method === "GET") {
 			if (!isAuthorized(request)) {
@@ -704,7 +701,7 @@ export default {
 			}
 		}
 
-		// 获取404统计数据（可选公开）
+		// 获取404统计数据
 		if (path === "/api/404stats" && method === "GET") {
 			try {
 				let stats = await redisCommand("GET", "404stats");
@@ -719,6 +716,111 @@ export default {
 				return new Response(JSON.stringify({
 					success: true,
 					stats
+				}), {
+					status: 200,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+		// 标记404反馈为已处理
+		if (path.startsWith("/api/admin/404feedback/") && method === "PUT") {
+			if (!isAuthorized(request)) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: "未授权"
+				}), {
+					status: 401,
+					headers: getCorsHeaders(request)
+				});
+			}
+			try {
+				const feedbackId = path.split("/").pop();
+				const {
+					action
+				} = await request.json();
+
+				let feedbacks = await redisCommand("GET", "404feedbacks");
+				if (typeof feedbacks === "string") feedbacks = JSON.parse(feedbacks);
+				if (!feedbacks) feedbacks = [];
+
+				const feedbackIndex = feedbacks.findIndex(f => f.id === feedbackId);
+				if (feedbackIndex === -1) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "反馈不存在"
+					}), {
+						status: 404,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				if (action === "mark") {
+					feedbacks[feedbackIndex].status = "handled";
+				} else if (action === "delete") {
+					feedbacks.splice(feedbackIndex, 1);
+				}
+
+				await redisCommand("SET", "404feedbacks", JSON.stringify(feedbacks));
+				return new Response(JSON.stringify({
+					success: true,
+					message: "操作成功"
+				}), {
+					status: 200,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// 删除404反馈（备用）
+		if (path.startsWith("/api/admin/404feedback/") && method === "DELETE") {
+			if (!isAuthorized(request)) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: "未授权"
+				}), {
+					status: 401,
+					headers: getCorsHeaders(request)
+				});
+			}
+			try {
+				const feedbackId = path.split("/").pop();
+
+				let feedbacks = await redisCommand("GET", "404feedbacks");
+				if (typeof feedbacks === "string") feedbacks = JSON.parse(feedbacks);
+				if (!feedbacks) feedbacks = [];
+
+				const feedbackIndex = feedbacks.findIndex(f => f.id === feedbackId);
+				if (feedbackIndex === -1) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "反馈不存在"
+					}), {
+						status: 404,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				feedbacks.splice(feedbackIndex, 1);
+				await redisCommand("SET", "404feedbacks", JSON.stringify(feedbacks));
+				return new Response(JSON.stringify({
+					success: true,
+					message: "删除成功"
 				}), {
 					status: 200,
 					headers: getCorsHeaders(request)

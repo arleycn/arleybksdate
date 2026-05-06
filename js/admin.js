@@ -458,6 +458,109 @@ window.deleteMessage = async (id) => {
     });
 };
 
+// ========== 404反馈管理 ==========
+let feedback404Data = [];
+
+async function load404Feedbacks() {
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/404feedback`, { 
+            headers: { 'Authorization': `Bearer ${adminPass}` } 
+        });
+        if (res.status === 401) { 
+            showToast('登录已过期', true); 
+            logout(); 
+            return; 
+        }
+        const result = await res.json();
+        if (result.success) {
+            feedback404Data = result.feedbacks || [];
+            render404Feedbacks();
+        }
+    } catch (err) { 
+        console.error(err);
+        showToast('加载404反馈失败', true); 
+    }
+}
+
+function render404Feedbacks() {
+    const container = document.getElementById('feedback404List');
+    if (!container) return;
+    
+    if (!feedback404Data || feedback404Data.length === 0) {
+        container.innerHTML = '<div class="empty">暂无404反馈记录 🌸</div>';
+        return;
+    }
+    
+    let html = '';
+    feedback404Data.forEach(fb => {
+        // 截断过长的URL
+        let displayUrl = fb.brokenUrl;
+        if (displayUrl && displayUrl.length > 80) {
+            displayUrl = displayUrl.substring(0, 70) + '...';
+        }
+        
+        html += `
+            <div class="feedback404-item">
+                <div class="feedback404-header">
+                    <span class="feedback404-time">📅 ${new Date(fb.time).toLocaleString()}</span>
+                    <span class="status-badge ${fb.status === 'pending' ? 'status-pending' : 'status-approved'}">${fb.status === 'pending' ? '待处理' : '已处理'}</span>
+                </div>
+                <div class="feedback404-url">
+                    🔗 <a href="${escapeHtml(fb.brokenUrl)}" target="_blank" style="color: #9b59b6; word-break: break-all;">${escapeHtml(displayUrl)}</a>
+                </div>
+                ${fb.message ? `<div class="feedback404-message">💬 ${escapeHtml(fb.message)}</div>` : '<div class="feedback404-message" style="opacity:0.6;">💬 无附加说明</div>'}
+                <div class="feedback404-info">
+                    <span>📱 ${fb.userAgent ? escapeHtml(fb.userAgent.substring(0, 60)) + (fb.userAgent.length > 60 ? '...' : '') : '未知设备'}</span>
+                    ${fb.referer ? `<span>🔗 来源: ${escapeHtml(fb.referer.substring(0, 50))}${fb.referer.length > 50 ? '...' : ''}</span>` : ''}
+                </div>
+                <div class="feedback404-actions">
+                    <button class="btn btn-success btn-sm" onclick="mark404FeedbackHandled('${fb.id}')">✅ 标记已处理</button>
+                    <button class="btn btn-danger btn-sm" onclick="delete404Feedback('${fb.id}')">🗑️ 删除</button>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+window.mark404FeedbackHandled = async (id) => {
+    showConfirm('标记处理', '标记此反馈为已处理？', async () => {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/404feedback/${id}`, { 
+                method: 'PUT', 
+                headers, 
+                body: JSON.stringify({ action: 'mark' }) 
+            });
+            if (res.ok) { 
+                showToast('✅ 已标记为已处理'); 
+                await load404Feedbacks(); 
+            } else { 
+                showToast('操作失败', true); 
+            }
+        } catch (err) { 
+            showToast('操作失败', true); 
+        }
+    });
+};
+
+window.delete404Feedback = async (id) => {
+    showConfirm('删除反馈', '确定要删除这条404反馈记录吗？', async () => {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/404feedback/${id}`, { 
+                method: 'DELETE', 
+                headers 
+            });
+            if (res.ok) { 
+                showToast('🗑️ 反馈已删除'); 
+                await load404Feedbacks(); 
+            } else { 
+                showToast('删除失败', true); 
+            }
+        } catch (err) { 
+            showToast('删除失败', true); 
+        }
+    });
+};
 // ========== 快捷链接管理 ==========
 let quickLinks = [];
 
