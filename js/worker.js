@@ -5,7 +5,6 @@ export default {
 		const method = request.method;
 
 		const ALLOWED_ORIGINS = env.FRONTEND_URL ? env.FRONTEND_URL.split(",").map(o => o.trim()) : [];
-		const DEBUG_TOKEN = env.DEBUG_TOKEN || "arley123456";
 		const ADMIN_PASSWORD = env.ADMIN_PASSWORD || "123456";
 
 		function getCorsHeaders(request) {
@@ -116,31 +115,6 @@ export default {
 		];
 
 		const DEFAULT_BOOKMARKS = [];
-
-		// ========== 调试入口 ==========
-		if (path === "/arleytsrk" && method === "GET") {
-			const urlToken = url.searchParams.get("token");
-			const isValidToken = urlToken === DEBUG_TOKEN;
-			if (!isValidToken) {
-				return new Response(JSON.stringify({
-					error: "Unauthorized"
-				}), {
-					status: 401,
-					headers: {
-						...getCorsHeaders(request),
-						"Content-Type": "application/json"
-					}
-				});
-			}
-			return new Response(JSON.stringify({
-				status: "ok",
-				debug: true
-			}), {
-				status: 200,
-				headers: getCorsHeaders(request)
-			});
-		}
-
 		// ========== 根路径 ==========
 		if (path === "/" && method === "GET") {
 			return new Response(JSON.stringify({
@@ -335,7 +309,7 @@ export default {
 				});
 			}
 		}
-		// 更新书签
+		// 更新书签（完整替换）
 		if (path === "/api/admin/bookmarks" && method === "PUT") {
 			if (!isAuthorized(request)) {
 				return new Response(JSON.stringify({
