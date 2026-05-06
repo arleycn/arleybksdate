@@ -25,6 +25,7 @@
 - 自定义域名（可选）
 
 ## GitHub 仓库结构
+
 ArleyBKS/
 ├── README.md # 项目说明
 ├── .env.example # 环境变量示例
@@ -41,10 +42,27 @@ ArleyBKS/
 │ └── worker.js # Cloudflare Workers 核心代码
 └── images/ # 图片资源
 
+## 环境变量
 
+参考 `.env.example` 配置以下变量：
+
+| 变量名 | 说明 |
+|--------|------|
+| REDIS_URL | Upstash Redis 连接地址 |
+| REDIS_TOKEN | Upstash Redis 密码/令牌 |
+| ADMIN_PASSWORD | 后台管理登录密码 |
+| SITE_NAME | 站点名称（可选） |
+
+## 预览
 
 <img width="2550" height="1233" alt="书签导航" src="https://github.com/user-attachments/assets/fddf96e0-badb-4249-a5fa-2498ac02bb32" />
-# ArleyBKS 书签导航 
+
 <img width="2550" height="1233" alt="404" src="https://github.com/user-attachments/assets/21288d94-29c0-41e7-bec6-e0573dd01633" />
+
 <img width="2550" height="1233" alt="admin" src="https://github.com/user-attachments/assets/4f3f9d0e-f5a0-48bb-8e19-7f7d869eaf1d" />
+
 <img width="2550" height="1233" alt="apihome" src="https://github.com/user-attachments/assets/67c262df-b255-4072-a3cb-7e832f153be8" />
+
+## 许可证
+
+MIT
