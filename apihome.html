@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Arley's API 调试台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+        .title-section h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .title-section p {
+            color: #475569;
+            margin-top: 0.3rem;
+            font-size: 0.9rem;
+        }
+        .stat-badge {
+            background: white;
+            border-radius: 2rem;
+            padding: 0.5rem 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-weight: 800;
+            font-size: 1.5rem;
+            line-height: 1.2;
+            color: #1e293b;
+        }
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5b6e8c;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #e9eef3;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            background: #fafcff;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .method {
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            background: #eef2ff;
+            color: #1e40af;
+            font-family: monospace;
+        }
+        .method.get { background: #dbeafe; color: #1e40af; }
+        .endpoint {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: #f1f5f9;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            word-break: break-all;
+            color: #0f172a;
+        }
+        .badge-auth {
+            margin-left: auto;
+            font-size: 0.65rem;
+            background: #fee2e2;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            color: #991b1b;
+        }
+        .badge-public {
+            background: #e6f7ff;
+            color: #0077b6;
+        }
+        .card-body {
+            padding: 1.2rem;
+        }
+        .desc {
+            font-size: 0.85rem;
+            color: #334155;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        button {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        button.primary {
+            background: #2563eb;
+        }
+        button.primary:hover {
+            background: #1d4ed8;
+        }
+        button.secondary {
+            background: #475569;
+        }
+        button.secondary:hover {
+            background: #334155;
+        }
+        .response {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 1rem;
+            padding: 0.7rem;
+            font-size: 0.7rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 220px;
+            overflow: auto;
+            margin-top: 0.8rem;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+        .status-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-right: 6px;
+            animation: pulse 1.5s infinite;
+        }
+        .auth-panel {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        .auth-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .auth-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .auth-input-group input {
+            border: 1px solid #cbd5e1;
+            border-radius: 40px;
+            padding: 0.45rem 1rem;
+            font-size: 0.8rem;
+            width: 180px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .auth-input-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+        }
+        .auth-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            background: #f1f5f9;
+        }
+        .auth-status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .auth-status-badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .api-grid { grid-template-columns: 1fr; }
+            .auth-input-group input { width: 140px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="title-section">
+            <h1>📡 Arley's API 调试中心</h1>
+            <p>书签导航 · 留言板 · 站点设置 · 快捷链接</p>
+        </div>
+        <div class="stat-badge" id="statPanel">
+            <div class="stat-item"><div class="stat-number" id="statBookmarks">—</div><div class="stat-label">书签总数</div></div>
+            <div class="stat-item"><div class="stat-number" id="statMessages">—</div><div class="stat-label">留言总数</div></div>
+            <div class="stat-item"><div class="stat-number" id="statQuick">—</div><div class="stat-label">快捷链接</div></div>
+            <div class="stat-item"><div class="stat-number" id="statStatus"><span class="status-badge"></span>活跃</div><div class="stat-label">API状态</div></div>
+        </div>
+    </div>
+
+    <!-- 鉴权面板 - 内嵌风格 -->
+    <div class="auth-panel">
+        <div class="auth-info">
+            <span>🔐</span>
+            <span>管理员鉴权</span>
+            <span id="authStatusBadge" class="auth-status-badge inactive">未登录</span>
+        </div>
+        <div class="auth-input-group">
+            <input type="password" id="adminPasswordInput" placeholder="输入管理员密码" value="">
+            <button id="loginBtn" class="primary" style="padding: 0.45rem 1.2rem;">登录</button>
+            <button id="logoutBtn" class="secondary" style="padding: 0.45rem 1.2rem;">退出</button>
+        </div>
+    </div>
+
+    <div class="api-grid">
+        <!-- 公共书签获取 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/bookmarks</span><span class="badge-auth badge-public">公开</span></div>
+            <div class="card-body">
+                <div class="desc">获取前端展示的书签 + 菜单分类</div>
+                <button class="primary" data-test="bookmarksPublic">📥 测试请求</button>
+                <div id="respBookmarksPublic" class="response">点击获取响应</div>
+            </div>
+        </div>
+
+        <!-- 公开留言列表 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/messages</span><span class="badge-auth badge-public">公开</span></div>
+            <div class="card-body">
+                <div class="desc">获取已审核通过的留言列表</div>
+                <button class="primary" data-test="getMessages">📢 获取留言列表</button>
+                <div id="respGetMessages" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 站点信息 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/siteinfo</span><span class="badge-auth badge-public">公开</span></div>
+            <div class="card-body">
+                <div class="desc">获取网站配置（名称、描述、版权、ICP备案等）</div>
+                <button class="primary" data-test="siteInfoGet">🏷️ 获取站点信息</button>
+                <div id="respSiteInfo" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 快捷链接 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/quicklinks</span><span class="badge-auth badge-public">公开</span></div>
+            <div class="card-body">
+                <div class="desc">获取快捷链接列表</div>
+                <button class="primary" data-test="getQuicklinks">🔗 获取快捷链接</button>
+                <div id="respQuicklinks" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 健康检查 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/health</span><span class="badge-auth badge-public">公开</span></div>
+            <div class="card-body">
+                <div class="desc">健康检查接口</div>
+                <button class="primary" data-test="healthCheck">❤️ 健康检查</button>
+                <div id="respHealth" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 根路径 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/</span><span class="badge-auth badge-public">公开</span></div>
+            <div class="card-body">
+                <div class="desc">API 根路径信息</div>
+                <button class="primary" data-test="rootInfo">🏠 根路径信息</button>
+                <div id="respRoot" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 管理后台书签 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/admin/bookmarks</span><span class="badge-auth">需鉴权</span></div>
+            <div class="card-body">
+                <div class="desc">获取完整书签数据结构（需要管理员密码）</div>
+                <button class="primary" data-test="adminBookmarksGet" id="adminBookmarksBtn">📋 获取管理数据</button>
+                <div id="respAdminBookmarks" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 管理留言列表 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/admin/messages</span><span class="badge-auth">需鉴权</span></div>
+            <div class="card-body">
+                <div class="desc">获取所有留言（含待审核）</div>
+                <button class="primary" data-test="adminMessages" id="adminMessagesBtn">📋 获取所有留言</button>
+                <div id="respAdminMessages" class="response"></div>
+            </div>
+        </div>
+
+        <!-- 管理快捷链接 -->
+        <div class="card">
+            <div class="card-header"><span class="method get">GET</span><span class="endpoint">/api/admin/quicklinks</span><span class="badge-auth">需鉴权</span></div>
+            <div class="card-body">
+                <div class="desc">获取快捷链接完整数据</div>
+                <button class="primary" data-test="adminQuicklinksGet" id="adminQuicklinksBtn">🔗 获取快捷链接</button>
+                <div id="respAdminQuicklinks" class="response"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        API 基地址：<span id="baseHost"></span> | Upstash Redis 持久化
+    </div>
+</div>
+
+<script>
+    const API_BASE = window.location.origin;
+    const STORAGE_KEY = 'admin_api_password';
+    
+    // 获取保存的密码
+    let savedPassword = localStorage.getItem(STORAGE_KEY) || '';
+    
+    document.getElementById('baseHost').innerText = API_BASE;
+    
+    // 更新鉴权状态显示
+    function updateAuthStatus() {
+        const statusBadge = document.getElementById('authStatusBadge');
+        const passwordInput = document.getElementById('adminPasswordInput');
+        
+        if (savedPassword) {
+            statusBadge.innerHTML = '✅ 已登录';
+            statusBadge.className = 'auth-status-badge active';
+            passwordInput.value = savedPassword;
+        } else {
+            statusBadge.innerHTML = '🔒 未登录';
+            statusBadge.className = 'auth-status-badge inactive';
+            passwordInput.value = '';
+        }
+    }
+    
+    // 登录
+    function login() {
+        const password = document.getElementById('adminPasswordInput').value.trim();
+        if (!password) {
+            alert('请输入管理员密码');
+            return;
+        }
+        savedPassword = password;
+        localStorage.setItem(STORAGE_KEY, savedPassword);
+        updateAuthStatus();
+        alert('登录成功，密码已保存到本地');
+    }
+    
+    // 退出登录
+    function logout() {
+        if (confirm('确定要退出登录吗？保存的密码将被清除。')) {
+            savedPassword = '';
+            localStorage.removeItem(STORAGE_KEY);
+            updateAuthStatus();
+            alert('已退出登录');
+        }
+    }
+    
+    // 需要鉴权的请求（使用保存的密码）
+    async function apiFetchWithAuth(endpoint) {
+        const url = `${API_BASE}${endpoint}`;
+        
+        // 如果没有登录，提示先登录
+        if (!savedPassword) {
+            alert('请先在顶部输入管理员密码并点击"登录"');
+            return { status: 401, ok: false, data: { error: '未登录，请先进行鉴权' } };
+        }
+        
+        try {
+            const resp = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${savedPassword}`
+                }
+            });
+            
+            // 如果返回401，说明密码错误
+            if (resp.status === 401) {
+                alert('密码错误，请重新登录');
+                savedPassword = '';
+                localStorage.removeItem(STORAGE_KEY);
+                updateAuthStatus();
+                return { status: 401, ok: false, data: { error: '密码错误，请重新登录' } };
+            }
+            
+            let data;
+            const text = await resp.text();
+            try { data = JSON.parse(text); } catch(e) { data = { raw: text, parseError: true }; }
+            return { status: resp.status, ok: resp.ok, data };
+        } catch (err) {
+            return { status: 0, ok: false, data: { error: err.message } };
+        }
+    }
+    
+    // 通用请求（公开接口）
+    async function apiFetch(endpoint) {
+        const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
+        try {
+            const resp = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+            let data;
+            const text = await resp.text();
+            try { data = JSON.parse(text); } catch(e) { data = { raw: text, parseError: true }; }
+            return { status: resp.status, ok: resp.ok, data };
+        } catch (err) {
+            return { status: 0, ok: false, data: { error: err.message } };
+        }
+    }
+    
+    function renderResponse(containerId, result) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        const prefix = result.status ? `[HTTP ${result.status}] ` : '';
+        const isError = !result.ok || (result.data && result.data.error);
+        const content = result.data ? JSON.stringify(result.data, null, 2) : (result.error || '无数据');
+        const truncated = content.length > 1500 ? content.slice(0, 1500) + '\n... (响应过长已截断)' : content;
+        el.innerHTML = (isError ? '⚠️ ' : '✅ ') + prefix + '\n' + truncated;
+    }
+    
+    async function updateStats() {
+        try {
+            const bookRes = await apiFetch('/api/bookmarks');
+            let total = 0;
+            if (bookRes.ok && bookRes.data?.data?.bookmarks) {
+                const bm = bookRes.data.data.bookmarks;
+                bm.forEach(cat => {
+                    if (cat.bookmarks) total += cat.bookmarks.length;
+                    if (cat.subcategories) {
+                        cat.subcategories.forEach(sub => {
+                            if (sub.bookmarks) total += sub.bookmarks.length;
+                        });
+                    }
+                });
+            }
+            document.getElementById('statBookmarks').innerText = total;
+            
+            const msgRes = await apiFetch('/api/messages');
+            let msgCount = 0;
+            if (msgRes.ok && Array.isArray(msgRes.data?.messages)) {
+                msgCount = msgRes.data.messages.length;
+            }
+            document.getElementById('statMessages').innerText = msgCount;
+            
+            const qlRes = await apiFetch('/api/quicklinks');
+            let qlCount = 0;
+            if (qlRes.ok && Array.isArray(qlRes.data?.quickLinks)) {
+                qlCount = qlRes.data.quickLinks.length;
+            }
+            document.getElementById('statQuick').innerText = qlCount;
+            
+            const health = await apiFetch('/health');
+            if (health.ok && health.data?.status === 'ok') {
+                document.getElementById('statStatus').innerHTML = '<span class="status-badge"></span>活跃';
+            } else {
+                document.getElementById('statStatus').innerHTML = '<span style="color:#ef4444;">● 异常</span>';
+            }
+        } catch(e) {
+            console.warn(e);
+        }
+    }
+    
+    function bindEvents() {
+        document.querySelector('[data-test="bookmarksPublic"]')?.addEventListener('click', async () => {
+            const res = await apiFetch('/api/bookmarks');
+            renderResponse('respBookmarksPublic', res);
+            updateStats();
+        });
+        
+        document.querySelector('[data-test="getMessages"]')?.addEventListener('click', async () => {
+            const res = await apiFetch('/api/messages');
+            renderResponse('respGetMessages', res);
+        });
+        
+        document.querySelector('[data-test="siteInfoGet"]')?.addEventListener('click', async () => {
+            const res = await apiFetch('/api/siteinfo');
+            renderResponse('respSiteInfo', res);
+        });
+        
+        document.querySelector('[data-test="getQuicklinks"]')?.addEventListener('click', async () => {
+            const res = await apiFetch('/api/quicklinks');
+            renderResponse('respQuicklinks', res);
+        });
+        
+        document.querySelector('[data-test="healthCheck"]')?.addEventListener('click', async () => {
+            const res = await apiFetch('/health');
+            renderResponse('respHealth', res);
+        });
+        
+        document.querySelector('[data-test="rootInfo"]')?.addEventListener('click', async () => {
+            const res = await apiFetch('/');
+            renderResponse('respRoot', res);
+        });
+        
+        document.querySelector('[data-test="adminBookmarksGet"]')?.addEventListener('click', async () => {
+            const res = await apiFetchWithAuth('/api/admin/bookmarks');
+            renderResponse('respAdminBookmarks', res);
+        });
+        
+        document.querySelector('[data-test="adminMessages"]')?.addEventListener('click', async () => {
+            const res = await apiFetchWithAuth('/api/admin/messages');
+            renderResponse('respAdminMessages', res);
+        });
+        
+        document.querySelector('[data-test="adminQuicklinksGet"]')?.addEventListener('click', async () => {
+            const res = await apiFetchWithAuth('/api/admin/quicklinks');
+            renderResponse('respAdminQuicklinks', res);
+        });
+        
+        // 鉴权控制按钮
+        document.getElementById('loginBtn')?.addEventListener('click', login);
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
+        
+        // 回车键登录
+        document.getElementById('adminPasswordInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    }
+    
+    bindEvents();
+    updateStats();
+    updateAuthStatus();
+</script>
+</body>
+</html>
