@@ -171,16 +171,18 @@ function renderBookmarks() {
                 const bookmarksList = sub.bookmarks || [];
                 bookmarksList.forEach((bookmark, idx) => {
                     html += `
-                        <div style="background: #1a1a2e; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem;">
-                            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                                <div style="flex: 1;">
-                                    <span style="color: #d99bb8;">📁 ${escapeHtml(cat.category)}</span> / 
-                                    <span style="color: #9b59b6;">📂 ${escapeHtml(sub.name)}</span>
-                                    <div><strong>${escapeHtml(bookmark.name)}</strong></div>
-                                    <div style="font-size: 0.75rem; color: #888;">${escapeHtml(bookmark.url)}</div>
-                                    ${bookmark.desc ? `<div style="font-size: 0.7rem; color: #666;">${escapeHtml(bookmark.desc)}</div>` : ''}
+                        <div class="bookmark-admin-item">
+                            <div class="bookmark-admin-inner">
+                                <div class="bookmark-info-area">
+                                    <div class="bookmark-category-path">
+                                        <span class="cat-parent">📁 ${escapeHtml(cat.category)}</span> / 
+                                        <span class="cat-sub">📂 ${escapeHtml(sub.name)}</span>
+                                    </div>
+                                    <div class="bookmark-title"><strong>${escapeHtml(bookmark.name)}</strong></div>
+                                    <div class="bookmark-url">${escapeHtml(bookmark.url)}</div>
+                                    ${bookmark.desc ? `<div class="bookmark-desc">${escapeHtml(bookmark.desc)}</div>` : ''}
                                 </div>
-                                <div style="display: flex; gap: 0.5rem;">
+                                <div class="bookmark-actions-area">
                                     <button class="btn btn-primary btn-sm" onclick="editBookmark('${escapeHtml(cat.category)}', '${escapeHtml(sub.name)}', ${idx})">编辑</button>
                                     <button class="btn btn-danger btn-sm" onclick="deleteBookmark('${escapeHtml(cat.category)}', '${escapeHtml(sub.name)}', ${idx})">删除</button>
                                 </div>
@@ -192,15 +194,17 @@ function renderBookmarks() {
         } else if (cat.bookmarks && cat.bookmarks.length > 0) {
             cat.bookmarks.forEach((bookmark, idx) => {
                 html += `
-                    <div style="background: #1a1a2e; border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem;">
-                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                            <div style="flex: 1;">
-                                <span style="color: #d99bb8;">📁 ${escapeHtml(cat.category)}</span>
-                                <div><strong>${escapeHtml(bookmark.name)}</strong></div>
-                                <div style="font-size: 0.75rem; color: #888;">${escapeHtml(bookmark.url)}</div>
-                                ${bookmark.desc ? `<div style="font-size: 0.7rem; color: #666;">${escapeHtml(bookmark.desc)}</div>` : ''}
+                    <div class="bookmark-admin-item">
+                        <div class="bookmark-admin-inner">
+                            <div class="bookmark-info-area">
+                                <div class="bookmark-category-path">
+                                    <span class="cat-parent">📁 ${escapeHtml(cat.category)}</span>
+                                </div>
+                                <div class="bookmark-title"><strong>${escapeHtml(bookmark.name)}</strong></div>
+                                <div class="bookmark-url">${escapeHtml(bookmark.url)}</div>
+                                ${bookmark.desc ? `<div class="bookmark-desc">${escapeHtml(bookmark.desc)}</div>` : ''}
                             </div>
-                            <div style="display: flex; gap: 0.5rem;">
+                            <div class="bookmark-actions-area">
                                 <button class="btn btn-primary btn-sm" onclick="editBookmarkDirect('${escapeHtml(cat.category)}', ${idx})">编辑</button>
                                 <button class="btn btn-danger btn-sm" onclick="deleteBookmarkDirect('${escapeHtml(cat.category)}', ${idx})">删除</button>
                             </div>

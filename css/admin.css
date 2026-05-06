@@ -470,3 +470,58 @@ h2 {
     .tab { padding: 6px 14px; font-size: 0.75rem; }
     .card { padding: 1rem; }
 }
+/* 书签管理列表项样式（白天/黑夜自适应） */
+.bookmark-admin-item {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+.bookmark-admin-item:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow);
+}
+.bookmark-admin-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+}
+.bookmark-info-area {
+    flex: 1;
+    min-width: 0;
+}
+.bookmark-category-path {
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+}
+.cat-parent {
+    color: var(--text-secondary);
+}
+.cat-sub {
+    color: var(--btn-primary);
+}
+.bookmark-title {
+    font-size: 0.9rem;
+    margin: 0.2rem 0;
+    color: var(--text-primary);
+}
+.bookmark-url {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+.bookmark-desc {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    margin-top: 0.2rem;
+}
+.bookmark-actions-area {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
