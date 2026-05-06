@@ -253,14 +253,13 @@
             background: #fee2e2;
             color: #991b1b;
         }
-        .error-banner {
-            background: #fee2e2;
-            border-left: 4px solid #ef4444;
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
+        .info-bar {
+            background: #e6f7ff;
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
             margin-bottom: 1rem;
             font-size: 0.8rem;
-            color: #991b1b;
+            border: 1px solid #91c7e8;
         }
         @keyframes pulse {
             0% { opacity: 0.4; }
@@ -278,7 +277,7 @@
     <div class="header">
         <div class="title-section">
             <h1>📡 Arley's API 调试中心</h1>
-            <p>书签导航 · 留言板 · 站点设置 · 快捷链接</p>
+            <p>跨域调试 | 前端: bm.arley.cn → API: arleybks.arley.cn</p>
         </div>
         <div class="stat-badge" id="statPanel">
             <div class="stat-item"><div class="stat-number" id="statBookmarks">—</div><div class="stat-label">书签总数</div></div>
@@ -288,8 +287,10 @@
         </div>
     </div>
 
-    <!-- 错误提示区域 -->
-    <div id="errorBanner" style="display: none;" class="error-banner"></div>
+    <!-- 信息提示 -->
+    <div class="info-bar">
+        🌐 API 地址：<strong>https://arleybks.arley.cn</strong> | 页面托管：<strong>https://bm.arley.cn</strong>
+    </div>
 
     <!-- 鉴权面板 -->
     <div class="auth-panel">
@@ -398,26 +399,21 @@
     </div>
 
     <div class="footer">
-        API 基地址：<span id="baseHost"></span> | Upstash Redis 持久化
+        API 地址：<strong>https://arleybks.arley.cn</strong> | Upstash Redis 持久化
     </div>
 </div>
 
 <script>
-    const API_BASE = window.location.origin;
+    // API 地址配置
+    const API_BASE = 'https://arleybks.arley.cn';
     const STORAGE_KEY = 'admin_api_password';
     
     // 获取保存的密码
     let savedPassword = localStorage.getItem(STORAGE_KEY) || '';
     
-    document.getElementById('baseHost').innerText = API_BASE;
-    
-    function showError(message) {
-        const banner = document.getElementById('errorBanner');
-        banner.innerHTML = message;
-        banner.style.display = 'block';
-        setTimeout(() => {
-            banner.style.display = 'none';
-        }, 5000);
+    function showMessage(msg, isError = false) {
+        // 简单提示，可以后续美化
+        console.log(isError ? '❌' : '✅', msg);
     }
     
     // 更新鉴权状态显示
@@ -440,13 +436,13 @@
     function login() {
         const password = document.getElementById('adminPasswordInput').value.trim();
         if (!password) {
-            showError('❌ 请输入管理员密码');
+            showMessage('请输入管理员密码', true);
             return;
         }
         savedPassword = password;
         localStorage.setItem(STORAGE_KEY, savedPassword);
         updateAuthStatus();
-        showError('✅ 登录成功，密码已保存到本地');
+        showMessage('登录成功，密码已保存到本地');
     }
     
     // 退出登录
@@ -454,7 +450,25 @@
         savedPassword = '';
         localStorage.removeItem(STORAGE_KEY);
         updateAuthStatus();
-        showError('🔓 已退出登录');
+        showMessage('已退出登录');
+    }
+    
+    // 通用请求（公开接口）
+    async function apiFetch(endpoint) {
+        const url = `${API_BASE}${endpoint}`;
+        try {
+            const resp = await fetch(url, { 
+                method: 'GET', 
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors'
+            });
+            let data;
+            const text = await resp.text();
+            try { data = JSON.parse(text); } catch(e) { data = { raw: text, parseError: true }; }
+            return { status: resp.status, ok: resp.ok, data };
+        } catch (err) {
+            return { status: 0, ok: false, data: { error: err.message } };
+        }
     }
     
     // 需要鉴权的请求（使用保存的密码）
@@ -462,7 +476,7 @@
         const url = `${API_BASE}${endpoint}`;
         
         if (!savedPassword) {
-            showError('⚠️ 请先在顶部输入管理员密码并点击"登录"');
+            showMessage('请先在顶部输入管理员密码并点击"登录"', true);
             return { status: 401, ok: false, data: { error: '未登录，请先进行鉴权' } };
         }
         
@@ -472,11 +486,12 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${savedPassword}`
-                }
+                },
+                mode: 'cors'
             });
             
             if (resp.status === 401) {
-                showError('❌ 密码错误，请重新登录');
+                showMessage('密码错误，请重新登录', true);
                 savedPassword = '';
                 localStorage.removeItem(STORAGE_KEY);
                 updateAuthStatus();
@@ -488,21 +503,7 @@
             try { data = JSON.parse(text); } catch(e) { data = { raw: text, parseError: true }; }
             return { status: resp.status, ok: resp.ok, data };
         } catch (err) {
-            showError(`❌ 请求失败: ${err.message}`);
-            return { status: 0, ok: false, data: { error: err.message } };
-        }
-    }
-    
-    // 通用请求（公开接口）
-    async function apiFetch(endpoint) {
-        const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
-        try {
-            const resp = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-            let data;
-            const text = await resp.text();
-            try { data = JSON.parse(text); } catch(e) { data = { raw: text, parseError: true }; }
-            return { status: resp.status, ok: resp.ok, data };
-        } catch (err) {
+            showMessage(`请求失败: ${err.message}`, true);
             return { status: 0, ok: false, data: { error: err.message } };
         }
     }
@@ -519,7 +520,7 @@
     
     async function updateStats() {
         try {
-            // 测试健康检查
+            // 健康检查
             const health = await apiFetch('/health');
             const statusEl = document.getElementById('statStatus');
             
@@ -527,10 +528,9 @@
                 statusEl.innerHTML = '<span class="status-badge"></span>活跃';
             } else {
                 statusEl.innerHTML = '<span class="status-badge error"></span>异常';
-                showError('⚠️ API 服务连接异常，请检查网络或后端服务');
             }
             
-            // 获取书签统计
+            // 书签统计
             const bookRes = await apiFetch('/api/bookmarks');
             let total = 0;
             if (bookRes.ok && bookRes.data?.data?.bookmarks) {
@@ -548,7 +548,7 @@
                 document.getElementById('statBookmarks').innerText = '?';
             }
             
-            // 获取留言统计
+            // 留言统计
             const msgRes = await apiFetch('/api/messages');
             let msgCount = 0;
             if (msgRes.ok && Array.isArray(msgRes.data?.messages)) {
@@ -558,7 +558,7 @@
                 document.getElementById('statMessages').innerText = '?';
             }
             
-            // 获取快捷链接统计
+            // 快捷链接统计
             const qlRes = await apiFetch('/api/quicklinks');
             let qlCount = 0;
             if (qlRes.ok && Array.isArray(qlRes.data?.quickLinks)) {
@@ -570,11 +570,7 @@
             
         } catch(e) {
             console.warn('统计更新失败:', e);
-            showError(`⚠️ 统计数据加载失败: ${e.message}`);
             document.getElementById('statStatus').innerHTML = '<span class="status-badge error"></span>异常';
-            document.getElementById('statBookmarks').innerText = '?';
-            document.getElementById('statMessages').innerText = '?';
-            document.getElementById('statQuick').innerText = '?';
         }
     }
     
