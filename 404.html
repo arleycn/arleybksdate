@@ -25,8 +25,6 @@
             --btn-bg: #f8cedb;
             --btn-primary: #f29bb8;
             --shadow-color: rgba(176, 70, 100, 0.15);
-            --footer-bg: rgba(255, 248, 250, 0.9);
-            --error-code-color: rgba(242, 155, 184, 0.25);
         }
 
         body.dark {
@@ -39,8 +37,6 @@
             --btn-bg: rgba(30, 30, 46, 0.6);
             --btn-primary: #9b59b6;
             --shadow-color: rgba(0, 0, 0, 0.3);
-            --footer-bg: rgba(30, 30, 46, 0.85);
-            --error-code-color: rgba(155, 89, 182, 0.25);
         }
 
         html {
@@ -53,13 +49,12 @@
             font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
             color: var(--text-primary);
             min-height: 100vh;
-            height: 100%;
-            transition: background 0.3s ease, color 0.2s ease;
-            position: relative;
+            transition: background 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
+            position: relative;
         }
 
         body::before {
@@ -79,25 +74,6 @@
             pointer-events: none;
         }
 
-        @media (max-width: 768px) {
-            body::before {
-                background-image: url('../images/bgmobile.jpg');
-                opacity: 0.4;
-            }
-        }
-
-        body.dark::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-            pointer-events: none;
-        }
-
         .error-container {
             max-width: 680px;
             width: 100%;
@@ -106,33 +82,18 @@
         }
 
         @keyframes floatIn {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* 毛玻璃主卡片 */
         .error-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
             border-radius: 48px;
             border: 1px solid var(--border-color);
-            padding: 2.2rem 2rem 2rem 2rem;
+            padding: 2.2rem 2rem;
             text-align: center;
             box-shadow: 0 20px 35px -12px var(--shadow-color);
-            transition: all 0.3s ease;
-        }
-
-        /* 装饰性 404 数字艺术 */
-        .error-code-art {
-            margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
         }
 
         .error-glitch {
@@ -143,7 +104,6 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            text-shadow: 4px 4px 12px rgba(242, 155, 184, 0.3);
             animation: gentleWobble 3s infinite ease;
         }
 
@@ -155,10 +115,8 @@
 
         @keyframes gentleWobble {
             0%, 100% { transform: translateX(0px); }
-            2% { transform: translateX(-2px); }
-            4% { transform: translateX(2px); }
-            6% { transform: translateX(-1px); }
-            8% { transform: translateX(1px); }
+            2%, 6% { transform: translateX(-2px); }
+            4%, 8% { transform: translateX(2px); }
             10% { transform: translateX(0); }
         }
 
@@ -177,19 +135,17 @@
         .error-title {
             font-size: 1.7rem;
             font-weight: 600;
-            margin: 0.5rem 0 0.5rem 0;
+            margin: 0.5rem 0;
             color: var(--text-primary);
         }
 
         .error-message {
             color: var(--text-secondary);
             font-size: 0.95rem;
-            max-width: 380px;
-            margin: 0.5rem auto 1.5rem auto;
+            margin: 0.5rem auto 1.5rem;
             line-height: 1.5;
         }
 
-        /* 可爱的搜索小狐狸提示 */
         .search-suggestion {
             background: rgba(255,255,240,0.2);
             border-radius: 60px;
@@ -198,7 +154,6 @@
             align-items: center;
             gap: 8px;
             font-size: 0.8rem;
-            backdrop-filter: blur(4px);
             border: 1px solid var(--border-color);
             margin-bottom: 1.8rem;
             color: var(--text-secondary);
@@ -221,7 +176,7 @@
             font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: all 0.25s;
             backdrop-filter: blur(4px);
             display: inline-flex;
             align-items: center;
@@ -234,13 +189,6 @@
             background: var(--btn-primary);
             color: white;
             border: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        .btn-primary-404:hover {
-            transform: translateY(-3px);
-            filter: brightness(1.05);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
         }
 
         .btn-404:hover {
@@ -249,7 +197,6 @@
             color: white;
         }
 
-        /* 趣味统计装饰 */
         .fun-stats {
             margin-top: 1.2rem;
             font-size: 0.7rem;
@@ -280,24 +227,8 @@
         .footer-note a {
             color: var(--btn-primary);
             text-decoration: none;
-            transition: color 0.2s;
         }
 
-        .footer-note a:hover {
-            text-decoration: underline;
-        }
-
-        /* 小动物爪印装饰 */
-        .paw-prints {
-            position: absolute;
-            bottom: 15px;
-            left: 20px;
-            opacity: 0.2;
-            font-size: 1.2rem;
-            pointer-events: none;
-        }
-
-        /* 模拟加载完成后动态展示 */
         .theme-toggle-icon {
             position: fixed;
             top: 18px;
@@ -314,12 +245,6 @@
             align-items: center;
             gap: 6px;
             color: var(--text-secondary);
-            transition: 0.2s;
-        }
-
-        .theme-toggle-icon:hover {
-            background: var(--btn-primary);
-            color: white;
         }
 
         .back-home-icon {
@@ -338,129 +263,131 @@
             align-items: center;
             gap: 6px;
             color: var(--text-secondary);
-            transition: 0.2s;
             text-decoration: none;
         }
 
-        .back-home-icon:hover {
+        .feedback-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-content {
+            background: var(--card-bg);
+            border-radius: 32px;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 360px;
+            border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.25s ease;
+            color: var(--text-primary);
+        }
+
+        .feedback-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feedback-content textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--btn-bg);
+            color: var(--text-primary);
+            margin: 12px 0;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .feedback-buttons button {
+            background: var(--btn-bg);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .feedback-submit {
             background: var(--btn-primary);
             color: white;
         }
 
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.94); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeOutMsg {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-15px); visibility: hidden; }
+        }
+
         @media (max-width: 520px) {
-            .error-card {
-                padding: 1.6rem 1.2rem;
-            }
-            .error-glitch {
-                font-size: 4.8rem;
-                letter-spacing: 6px;
-            }
-            .error-title {
-                font-size: 1.4rem;
-            }
-            .action-buttons {
-                gap: 8px;
-            }
-            .btn-404 {
-                padding: 8px 16px;
-                font-size: 0.75rem;
-            }
-            .lost-emoji {
-                font-size: 2.5rem;
-            }
-            .theme-toggle-icon, .back-home-icon {
-                top: 12px;
-                font-size: 0.7rem;
-                padding: 5px 10px;
-            }
-            .back-home-icon {
-                left: 12px;
-            }
-            .theme-toggle-icon {
-                right: 12px;
-            }
-        }
-
-        /* 模拟全局加载之后淡入 (不要loader，但是加个优雅入场) */
-        .floating-leaf {
-            position: absolute;
-            bottom: 5%;
-            right: 3%;
-            font-size: 1.6rem;
-            opacity: 0.3;
-            pointer-events: none;
-            animation: leafFloat 8s infinite alternate;
-        }
-
-        @keyframes leafFloat {
-            0% {
-                transform: translateY(0px) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-15px) rotate(5deg);
-            }
+            .error-card { padding: 1.6rem 1.2rem; }
+            .error-glitch { font-size: 4.8rem; letter-spacing: 6px; }
+            .error-title { font-size: 1.4rem; }
+            .btn-404 { padding: 8px 16px; font-size: 0.75rem; }
+            .fun-stats { flex-direction: column; gap: 6px; }
         }
     </style>
 </head>
 <body>
-    <!-- 昼夜切换小控件（与原站风格一致） -->
-    <div class="theme-toggle-icon" id="themeToggle404">
-        🌙 夜间
-    </div>
-    <!-- 返回首页快捷入口 -->
-    <a href="/" class="back-home-icon" id="backHomeBtn">
-        🏠 返回导航
-    </a>
+    <div class="theme-toggle-icon" id="themeToggle404">🌙 夜间</div>
+    <a href="/" class="back-home-icon">🏠 返回导航</a>
 
     <div class="error-container">
         <div class="error-card">
-            <div class="error-code-art">
-                <div class="lost-emoji">🌸🔍</div>
-                <div class="error-glitch">404</div>
-            </div>
-            <div class="error-title">
-                哎呀！书签飘走啦~
-            </div>
+            <div class="lost-emoji">🌸🔍</div>
+            <div class="error-glitch">404</div>
+            <div class="error-title">哎呀！书签飘走啦~</div>
             <div class="error-message">
                 您访问的页面似乎迷失在樱花林中<br>
                 或许它被移除了，或者链接里有小调皮~
             </div>
             
-            <!-- 仿书签导航的搜索建议氛围 -->
             <div class="search-suggestion">
                 <span>🔎</span> 试试返回首页搜索书签名，或从分类里寻找宝藏吧
             </div>
 
             <div class="action-buttons">
-                <a href="/" class="btn-404 btn-primary-404">
-                    🌸 返回书签花园
-                </a>
-                <button class="btn-404" id="randomBookmarkSuggestion">
-                    🎲 随机推荐一个站点
-                </button>
-                <button class="btn-404" id="reportIssueBtn">
-                    📢 反馈失效链接
-                </button>
+                <a href="/" class="btn-404 btn-primary-404">🌸 返回书签花园</a>
+                <button class="btn-404" id="randomBookmarkSuggestion">🎲 随机推荐</button>
+                <button class="btn-404" id="reportIssueBtn">📢 反馈失效链接</button>
             </div>
 
-            <!-- 趣味统计装饰（交互模仿原书签样式） -->
-            <div class="fun-stats">
-                <span>📚 今日失踪页面: 1</span>
-                <span>🌸 樱花书签总数: ∞</span>
+            <div class="fun-stats" id="funStats">
+                <span>📚 加载中...</span>
+                <span>🌸 加载中...</span>
                 <span>💡 404治愈率: 100%</span>
             </div>
         </div>
         <div class="footer-note">
             🧭 或许您想到达 <strong>Arley's 书签导航</strong> 主站？<br>
-            点击上方按钮回到起点，或者 <a href="/" id="inlineHomeLink">点击这里</a> 继续冲浪 🌊
+            <a href="/">点击这里返回首页</a> 继续冲浪 🌊
         </div>
     </div>
 
-    <!-- 反馈弹窗（可爱小窗） -->
-    <div id="feedbackModal" class="feedback-modal" style="display: none;">
+    <div id="feedbackModal" class="feedback-modal">
         <div class="feedback-content">
             <h3>📢 告知站长链接失效</h3>
-            <p style="font-size:0.8rem; margin-bottom:8px;">您访问的失效页面地址：<strong id="brokenUrlPath"></strong></p>
+            <p style="font-size:0.8rem; margin-bottom:8px;">失效页面：<strong id="brokenUrlPath"></strong></p>
             <textarea id="feedbackMsg" rows="2" placeholder="可选：补充说明或建议..."></textarea>
             <div class="feedback-buttons">
                 <button class="feedback-cancel">取消</button>
@@ -469,262 +396,172 @@
         </div>
     </div>
 
-    <div class="floating-leaf">🍃</div>
-    <div class="paw-prints">🐾 🐾 🐾</div>
+    <div style="position:fixed; bottom:15px; right:15px; opacity:0.2; pointer-events:none;">🍃</div>
 
     <script>
-        // 获取当前路径 (缺失的url)
-        const missingPath = window.location.pathname + window.location.search + window.location.hash;
+        const API_BASE = "https://arleybks.arley.cn";
         
-        // 更新弹窗里的路径显示
-        const brokenUrlSpan = document.getElementById('brokenUrlPath');
-        if (brokenUrlSpan) {
-            brokenUrlSpan.innerText = window.location.href;
-        }
-
-        // ==================== 主题切换 (延续原站逻辑) ====================
-        function init404Theme() {
-            const saved = localStorage.getItem("theme");
-            const themeToggle = document.getElementById('themeToggle404');
-            if (saved === "dark") {
-                document.body.classList.add("dark");
-                if (themeToggle) themeToggle.textContent = "☀️ 白天";
-            } else {
-                if (themeToggle) themeToggle.textContent = "🌙 夜间";
+        // 获取动态书签总数
+        async function fetchBookmarkCount() {
+            try {
+                const res = await fetch(`${API_BASE}/api/bookmarks`);
+                const result = await res.json();
+                if (result.success && result.data) {
+                    let totalCount = 0;
+                    const bookmarks = result.data.bookmarks || [];
+                    bookmarks.forEach(cat => {
+                        if (cat.subcategories && cat.subcategories.length > 0) {
+                            cat.subcategories.forEach(sub => {
+                                totalCount += (sub.bookmarks || []).length;
+                            });
+                        } else if (cat.bookmarks && cat.bookmarks.length > 0) {
+                            totalCount += cat.bookmarks.length;
+                        }
+                    });
+                    return totalCount;
+                }
+                return "∞";
+            } catch (err) {
+                console.error("获取书签数失败:", err);
+                return "∞";
             }
         }
-        function toggleTheme() {
-            document.body.classList.toggle("dark");
-            const isDark = document.body.classList.contains("dark");
-            localStorage.setItem("theme", isDark ? "dark" : "light");
-            const btn = document.getElementById('themeToggle404');
-            if (btn) btn.textContent = isDark ? "☀️ 白天" : "🌙 夜间";
-        }
-        document.getElementById('themeToggle404')?.addEventListener('click', toggleTheme);
-        init404Theme();
 
-        // 随机推荐一个站点 (有趣模拟，和原导航站互动风格)
-        const mockRecommendations = [
+        // 获取404统计
+        async function fetch404Stats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/404stats`);
+                const result = await res.json();
+                if (result.success && result.stats) {
+                    return {
+                        today404: result.stats.today404 || 0,
+                        total404: result.stats.total404 || 0
+                    };
+                }
+                return { today404: 0, total404: 0 };
+            } catch (err) {
+                console.error("获取404统计失败:", err);
+                return { today404: 0, total404: 0 };
+            }
+        }
+
+        // 更新统计显示
+        async function updateStats() {
+            const [bookmarkCount, stats404] = await Promise.all([
+                fetchBookmarkCount(),
+                fetch404Stats()
+            ]);
+            
+            const statsHtml = `
+                <span>📚 今日失踪页面: ${stats404.today404}</span>
+                <span>🌸 樱花书签总数: ${bookmarkCount}</span>
+                <span>💡 404治愈率: 100%</span>
+            `;
+            document.getElementById('funStats').innerHTML = statsHtml;
+        }
+
+        // 提交404反馈
+        async function submit404Feedback(brokenUrl, message) {
+            try {
+                const res = await fetch(`${API_BASE}/api/404feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        brokenUrl: brokenUrl,
+                        message: message,
+                        userAgent: navigator.userAgent,
+                        referer: document.referrer
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('📨 反馈已记录！感谢您的帮助～', false);
+                    // 更新统计
+                    updateStats();
+                    return true;
+                } else {
+                    showMessage(result.error || '提交失败', true);
+                    return false;
+                }
+            } catch (err) {
+                showMessage('网络错误，请稍后重试', true);
+                return false;
+            }
+        }
+
+        function showMessage(msg, isError) {
+            const toast = document.createElement('div');
+            toast.textContent = msg;
+            toast.style.cssText = `position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:${isError ? '#c0392b' : '#27ae60'};color:white;padding:6px 18px;border-radius:40px;font-size:0.75rem;z-index:2000;animation:fadeOutMsg 2.5s forwards;box-shadow:0 2px 8px rgba(0,0,0,0.2);`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        // 随机推荐
+        const recommendations = [
             { name: "GitHub 开源世界", url: "https://github.com" },
             { name: "Cloudflare 加速星球", url: "https://cloudflare.com" },
             { name: "Canva 设计魔法", url: "https://canva.com" },
             { name: "V2EX 创意社区", url: "https://v2ex.com" },
             { name: "MDN 学前端", url: "https://developer.mozilla.org" },
-            { name: "书签导航站主站", url: "/" },
             { name: "Arley 技术博客", url: "https://blog.arley.cn" }
         ];
-        function getRandomRecommend() {
-            const randomIdx = Math.floor(Math.random() * mockRecommendations.length);
-            return mockRecommendations[randomIdx];
-        }
+
         document.getElementById('randomBookmarkSuggestion')?.addEventListener('click', () => {
-            const rec = getRandomRecommend();
-            // 显示toast风格提示
-            showFloatingMessage(`✨ 推荐前往：${rec.name}`, false);
-            setTimeout(() => {
-                window.open(rec.url, '_blank');
-            }, 400);
+            const rec = recommendations[Math.floor(Math.random() * recommendations.length)];
+            showMessage(`✨ 推荐前往：${rec.name}`, false);
+            setTimeout(() => window.open(rec.url, '_blank'), 400);
         });
 
-        // 反馈失效链接弹窗逻辑
+        // 反馈弹窗
         const modal = document.getElementById('feedbackModal');
-        const reportBtn = document.getElementById('reportIssueBtn');
-        const cancelBtn = document.querySelector('.feedback-cancel');
-        const submitBtn = document.querySelector('.feedback-submit');
-        const feedbackText = document.getElementById('feedbackMsg');
+        const brokenUrlSpan = document.getElementById('brokenUrlPath');
+        brokenUrlSpan.innerText = window.location.href;
 
-        function showFloatingMessage(msg, isError = false) {
-            const toast = document.createElement('div');
-            toast.textContent = msg;
-            toast.style.cssText = `position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:${isError ? '#c0392b' : '#27ae60'};color:white;padding:6px 18px;border-radius:40px;font-size:0.75rem;z-index:2000;animation:fadeOutMsg 2.5s forwards;backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,0.2);`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
-        }
-
-        // 打开弹窗
-        reportBtn?.addEventListener('click', () => {
-            if (modal) {
-                modal.style.display = 'flex';
-                if (feedbackText) feedbackText.value = '';
-            }
+        document.getElementById('reportIssueBtn')?.addEventListener('click', () => {
+            if (modal) modal.style.display = 'flex';
         });
 
-        function closeModal() {
-            if (modal) modal.style.display = 'none';
-        }
-        cancelBtn?.addEventListener('click', closeModal);
+        document.querySelector('.feedback-cancel')?.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
         modal?.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
+            if (e.target === modal) modal.style.display = 'none';
         });
 
-        // 提交反馈（模拟请求 + 美观提示）
-        submitBtn?.addEventListener('click', async () => {
-            const userMsg = feedbackText?.value.trim() || '无额外说明';
-            const brokenUrl = window.location.href;
-            // 模拟发送反馈（由于原API无跨域限制以展示为主，当然可以复用原风格，这里演示友善通知）
-            showFloatingMessage('📨 反馈已收到！感谢您的支持～', false);
-            closeModal();
-            // 如果有兴趣，可以调原有API_BASE，但这是404页面，优雅为主，控制台示意
-            console.log(`[404反馈] 失效页面: ${brokenUrl}, 留言: ${userMsg}`);
-            // 可选的扩展：调用 /api/feedback 但为了避免干扰主站，仅做 UI 表现
-            // 但如果前后端支持管理员可以整合，这里保留原书签交互风格
-            // 增加小彩蛋: 统计本地存储计数
-            let reportCount = localStorage.getItem('404report_count') || 0;
-            reportCount = Number(reportCount) + 1;
-            localStorage.setItem('404report_count', reportCount);
-            if (reportCount % 3 === 0) {
-                showFloatingMessage('🎉 感谢坚持反馈，站长会尽快修复书签~', false);
+        document.querySelector('.feedback-submit')?.addEventListener('click', async () => {
+            const msg = document.getElementById('feedbackMsg')?.value.trim() || '';
+            const success = await submit404Feedback(window.location.href, msg);
+            if (success) {
+                modal.style.display = 'none';
+                document.getElementById('feedbackMsg').value = '';
             }
         });
 
-        // 返回首页几个按钮都绑定
-        const backBtns = document.querySelectorAll('#backHomeBtn, .btn-primary-404, #inlineHomeLink');
-        backBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (btn.getAttribute('href') === '/' || btn.id === 'backHomeBtn' || btn.id === 'inlineHomeLink') {
-                    // 不阻止default 直接跳转/
-                } else {
-                    e.preventDefault();
-                    window.location.href = '/';
-                }
-            });
-        });
-
-        // 添加额外动画，美化hover，且全局控制加载感觉
-        document.querySelectorAll('.btn-404').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                if (this.id === 'randomBookmarkSuggestion' || this.id === 'reportIssueBtn') return;
-                if (this.classList.contains('btn-primary-404') || this.innerText.includes('返回书签花园')) {
-                    // 正常跳转
-                } else {
-                    e.preventDefault();
-                }
-            });
-        });
-
-        // 一个小彩蛋: 控制台输出原站同款欢迎语
-        console.log("%c 404 · 樱花迷失之境 %c 回到首页 arley.cn ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px; background:#f29bb8; color:white;");
-
-        // 动态修复下如果在子目录中基地址?
-        // 让随机推荐包含当前域名下的主站
-        // 为返回按钮增加路径安全
-        // 添加失焦优雅效果
-        function adjustBackLinkForSubDir() {
-            const homeLinks = document.querySelectorAll('.btn-primary-404, #backHomeBtn');
-            const base = window.location.origin + '/';
-            homeLinks.forEach(link => {
-                if (link.tagName === 'A' && link.getAttribute('href') === '/') {
-                    link.setAttribute('href', base);
-                }
-            });
-            const inlineHome = document.getElementById('inlineHomeLink');
-            if (inlineHome && inlineHome.getAttribute('href') === '/') inlineHome.setAttribute('href', base);
+        // 主题切换
+        function initTheme() {
+            const saved = localStorage.getItem("theme");
+            const themeToggle = document.getElementById('themeToggle404');
+            if (saved === "dark") {
+                document.body.classList.add("dark");
+                if (themeToggle) themeToggle.textContent = "☀️ 白天";
+            }
         }
-        adjustBackLinkForSubDir();
+        
+        document.getElementById('themeToggle404')?.addEventListener('click', () => {
+            document.body.classList.toggle("dark");
+            const isDark = document.body.classList.contains("dark");
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+            const btn = document.getElementById('themeToggle404');
+            if (btn) btn.textContent = isDark ? "☀️ 白天" : "🌙 夜间";
+        });
+        
+        initTheme();
+        updateStats();
 
-        // 增加页面标题动态微调
-        document.title = "404 页面未找到 · Arley's 书签导航";
-
-        // 注入动态星空特效（极简小点）
-        const starsCanvas = document.createElement('div');
-        starsCanvas.style.position = 'fixed';
-        starsCanvas.style.top = 0;
-        starsCanvas.style.left = 0;
-        starsCanvas.style.width = '100%';
-        starsCanvas.style.height = '100%';
-        starsCanvas.style.pointerEvents = 'none';
-        starsCanvas.style.zIndex = '-1';
-        starsCanvas.style.opacity = '0.2';
-        document.body.appendChild(starsCanvas);
-        // 可选极简星点
-        if (!document.body.classList.contains('dark')) {
-            starsCanvas.style.background = 'radial-gradient(circle at 20% 40%, rgba(242,155,184,0.1) 1px, transparent 1px)';
-            starsCanvas.style.backgroundSize = '30px 30px';
-        } else {
-            starsCanvas.style.background = 'radial-gradient(circle at 20% 40%, rgba(155,89,182,0.2) 1px, transparent 1px)';
-            starsCanvas.style.backgroundSize = '25px 25px';
-        }
-
-        // 针对移动端手势和触摸优化
-        if ('ontouchstart' in window) {
-            // 只是让按钮触摸有反馈
-            document.querySelectorAll('.btn-404').forEach(el => {
-                el.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.96)';
-                    setTimeout(() => { if(this) this.style.transform = ''; }, 120);
-                });
-            });
-        }
-
-        // 显示漂亮的消失动画定义
-        const styleSheet = document.createElement("style");
-        styleSheet.textContent = `
-            @keyframes fadeOutMsg {
-                0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-                70% { opacity: 1; transform: translateX(-50%) translateY(0); }
-                100% { opacity: 0; transform: translateX(-50%) translateY(-15px); visibility: hidden; }
-            }
-            .feedback-modal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                backdrop-filter: blur(6px);
-                z-index: 2000;
-                display: none;
-                justify-content: center;
-                align-items: center;
-            }
-            .feedback-content {
-                background: var(--card-bg);
-                border-radius: 32px;
-                padding: 1.5rem;
-                width: 90%;
-                max-width: 360px;
-                border: 1px solid var(--border-color);
-                animation: modalSlideIn 0.25s ease;
-                color: var(--text-primary);
-            }
-            .feedback-content h3 {
-                margin-bottom: 10px;
-                font-size: 1.1rem;
-            }
-            .feedback-content textarea {
-                width: 100%;
-                padding: 8px 12px;
-                border-radius: 20px;
-                border: 1px solid var(--border-color);
-                background: var(--btn-bg);
-                color: var(--text-primary);
-                margin: 12px 0;
-                resize: vertical;
-                font-family: inherit;
-            }
-            .feedback-buttons {
-                display: flex;
-                justify-content: flex-end;
-                gap: 12px;
-            }
-            .feedback-buttons button {
-                background: var(--btn-bg);
-                border: none;
-                padding: 6px 15px;
-                border-radius: 40px;
-                cursor: pointer;
-                font-size: 0.75rem;
-            }
-            .feedback-submit {
-                background: var(--btn-primary);
-                color: white;
-            }
-            @keyframes modalSlideIn {
-                from { opacity: 0; transform: scale(0.94); }
-                to { opacity: 1; transform: scale(1); }
-            }
-        `;
-        document.head.appendChild(styleSheet);
+        // 控制台彩蛋
+        console.log("%c 404 · 樱花迷失之境 %c 反馈已连接数据库 ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px; background:#f29bb8; color:white;");
     </script>
 </body>
 </html>
