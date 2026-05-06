@@ -76,6 +76,7 @@ h1 {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
+    margin-bottom: 30px;
 }
 body.dark h1 {
     background: linear-gradient(135deg, #d99bb8, #b86b9e);
