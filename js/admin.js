@@ -110,6 +110,7 @@ async function loadAllData() {
     await loadMessages();
     await loadQuickLinks();
     await loadSiteInfo();
+    await load404Feedbacks();
 }
 
 // ========== 书签管理 ==========

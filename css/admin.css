@@ -441,3 +441,61 @@ h2 {
         padding: 1rem;
     }
 }
+/* 404反馈列表样式 */
+.feedback404-item {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-left: 3px solid #e67e22;
+    transition: all 0.2s;
+}
+
+.feedback404-item:hover {
+    background: #22223a;
+    transform: translateX(4px);
+}
+
+.feedback404-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.feedback404-time {
+    font-size: 0.7rem;
+    color: #888;
+}
+
+.feedback404-url {
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+    word-break: break-all;
+}
+
+.feedback404-message {
+    background: rgba(155, 89, 182, 0.15);
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+    color: #c9b6d0;
+}
+
+.feedback404-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    font-size: 0.65rem;
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.feedback404-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
