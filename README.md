@@ -26,21 +26,24 @@
 
 ## GitHub 仓库结构
 
+```plaintext
 ArleyBKS/
-├── README.md # 项目说明
-├── .env.example # 环境变量示例
-├── index.html # 前台主页面
-├── admin.html # 管理后台页面
-├── 404.html # 自定义404错误页面
-├── apihome.html # API调试页面
+├── README.md                # 项目说明
+├── .env.example             # 环境变量示例
+├── index.html               # 前台主页面
+├── admin.html               # 管理后台页面
+├── 404.html                 # 自定义 404 错误页面
+├── apihome.html             # API 调试页面
 ├── css/
-│ ├── admin.css # 后台管理专用样式
-│ └── main.css # 前台主样式
+│   ├── admin.css            # 后台管理专用样式
+│   └── main.css             # 前台主样式
 ├── js/
-│ ├── admin.js # 后台管理交互脚本
-│ └── main.js # 前台交互脚本
-│ └── worker.js # Cloudflare Workers 核心代码
-└── images/ # 图片资源
+│   ├── admin.js             # 后台管理交互脚本
+│   ├── main.js              # 前台交互脚本
+│   └── worker.js            # Cloudflare Workers 核心代码
+└── images/                  # 图片资源
+
+```
 
 ## 环境变量
 
