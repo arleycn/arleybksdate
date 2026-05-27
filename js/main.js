@@ -53,7 +53,7 @@ function checkScrollAndAnimate() {
             btn.style.display = 'flex';
             btn.style.animation = 'none';
             btn.offsetHeight;
-            btn.style.animation = 'fadeInUp 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards';
+            btn.style.animation = 'fadeInUpBtn 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards';
         }
     } else {
         if (btn.style.display === 'flex') {

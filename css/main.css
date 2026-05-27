@@ -991,7 +991,7 @@ body.dark .loader-text {
     }
 }
 /* 返回按钮出现动画 */
-@keyframes fadeInUp {
+@keyframes fadeInUpBtn {
     from {
         opacity: 0;
         transform: translateY(20px);
