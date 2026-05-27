@@ -676,6 +676,8 @@ body.dark .hero h1 {
     padding: 6px 18px;
     border-radius: 30px;
     margin-top: 0.8rem;
+    color: var(--text-secondary);
+    cursor: pointer;
 }
 
 .modal {
