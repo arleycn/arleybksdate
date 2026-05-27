@@ -371,7 +371,7 @@ body.dark .hero h1 {
 }
 
 .bookmark-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateX(4px);
 }
 
 .bookmark-info {
@@ -812,13 +812,6 @@ body.dark mark {
     .bookmarks-grid {
         gap: 0.6rem;
         grid-template-columns: 1fr;
-    }
-
-    .bookmark-card {
-        padding: 0.6rem;
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
     }
 
     .bookmark-info {
