@@ -17,173 +17,6 @@
     <link rel="shortcut icon" href="/images/bks.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="/images/bks.png">
     <link rel="stylesheet" href="css/main.css">
-    <style>
-        .search-engine-page {
-            display: none;
-            animation: pageFadeIn 0.4s ease;
-        }
-        .search-engine-page.active {
-            display: block;
-        }
-        .bookmark-page {
-            display: block;
-        }
-        .bookmark-page.hidden {
-            display: none;
-        }
-        .search-hero {
-            text-align: center;
-            padding: 2rem 0 1.5rem;
-        }
-        .search-hero h1 {
-            font-size: 2.4rem;
-            background: linear-gradient(135deg, #e8809e, #c95c7c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
-            margin-bottom: 0.25rem;
-        }
-        body.dark .search-hero h1 {
-            background: linear-gradient(135deg, #d99bb8, #b86b9e);
-            background-clip: text;
-            -webkit-background-clip: text;
-        }
-        .search-hero p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            opacity: 0.8;
-        }
-        .search-engine-box {
-            max-width: 720px;
-            margin: 0.8rem auto 1.8rem;
-            background: var(--card-bg);
-            border-radius: 60px;
-            padding: 0.4rem 0.4rem 0.4rem 1.5rem;
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            box-shadow: 0 8px 28px -12px var(--shadow-color);
-            transition: box-shadow 0.25s;
-        }
-        .search-engine-box:focus-within {
-            box-shadow: 0 8px 32px -8px var(--shadow-color), 0 0 0 2px rgba(245, 163, 189, 0.25);
-        }
-        .search-engine-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 14px 6px;
-            font-size: 1rem;
-            color: var(--text-primary);
-            outline: none;
-            min-width: 0;
-        }
-        .search-engine-box input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
-        }
-        .search-engine-box button {
-            background: var(--btn-primary);
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .search-engine-box button:hover {
-            filter: brightness(1.08);
-            transform: scale(1.02);
-        }
-        .search-engines-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 0.8rem;
-            margin: 1.8rem 0 1rem;
-        }
-        .engine-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 0.8rem 0.6rem;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 2px 8px -6px var(--shadow-color);
-        }
-        .engine-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            border-color: var(--btn-primary);
-            box-shadow: 0 12px 24px -12px var(--shadow-color);
-        }
-        .engine-card .engine-icon {
-            font-size: 1.8rem;
-            display: block;
-            margin-bottom: 0.2rem;
-        }
-        .engine-card .engine-name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .engine-card .engine-desc {
-            font-size: 0.6rem;
-            color: var(--text-secondary);
-            opacity: 0.6;
-            margin-top: 2px;
-        }
-        .view-toggle {
-            display: flex;
-            gap: 6px;
-            background: var(--card-bg);
-            padding: 4px;
-            border-radius: 40px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(8px);
-        }
-        .view-toggle button {
-            background: transparent;
-            border: none;
-            padding: 5px 16px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .view-toggle button.active {
-            background: var(--btn-primary);
-            color: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .view-toggle button:hover:not(.active) {
-            background: var(--btn-bg);
-        }
-        @media (max-width: 640px) {
-            .search-hero h1 { font-size: 1.8rem; }
-            .search-engine-box { padding-left: 1rem; }
-            .search-engine-box input { font-size: 0.9rem; padding: 12px 4px; }
-            .search-engine-box button { padding: 8px 16px; font-size: 0.8rem; }
-            .search-engines-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-        }
-        body.dark .search-engine-box {
-            background: var(--card-bg);
-            border-color: var(--border-color);
-        }
-        body.dark .view-toggle {
-            background: var(--card-bg);
-            border-color: var(--border-color);
-        }
-    </style>
 </head>
 <body>
 <!-- 全局加载动画 -->
@@ -204,11 +37,8 @@
 
     <div class="toolbar">
         <div class="quick-items" id="quickItemsContainer"></div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-            <div class="view-toggle" id="viewToggle">
-                <button class="active" data-view="bookmark">📚 书签</button>
-                <button data-view="search">🔍 搜索</button>
-            </div>
+        <div class="tool-buttons">
+            <a href="/search" class="tool-btn" target="_blank" style="text-decoration:none;">🔍 搜索</a>
             <button class="tool-btn" id="themeToggle">🌙 夜间</button>
             <button class="tool-btn" id="messageBtn">💬 推荐</button>
             <button class="tool-btn" id="oldVersionBtn">📁 旧版入口</button>
@@ -222,38 +52,16 @@
         <button id="clearSearchBtn" class="btn" style="display:none;">清除</button>
     </div>
 
-    <!-- 书签页面 -->
-    <div class="bookmark-page" id="bookmarkPage">
-        <div class="category-nav-wrapper">
-            <div class="category-nav" id="categoryNav"></div>
-        </div>
-
-        <div class="stats-bar" id="statsInfo">加载中...</div>
-        <div id="bookmarksContainer"><div class="loading">🍰 加载中...</div></div>
-
-        <div class="messages-section">
-            <div class="messages-title">💬 网友推荐</div>
-            <div id="messagesContainer"><div class="loading">加载留言中...</div></div>
-        </div>
+    <div class="category-nav-wrapper">
+        <div class="category-nav" id="categoryNav"></div>
     </div>
 
-    <!-- 搜索引擎页面 -->
-    <div class="search-engine-page" id="searchPage">
-        <div class="search-hero">
-            <h1>🔍 极简搜索</h1>
-            <p>聚合引擎 · 一键直达</p>
-        </div>
+    <div class="stats-bar" id="statsInfo">加载中...</div>
+    <div id="bookmarksContainer"><div class="loading">🍰 加载中...</div></div>
 
-        <div class="search-engine-box">
-            <input type="text" id="engineSearchInput" placeholder="输入关键词，按 Enter 搜索..." autocomplete="off">
-            <button id="engineSearchBtn">搜索</button>
-        </div>
-
-        <div class="search-engines-grid" id="engineGrid"></div>
-
-        <div style="text-align:center; font-size:0.65rem; color:var(--text-secondary); opacity:0.5; margin-top:0.8rem;">
-            ⚡ 点击引擎卡片快速切换 · 输入关键词直接搜索
-        </div>
+    <div class="messages-section">
+        <div class="messages-title">💬 网友推荐</div>
+        <div id="messagesContainer"><div class="loading">加载留言中...</div></div>
     </div>
 
     <div class="footer">
