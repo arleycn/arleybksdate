@@ -473,6 +473,9 @@ document.getElementById('adminBtn').onclick = () => { window.open('admin.html', 
 document.getElementById('searchBtn').onclick = searchBookmarks;
 document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') searchBookmarks(); };
 document.getElementById('clearSearchBtn').onclick = clearSearch;
+document.getElementById('searchPageBtn').addEventListener('click', function() {
+    window.open('/search', '_blank');
+});
 // 初始化
 initTheme();
 fetchBookmarks();
