@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="author" content="Arley">
+    <meta name="keywords" content="arley,搜索,引擎,导航"/>
+    <meta name="description" content="Arley's | 极简搜索">
     <title>Arley's | 搜索</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="shortcut icon" href="/images/bks.png" type="image/x-icon">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="apple-touch-icon" href="/images/bks.png">
+    <link rel="stylesheet" href="css/main.css">
     <style>
-        /* 重置页面，全屏居中 */
+        /* ===== 重置页面，全屏居中 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -26,29 +30,64 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
             padding: 1rem;
+            position: relative;
         }
-        body.dark {
-            --bg-gradient-start: #1a1a2e;
-            --bg-gradient-end: #16213e;
-            --card-bg: rgba(30, 30, 46, 0.75);
-            --text-primary: #e8e8e8;
-            --text-secondary: #c9b6d0;
-            --border-color: #2a2a3e;
-            --btn-bg: rgba(30, 30, 46, 0.6);
-            --btn-primary: #9b59b6;
-            --shadow-color: rgba(0, 0, 0, 0.3);
+        /* 背景图片（与主站一致） */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: 0.35;
+            z-index: -2;
+            pointer-events: none;
+        }
+        body.dark::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            body::before {
+                background-image: url('../images/bgmobile.jpg');
+                opacity: 0.4;
+            }
+        }
+
+        /* ===== 主容器 ===== */
+        .search-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
         }
         .search-container {
             width: 100%;
             max-width: 700px;
             text-align: center;
-            padding: 1rem;
+            padding: 1rem 0;
         }
-        /* 日期时间 */
+
+        /* ===== 日期时间 ===== */
         .search-datetime {
             margin-bottom: 2.5rem;
         }
@@ -82,7 +121,8 @@
             margin-top: 0.3rem;
             letter-spacing: 3px;
         }
-        /* 搜索框 */
+
+        /* ===== 搜索框 ===== */
         .search-engine-box {
             width: 100%;
             background: var(--card-bg);
@@ -106,13 +146,17 @@
             background: transparent;
             padding: 14px 6px;
             font-size: 1rem;
-            color: var(--text-primary);
+            color: var(--text-primary) !important;
             outline: none;
             min-width: 0;
         }
         .search-engine-box input::placeholder {
             color: var(--text-secondary);
             opacity: 0.5;
+        }
+        .search-engine-box input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset !important;
+            -webkit-text-fill-color: var(--text-primary) !important;
         }
         .search-engine-box button {
             background: var(--btn-primary);
@@ -131,7 +175,8 @@
             filter: brightness(1.08);
             transform: scale(1.02);
         }
-        /* 搜索引擎卡片 */
+
+        /* ===== 搜索引擎卡片 ===== */
         .search-engines-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -170,11 +215,22 @@
             opacity: 0.6;
             margin-top: 2px;
         }
-        /* 返回按钮 */
-        .back-link {
+
+        /* ===== 顶部导航 ===== */
+        .top-nav {
             position: fixed;
             top: 1rem;
-            left: 1rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            z-index: 100;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .top-nav a,
+        .top-nav select {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             padding: 6px 16px;
@@ -184,33 +240,49 @@
             font-size: 0.8rem;
             transition: all 0.2s;
             backdrop-filter: blur(8px);
-            z-index: 100;
-        }
-        .back-link:hover {
-            background: var(--btn-primary);
-            color: white;
-        }
-        /* 主题切换按钮 */
-        .theme-toggle-btn {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 6px 16px;
-            border-radius: 30px;
             cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            transition: all 0.2s;
-            backdrop-filter: blur(8px);
-            z-index: 100;
+            font-family: inherit;
         }
-        .theme-toggle-btn:hover {
+        .top-nav a:hover,
+        .top-nav select:hover {
             background: var(--btn-primary);
             color: white;
         }
-        /* 响应式 */
+        .top-nav select option {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        /* ===== Footer（仅置底，无关于本站） ===== */
+        .search-footer {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+        .search-footer .footer {
+            margin-top: 0;
+            background: var(--footer-bg);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+        .search-footer .footer-content {
+            padding: 0.8rem 1rem;
+        }
+        .search-footer .footer-bottom {
+            padding: 0.6rem 1rem;
+            text-align: center;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* ===== 响应式 ===== */
         @media (max-width: 640px) {
             .search-datetime .time { font-size: 3rem; }
             .search-datetime .date { font-size: 1.1rem; }
@@ -218,13 +290,11 @@
             .search-engine-box input { font-size: 0.9rem; padding: 12px 4px; }
             .search-engine-box button { padding: 8px 16px; font-size: 0.8rem; }
             .search-engines-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-            .back-link, .theme-toggle-btn { font-size: 0.7rem; padding: 4px 12px; top: 0.6rem; }
+            .top-nav a, .top-nav select { font-size: 0.7rem; padding: 4px 12px; }
+            .search-footer .footer-content { padding: 0.6rem 0.8rem; }
         }
-        body.dark .search-engine-box {
-            background: var(--card-bg);
-            border-color: var(--border-color);
-        }
-        /* Toast 提示 */
+
+        /* ===== Toast 提示 ===== */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -249,25 +319,44 @@
     </style>
 </head>
 <body>
-    <a href="/" class="back-link">📚 返回书签</a>
-    <button class="theme-toggle-btn" id="themeToggle">🌙 夜间</button>
+    <!-- ===== 顶部导航 ===== -->
+    <div class="top-nav">
+        <a href="/">📚 返回书签</a>
+        <select id="themeSelector" style="background:var(--card-bg);border:1px solid var(--border-color);padding:6px 16px;border-radius:30px;color:var(--text-secondary);font-size:0.8rem;cursor:pointer;backdrop-filter:blur(8px);font-family:inherit;">
+            <option value="auto">🌈 跟随系统</option>
+            <option value="light">☀️ 白天</option>
+            <option value="dark">🌙 夜间</option>
+        </select>
+    </div>
 
-    <div class="search-container">
-        <!-- 日期时间 -->
-        <div class="search-datetime">
-            <div class="date" id="searchDate">加载中...</div>
-            <div class="time" id="searchTime">--:--:--</div>
-            <div class="weekday" id="searchWeekday">--</div>
+    <!-- ===== 主内容 ===== -->
+    <div class="search-wrapper">
+        <div class="search-container">
+            <!-- 日期时间 -->
+            <div class="search-datetime">
+                <div class="date" id="searchDate">加载中...</div>
+                <div class="time" id="searchTime">--:--:--</div>
+                <div class="weekday" id="searchWeekday">--</div>
+            </div>
+
+            <!-- 搜索框 -->
+            <div class="search-engine-box">
+                <input type="text" id="engineSearchInput" placeholder="输入关键词，按 Enter 搜索..." autocomplete="off">
+                <button id="engineSearchBtn">🔍 搜索</button>
+            </div>
+
+            <!-- 搜索引擎卡片 -->
+            <div class="search-engines-grid" id="engineGrid"></div>
         </div>
+    </div>
 
-        <!-- 搜索框 -->
-        <div class="search-engine-box">
-            <input type="text" id="engineSearchInput" placeholder="输入关键词，按 Enter 搜索..." autocomplete="off">
-            <button id="engineSearchBtn">搜索</button>
+    <!-- ===== Footer（仅置底，无关于本站） ===== -->
+    <div class="search-footer">
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-bottom" id="copyrightContainer">加载中...</div>
+            </div>
         </div>
-
-        <!-- 搜索引擎卡片 -->
-        <div class="search-engines-grid" id="engineGrid"></div>
     </div>
 
     <script>
@@ -284,19 +373,28 @@
         ];
 
         // ===== 主题切换 =====
-        function initTheme() {
-            const saved = localStorage.getItem("theme");
-            if (saved === "dark") {
-                document.body.classList.add("dark");
-                document.getElementById("themeToggle").textContent = "☀️ 白天";
-            }
+        function setTheme(theme) {
+            const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.body.classList.toggle('dark', isDark);
+            localStorage.setItem('theme', theme);
+            document.getElementById('themeSelector').value = theme;
         }
-        document.getElementById("themeToggle").addEventListener("click", () => {
-            document.body.classList.toggle("dark");
-            const isDark = document.body.classList.contains("dark");
-            localStorage.setItem("theme", isDark ? "dark" : "light");
-            document.getElementById("themeToggle").textContent = isDark ? "☀️ 白天" : "🌙 夜间";
+
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'auto';
+            setTheme(saved);
+        }
+
+        document.getElementById('themeSelector').addEventListener('change', function() {
+            setTheme(this.value);
         });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (localStorage.getItem('theme') === 'auto') {
+                setTheme('auto');
+            }
+        });
+
         initTheme();
 
         // ===== 日期时间 =====
@@ -344,7 +442,7 @@
         }
         renderEngines();
 
-        // ===== 搜索逻辑（默认 Bing，索引2） =====
+        // ===== 搜索逻辑（默认 Bing） =====
         function performSearch() {
             const input = document.getElementById('engineSearchInput');
             const keyword = input.value.trim();
@@ -356,7 +454,7 @@
                 setTimeout(() => toast.remove(), 2000);
                 return;
             }
-            const defaultEngine = SEARCH_ENGINES[2]; // Bing
+            const defaultEngine = SEARCH_ENGINES[2];
             window.open(defaultEngine.url + encodeURIComponent(keyword), '_blank');
         }
 
@@ -365,8 +463,51 @@
             if (e.key === 'Enter') performSearch();
         });
 
-        // 自动聚焦
         document.getElementById('engineSearchInput').focus();
+
+        // ===== 加载版权信息 =====
+        async function fetchCopyright() {
+            try {
+                const res = await fetch('/api/siteinfo');
+                const result = await res.json();
+                const currentYear = new Date().getFullYear();
+                const container = document.getElementById('copyrightContainer');
+                if (result.success && result.siteInfo) {
+                    const info = result.siteInfo;
+                    const name = info.name || "Arley's | 书签导航";
+                    const desc = info.description || "自用书签导航站，欢迎使用";
+                    const year = info.copyrightYear || currentYear;
+                    const owner = info.copyrightOwner || '';
+                    const ownerUrl = info.copyrightUrl || '';
+                    const poweredName = info.poweredName || '';
+                    const poweredUrl = info.poweredUrl || '';
+                    const icpNumber = info.icpNumber || '';
+                    let html = '';
+                    if (owner) {
+                        html += `COPYRIGHT © ${year} `;
+                        if (ownerUrl) html += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
+                        else html += `<strong>${owner}</strong> `;
+                    }
+                    if (poweredName) {
+                        if (html) html += `| `;
+                        html += `POWERED BY `;
+                        if (poweredUrl) html += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
+                        else html += `<strong>${poweredName}</strong> `;
+                    }
+                    if (icpNumber) {
+                        if (html) html += `| `;
+                        html += `萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
+                    }
+                    container.innerHTML = html || `${currentYear} ${name} · ${desc}`;
+                } else {
+                    container.innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
+                }
+            } catch (err) {
+                const currentYear = new Date().getFullYear();
+                document.getElementById('copyrightContainer').innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
+            }
+        }
+        fetchCopyright();
     </script>
 </body>
 </html>
