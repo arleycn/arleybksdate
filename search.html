@@ -250,6 +250,14 @@
             background: var(--btn-primary);
             color: white;
         }
+        /* 添加按钮在左，重置在右 */
+        .quick-tabs-actions .btn-add {
+            order: 0;
+        }
+        .quick-tabs-actions .btn-reset {
+            order: 1;
+            opacity: 0.5;
+        }
 
         .quick-tabs-grid {
             display: grid;
@@ -289,6 +297,17 @@
             font-size: 1.6rem;
             line-height: 1.4;
             transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+        .quick-tab-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
         }
         .quick-tab-item:hover .quick-tab-icon {
             transform: scale(1.08);
@@ -446,10 +465,9 @@
         }
 
         /* ================================================================
-           ===== 弹窗样式 - 完全复刻 index.html =====
+           ===== 弹窗样式 =====
            ================================================================ */
 
-        /* 弹窗蒙层 - 固定定位覆盖全屏 */
         .modal {
             display: none;
             position: fixed;
@@ -467,7 +485,6 @@
             display: flex;
         }
 
-        /* 弹窗内容 - 居中显示 */
         .modal-content {
             background: var(--card-bg);
             border-radius: 28px;
@@ -517,6 +534,40 @@
             opacity: 0.4;
         }
 
+        /* 网站图标预览 */
+        .favicon-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            padding: 6px 12px;
+            background: var(--btn-bg);
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            min-height: 36px;
+        }
+        .favicon-preview .preview-icon {
+            font-size: 1.2rem;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .favicon-preview .preview-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .favicon-preview .preview-label {
+            font-size: 0.6rem;
+            opacity: 0.6;
+        }
+
         .modal-content .icon-hint {
             font-size: 0.55rem;
             color: var(--text-secondary);
@@ -536,10 +587,11 @@
             display: block;
         }
 
+        /* ===== 按钮布局：取消在左，确认在右 ===== */
         .modal-buttons {
             display: flex;
             gap: 10px;
-            justify-content: flex-end;
+            justify-content: space-between;
             margin-top: 0.5rem;
             padding-top: 0.5rem;
             border-top: 1px solid var(--border-color);
@@ -554,6 +606,7 @@
             transition: all 0.2s;
             color: var(--text-secondary);
             font-family: inherit;
+            min-width: 72px;
         }
         .modal-buttons .btn:hover {
             opacity: 0.8;
@@ -571,8 +624,10 @@
             cursor: not-allowed;
             transform: none;
         }
+        .modal-buttons .btn-cancel {
+            margin-right: auto;
+        }
 
-        /* 弹窗滑入动画 */
         @keyframes modalSlideIn {
             from {
                 opacity: 0;
@@ -619,17 +674,19 @@
             .top-nav a, .top-nav select { font-size: 0.7rem; padding: 4px 12px; }
             .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; }
             .quick-tab-item { min-height: 62px; padding: 6px 3px; }
-            .quick-tab-icon { font-size: 1.3rem; }
+            .quick-tab-icon { font-size: 1.3rem; width: 28px; height: 28px; }
             .quick-tab-name { font-size: 0.5rem; max-width: 50px; }
             .quick-tab-add { min-height: 62px; }
             .quick-tab-add .add-icon { font-size: 1.4rem; }
             .modal-content { padding: 1rem; border-radius: 24px; }
+            .modal-buttons .btn { padding: 6px 14px; font-size: 0.75rem; min-width: 60px; }
+            .favicon-preview { font-size: 0.65rem; padding: 4px 10px; }
         }
 
         @media (max-width: 400px) {
             .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
             .quick-tab-item { min-height: 54px; padding: 4px 2px; border-radius: 12px; }
-            .quick-tab-icon { font-size: 1.1rem; }
+            .quick-tab-icon { font-size: 1.1rem; width: 24px; height: 24px; }
             .quick-tab-name { font-size: 0.45rem; max-width: 44px; }
             .quick-tab-add { min-height: 54px; }
             .quick-tab-add .add-icon { font-size: 1.2rem; }
@@ -670,8 +727,8 @@
             <div class="quick-tabs-header">
                 <h3>📌 我的标签</h3>
                 <div class="quick-tabs-actions">
-                    <button id="addTabBtn">+ 添加</button>
-                    <button id="resetTabsBtn" style="opacity:0.5;">重置</button>
+                    <button class="btn-add" id="addTabBtn">+ 添加</button>
+                    <button class="btn-reset" id="resetTabsBtn">重置</button>
                 </div>
             </div>
             <div class="quick-tabs-grid" id="quickTabsGrid">
@@ -686,7 +743,7 @@
         <div class="footer-bottom" id="copyrightContainer">加载中...</div>
     </div>
 
-    <!-- ===== 添加标签弹窗 - 完全复刻 index.html 样式 ===== -->
+    <!-- ===== 添加标签弹窗 ===== -->
     <div id="tabModal" class="modal">
         <div class="modal-content">
             <h3>✨ 添加快捷标签</h3>
@@ -699,13 +756,18 @@
                 <input type="text" id="tabUrlInput" placeholder="https://github.com" autocomplete="off">
             </div>
             <div class="form-group">
-                <label>🎨 图标（输入 emoji，留空自动匹配）</label>
-                <input type="text" id="tabIconInput" placeholder="例如：🐱" maxlength="4" autocomplete="off">
-                <div class="icon-hint">💡 留空将根据名称首字母自动分配图标</div>
+                <label>🎨 图标（留空自动获取网站 favicon）</label>
+                <input type="text" id="tabIconInput" placeholder="例如：🐱 或留空自动获取" maxlength="4" autocomplete="off">
+                <div class="favicon-preview" id="faviconPreview">
+                    <span class="preview-icon" id="previewIcon">🔗</span>
+                    <span>网站图标预览</span>
+                    <span class="preview-label" id="previewStatus">输入网址后自动获取</span>
+                </div>
+                <div class="icon-hint">💡 留空将自动从网站获取 favicon.ico 图标</div>
             </div>
             <div class="modal-loading" id="tabModalLoading">⏳ 提交中...</div>
             <div class="modal-buttons">
-                <button class="btn" id="tabModalCancel">取消</button>
+                <button class="btn btn-cancel" id="tabModalCancel">取消</button>
                 <button class="btn btn-primary" id="tabModalConfirm">添加</button>
             </div>
         </div>
@@ -808,7 +870,31 @@
         document.getElementById('engineSearchInput').focus();
 
         // ================================================================
-        //  6. 标签管理
+        //  6. 网站图标获取工具
+        // ================================================================
+
+        function extractDomain(url) {
+            try {
+                const parsed = new URL(url);
+                return parsed.hostname;
+            } catch (e) {
+                try {
+                    const parsed = new URL('https://' + url);
+                    return parsed.hostname;
+                } catch (e2) {
+                    return url.split('/')[0].split('?')[0];
+                }
+            }
+        }
+
+        function getFaviconUrl(url) {
+            const domain = extractDomain(url);
+            if (!domain) return null;
+            return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        }
+
+        // ================================================================
+        //  7. 标签管理
         // ================================================================
         const DEFAULT_TABS = [
             { name: 'GitHub', url: 'https://github.com', icon: '🐙' },
@@ -880,11 +966,7 @@
             if (!tabs || tabs.length === 0) {
                 grid.innerHTML = `
                     <div class="quick-tabs-empty" style="grid-column:1/-1;">
-                        🌱 还没有标签，点击「+ 添加」创建你的快捷方式吧
-                    </div>
-                    <div class="quick-tab-add" onclick="openAddModal()">
-                        <span class="add-icon">➕</span>
-                        <span class="add-text">添加</span>
+                        🌱 还没有标签，点击「添加」创建你的快捷方式吧
                     </div>
                 `;
                 return;
@@ -895,21 +977,16 @@
                 const icon = tab.icon || '🔗';
                 const name = tab.name || '未命名';
                 const url = tab.url || '#';
+                // 判断是否为图片 URL
+                const isImageIcon = icon && (icon.startsWith('http') || icon.startsWith('data:'));
                 html += `
                     <div class="quick-tab-item" onclick="openTab('${escapeHtml(url)}')" title="${escapeHtml(name)}">
-                        <span class="quick-tab-icon">${icon}</span>
+                        <span class="quick-tab-icon">${isImageIcon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy">` : icon}</span>
                         <span class="quick-tab-name">${escapeHtml(name)}</span>
                         <span class="quick-tab-delete" onclick="event.stopPropagation(); deleteTab(${index})">✕</span>
                     </div>
                 `;
             });
-
-            html += `
-                <div class="quick-tab-add" onclick="openAddModal()">
-                    <span class="add-icon">➕</span>
-                    <span class="add-text">添加</span>
-                </div>
-            `;
 
             grid.innerHTML = html;
         }
@@ -949,18 +1026,40 @@
         }
 
         // ================================================================
-        //  7. 弹窗控制 - 完全复刻 index.html 逻辑
+        //  8. 弹窗控制
         // ================================================================
         const modal = document.getElementById('tabModal');
         const nameInput = document.getElementById('tabNameInput');
         const urlInput = document.getElementById('tabUrlInput');
         const iconInput = document.getElementById('tabIconInput');
         const loadingEl = document.getElementById('tabModalLoading');
+        const previewIcon = document.getElementById('previewIcon');
+        const previewStatus = document.getElementById('previewStatus');
+
+        // 网址输入实时预览 favicon
+        urlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                const faviconUrl = getFaviconUrl(url);
+                if (faviconUrl) {
+                    previewIcon.innerHTML = `<img src="${faviconUrl}" alt="favicon" onerror="this.parentElement.innerHTML='🔗'">`;
+                    previewStatus.textContent = '✅ 已获取网站图标';
+                } else {
+                    previewIcon.innerHTML = '🔗';
+                    previewStatus.textContent = '⚠️ 无法解析网址';
+                }
+            } else {
+                previewIcon.innerHTML = '🔗';
+                previewStatus.textContent = '输入网址后自动获取';
+            }
+        });
 
         function openAddModal() {
             nameInput.value = '';
             urlInput.value = '';
             iconInput.value = '';
+            previewIcon.innerHTML = '🔗';
+            previewStatus.textContent = '输入网址后自动获取';
             loadingEl.classList.remove('active');
             modal.classList.add('active');
             setTimeout(() => nameInput.focus(), 100);
@@ -971,40 +1070,51 @@
             loadingEl.classList.remove('active');
         }
 
-        // 点击蒙层关闭弹窗（完全复刻 index.html）
         modal.onclick = function(e) {
             if (e.target === modal) {
                 closeAddModal();
             }
         };
 
-        // ESC 键关闭
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && modal.classList.contains('active')) {
                 closeAddModal();
             }
         });
 
-        // 智能匹配图标
-        function getAutoIcon(name) {
-            if (!name) return '🔗';
-            const firstChar = name.charAt(0).toUpperCase();
-            const emojiMap = {
-                'G': '🐙', 'V': '💬', 'M': '📘', 'C': '☁️',
-                'A': '📝', 'B': '🔵', 'D': '🐶', 'Y': '🌟',
-                'T': '📰', 'S': '🔍', 'W': '🌐', 'N': '📺',
-                'Z': '💎', 'P': '📷', 'F': '📄', 'E': '📧',
-                'R': '📚', 'U': '🎓', 'I': '💡', 'O': '🎯',
-                'L': '📋', 'H': '🛠️', 'J': '☕', 'K': '🔑',
-                'Q': '❓', 'X': '✖️'
-            };
-            return emojiMap[firstChar] || '🔗';
+        // 智能获取图标
+        function getTabIcon(name, url, userIcon) {
+            // 如果用户手动输入了图标，使用用户的
+            if (userIcon) return userIcon;
+            
+            // 尝试从网址获取 favicon
+            if (url) {
+                const faviconUrl = getFaviconUrl(url);
+                if (faviconUrl) return faviconUrl;
+            }
+            
+            // 降级：根据名称首字母匹配 emoji
+            if (name) {
+                const firstChar = name.charAt(0).toUpperCase();
+                const emojiMap = {
+                    'G': '🐙', 'V': '💬', 'M': '📘', 'C': '☁️',
+                    'A': '📝', 'B': '🔵', 'D': '🐶', 'Y': '🌟',
+                    'T': '📰', 'S': '🔍', 'W': '🌐', 'N': '📺',
+                    'Z': '💎', 'P': '📷', 'F': '📄', 'E': '📧',
+                    'R': '📚', 'U': '🎓', 'I': '💡', 'O': '🎯',
+                    'L': '📋', 'H': '🛠️', 'J': '☕', 'K': '🔑',
+                    'Q': '❓', 'X': '✖️'
+                };
+                return emojiMap[firstChar] || '🔗';
+            }
+            
+            return '🔗';
         }
 
         async function confirmAddTab() {
             const name = nameInput.value.trim();
             let url = urlInput.value.trim();
-            let icon = iconInput.value.trim();
+            const userIcon = iconInput.value.trim();
 
             if (!name) {
                 showToast('请输入网站名称', true);
@@ -1020,9 +1130,7 @@
                 url = 'https://' + url;
             }
 
-            if (!icon) {
-                icon = getAutoIcon(name);
-            }
+            const icon = getTabIcon(name, url, userIcon);
 
             const exists = currentTabs.some(t => t.name === name || t.url === url);
             if (exists) {
@@ -1055,14 +1163,13 @@
         }
 
         // ================================================================
-        //  8. 事件绑定
+        //  9. 事件绑定
         // ================================================================
         document.getElementById('addTabBtn').addEventListener('click', openAddModal);
         document.getElementById('resetTabsBtn').addEventListener('click', resetTabs);
         document.getElementById('tabModalCancel').addEventListener('click', closeAddModal);
         document.getElementById('tabModalConfirm').addEventListener('click', confirmAddTab);
 
-        // 回车键切换焦点
         nameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') urlInput.focus();
         });
@@ -1080,7 +1187,7 @@
         window.resetTabs = resetTabs;
 
         // ================================================================
-        //  9. Toast
+        //  10. Toast
         // ================================================================
         function showToast(msg, isError = false) {
             document.querySelectorAll('.toast').forEach(el => el.remove());
@@ -1092,7 +1199,7 @@
         }
 
         // ================================================================
-        //  10. 工具函数
+        //  11. 工具函数
         // ================================================================
         function escapeHtml(str) {
             if (!str) return '';
@@ -1106,7 +1213,7 @@
         }
 
         // ================================================================
-        //  11. 版权信息
+        //  12. 版权信息
         // ================================================================
         async function fetchCopyright() {
             try {
@@ -1151,7 +1258,7 @@
         }
 
         // ================================================================
-        //  12. 初始化
+        //  13. 初始化
         // ================================================================
         fetchTabs();
         fetchCopyright();
