@@ -73,48 +73,48 @@ export default {
 
 		// ========== 默认数据 ==========
 		const DEFAULT_MENU = [{
-				"name": "热搜新闻",
-				"icon": "🔥"
-			},
-			{
-				"name": "常用站点",
-				"icon": "⭐"
-			},
-			{
-				"name": "字母站",
-				"icon": "💎"
-			},
-			{
-				"name": "实用工具",
-				"icon": "👍"
-			},
-			{
-				"name": "素材资源",
-				"icon": "📷"
-			},
-			{
-				"name": "开发生产",
-				"icon": "📄"
-			},
-			{
-				"name": "学无止境",
-				"icon": "🎓"
-			},
-			{
-				"name": "系统相关",
-				"icon": "💻"
-			},
-			{
-				"name": "在线追剧",
-				"icon": "📺"
-			},
-			{
-				"name": "搜索引擎",
-				"icon": "🔍"
-			}
-		];
+			"name": "热搜新闻",
+			"icon": "🔥"
+		}, {
+			"name": "常用站点",
+			"icon": "⭐"
+		}, {
+			"name": "字母站",
+			"icon": "💎"
+		}, {
+			"name": "实用工具",
+			"icon": "👍"
+		}, {
+			"name": "素材资源",
+			"icon": "📷"
+		}, {
+			"name": "开发生产",
+			"icon": "📄"
+		}, {
+			"name": "学无止境",
+			"icon": "🎓"
+		}, {
+			"name": "系统相关",
+			"icon": "💻"
+		}, {
+			"name": "在线追剧",
+			"icon": "📺"
+		}, {
+			"name": "搜索引擎",
+			"icon": "🔍"
+		}];
 
 		const DEFAULT_BOOKMARKS = [];
+
+		const DEFAULT_TABS = [
+			{ name: 'GitHub', url: 'https://github.com', icon: '🐙' },
+			{ name: 'V2EX', url: 'https://v2ex.com', icon: '💬' },
+			{ name: 'MDN', url: 'https://developer.mozilla.org', icon: '📘' },
+			{ name: 'Canva', url: 'https://canva.com', icon: '🎨' },
+			{ name: 'Cloudflare', url: 'https://cloudflare.com', icon: '☁️' },
+			{ name: 'Arley Blog', url: 'https://blog.arley.cn', icon: '📝' }
+		];
+
 		// ========== 根路径 ==========
 		if (path === "/" && method === "GET") {
 			return new Response(JSON.stringify({
@@ -141,7 +141,77 @@ export default {
 			});
 		}
 
-		// ========== 书签 API ==========
+		// ================================================================
+		//  ========== 标签 API（放在书签 API 之前） ==========
+		// ================================================================
+
+		// 获取标签（公开）
+		if (path === "/api/tabs" && method === "GET") {
+			try {
+				let tabs = await redisCommand("GET", "tabs");
+				if (!tabs) {
+					await redisCommand("SET", "tabs", JSON.stringify(DEFAULT_TABS));
+					tabs = DEFAULT_TABS;
+				}
+				if (typeof tabs === "string") tabs = JSON.parse(tabs);
+				return new Response(JSON.stringify({
+					success: true,
+					data: tabs
+				}), {
+					status: 200,
+					headers: {
+						...getCorsHeaders(request),
+						"Content-Type": "application/json"
+					}
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// 保存标签（公开）
+		if (path === "/api/tabs" && method === "POST") {
+			try {
+				const { tabs } = await request.json();
+				if (!Array.isArray(tabs)) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "数据格式错误"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+				const limitedTabs = tabs.slice(0, 50);
+				await redisCommand("SET", "tabs", JSON.stringify(limitedTabs));
+				return new Response(JSON.stringify({
+					success: true,
+					message: "保存成功",
+					count: limitedTabs.length
+				}), {
+					status: 200,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// ================================================================
+		//  ========== 书签 API ==========
+		// ================================================================
 
 		// 获取书签（公开）
 		if (path === "/api/bookmarks" && method === "GET") {
@@ -254,7 +324,6 @@ export default {
 				if (!bookmarks) bookmarks = [];
 				if (typeof bookmarks === "string") bookmarks = JSON.parse(bookmarks);
 
-				// 查找或创建分类
 				let categoryData = bookmarks.find(c => c.category === category);
 				if (!categoryData) {
 					categoryData = {
@@ -264,7 +333,6 @@ export default {
 					bookmarks.push(categoryData);
 				}
 
-				// 如果有子分类
 				if (subcategory && subcategory.trim()) {
 					let subcategoryData = categoryData.subcategories.find(s => s.name === subcategory);
 					if (!subcategoryData) {
@@ -279,9 +347,7 @@ export default {
 						url: url.trim(),
 						desc: desc || ""
 					});
-				}
-				// 无子分类，直接添加到分类下
-				else {
+				} else {
 					if (!categoryData.bookmarks) categoryData.bookmarks = [];
 					categoryData.bookmarks.push({
 						name: name.trim(),
@@ -309,6 +375,7 @@ export default {
 				});
 			}
 		}
+
 		// 更新书签（完整替换）
 		if (path === "/api/admin/bookmarks" && method === "PUT") {
 			if (!isAuthorized(request)) {
@@ -321,9 +388,7 @@ export default {
 				});
 			}
 			try {
-				const {
-					bookmarks
-				} = await request.json();
+				const { bookmarks } = await request.json();
 				await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks || []));
 				return new Response(JSON.stringify({
 					success: true,
@@ -342,6 +407,7 @@ export default {
 				});
 			}
 		}
+
 		// 删除书签
 		if (path.startsWith("/api/admin/bookmarks/") && method === "DELETE") {
 			if (!isAuthorized(request)) {
@@ -403,7 +469,9 @@ export default {
 			}
 		}
 
-		// ========== 留言 API ==========
+		// ================================================================
+		//  ========== 留言 API ==========
+		// ================================================================
 
 		if (path === "/api/messages" && method === "GET") {
 			try {
@@ -431,11 +499,7 @@ export default {
 
 		if (path === "/api/messages" && method === "POST") {
 			try {
-				const {
-					nickname,
-					content,
-					recommendUrl
-				} = await request.json();
+				const { nickname, content, recommendUrl } = await request.json();
 				if (!nickname || !content) {
 					return new Response(JSON.stringify({
 						success: false,
@@ -522,9 +586,7 @@ export default {
 			}
 			try {
 				const messageId = path.split("/").pop();
-				const {
-					action
-				} = await request.json();
+				const { action } = await request.json();
 
 				let messages = await redisCommand("GET", "messages");
 				if (typeof messages === "string") messages = JSON.parse(messages);
@@ -565,8 +627,10 @@ export default {
 			}
 		}
 
-		// ========== 404反馈 API ==========
-		// 获取404反馈列表（管理员）
+		// ================================================================
+		//  ========== 404反馈 API ==========
+		// ================================================================
+
 		if (path === "/api/admin/404feedback" && method === "GET") {
 			if (!isAuthorized(request)) {
 				return new Response(JSON.stringify({
@@ -599,15 +663,9 @@ export default {
 			}
 		}
 
-		// 提交404反馈（公开）
 		if (path === "/api/404feedback" && method === "POST") {
 			try {
-				const {
-					brokenUrl,
-					message,
-					userAgent,
-					referer
-				} = await request.json();
+				const { brokenUrl, message, userAgent, referer } = await request.json();
 				if (!brokenUrl) {
 					return new Response(JSON.stringify({
 						success: false,
@@ -632,12 +690,9 @@ export default {
 					status: "pending"
 				});
 
-				// 只保留最近100条
 				if (feedbacks.length > 100) feedbacks = feedbacks.slice(0, 100);
-
 				await redisCommand("SET", "404feedbacks", JSON.stringify(feedbacks));
 
-				// 同时增加404统计计数
 				let stats = await redisCommand("GET", "404stats");
 				if (!stats) stats = {
 					total404: 0,
@@ -675,7 +730,6 @@ export default {
 			}
 		}
 
-		// 获取404统计数据
 		if (path === "/api/404stats" && method === "GET") {
 			try {
 				let stats = await redisCommand("GET", "404stats");
@@ -704,7 +758,7 @@ export default {
 				});
 			}
 		}
-		// 标记404反馈为已处理
+
 		if (path.startsWith("/api/admin/404feedback/") && method === "PUT") {
 			if (!isAuthorized(request)) {
 				return new Response(JSON.stringify({
@@ -717,9 +771,7 @@ export default {
 			}
 			try {
 				const feedbackId = path.split("/").pop();
-				const {
-					action
-				} = await request.json();
+				const { action } = await request.json();
 
 				let feedbacks = await redisCommand("GET", "404feedbacks");
 				if (typeof feedbacks === "string") feedbacks = JSON.parse(feedbacks);
@@ -761,7 +813,6 @@ export default {
 			}
 		}
 
-		// 删除404反馈（备用）
 		if (path.startsWith("/api/admin/404feedback/") && method === "DELETE") {
 			if (!isAuthorized(request)) {
 				return new Response(JSON.stringify({
@@ -809,7 +860,10 @@ export default {
 				});
 			}
 		}
-		// ========== 快捷链接 API ==========
+
+		// ================================================================
+		//  ========== 快捷链接 API ==========
+		// ================================================================
 
 		if (path === "/api/quicklinks" && method === "GET") {
 			try {
@@ -880,9 +934,7 @@ export default {
 				});
 			}
 			try {
-				const {
-					quickLinks
-				} = await request.json();
+				const { quickLinks } = await request.json();
 				await redisCommand("SET", "quicklinks", JSON.stringify(quickLinks || []));
 				return new Response(JSON.stringify({
 					success: true,
@@ -902,7 +954,9 @@ export default {
 			}
 		}
 
-		// ========== 网站设置 API ==========
+		// ================================================================
+		//  ========== 网站设置 API ==========
+		// ================================================================
 
 		if (path === "/api/siteinfo" && method === "GET") {
 			try {
@@ -983,12 +1037,13 @@ export default {
 			}
 		}
 
-		// ========== 登录 API ==========
+		// ================================================================
+		//  ========== 登录 API ==========
+		// ================================================================
+
 		if (path === "/api/login" && method === "POST") {
 			try {
-				const {
-					password
-				} = await request.json();
+				const { password } = await request.json();
 				if (password === ADMIN_PASSWORD) {
 					return new Response(JSON.stringify({
 						success: true,
@@ -1016,6 +1071,7 @@ export default {
 			}
 		}
 
+		// ========== 404 ==========
 		return new Response(JSON.stringify({
 			error: "Not Found"
 		}), {

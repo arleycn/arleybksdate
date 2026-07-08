@@ -66,34 +66,40 @@
                 opacity: 0.4;
             }
         }
+
+        /* ========== 标签区域 ========== */
         .search-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
+            padding: 0.5rem 1rem 1rem;
             position: relative;
             z-index: 1;
+            gap: 1.2rem;
         }
+
         .search-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 680px;
             text-align: center;
-            padding: 1rem 0;
+            padding: 0.5rem 0;
         }
+
+        /* 日期时间 */
         .search-datetime {
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
         }
         .search-datetime .date {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: var(--text-secondary);
             opacity: 0.7;
             font-weight: 300;
             letter-spacing: 2px;
         }
         .search-datetime .time {
-            font-size: 4.5rem;
+            font-size: 4rem;
             font-weight: 700;
             background: linear-gradient(135deg, #e8809e, #c95c7c);
             background-clip: text;
@@ -109,12 +115,14 @@
             -webkit-background-clip: text;
         }
         .search-datetime .weekday {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
             opacity: 0.5;
-            margin-top: 0.3rem;
+            margin-top: 0.2rem;
             letter-spacing: 3px;
         }
+
+        /* 搜索框 */
         .search-engine-box {
             width: 100%;
             background: var(--card-bg);
@@ -127,7 +135,7 @@
             gap: 0.2rem;
             box-shadow: 0 8px 28px -12px var(--shadow-color);
             transition: box-shadow 0.25s;
-            margin-bottom: 1rem;
+            margin-bottom: 0.3rem;
         }
         .search-engine-box:focus-within {
             box-shadow: 0 8px 32px -8px var(--shadow-color), 0 0 0 2px rgba(245, 163, 189, 0.25);
@@ -194,12 +202,359 @@
             transform: scale(1.02);
         }
         .search-tip {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-secondary);
             opacity: 0.4;
             text-align: center;
-            margin-top: 0.2rem;
+            margin-top: 0.1rem;
         }
+
+        /* ========== 标签（快捷方式）区域 ========== */
+        .quick-tabs-section {
+            width: 100%;
+            max-width: 760px;
+            margin: 0.2rem auto 0;
+            padding: 0.5rem 0;
+        }
+
+        .quick-tabs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            padding: 0 0.2rem;
+        }
+        .quick-tabs-header h3 {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        .quick-tabs-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .quick-tabs-actions button {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+            font-family: inherit;
+        }
+        .quick-tabs-actions button:hover {
+            background: var(--btn-primary);
+            color: white;
+        }
+
+        .quick-tabs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 10px;
+            padding: 0.3rem 0;
+        }
+
+        .quick-tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            backdrop-filter: blur(4px);
+            text-decoration: none;
+            color: var(--text-primary);
+            min-height: 72px;
+            position: relative;
+            gap: 4px;
+        }
+        .quick-tab-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--btn-primary);
+            box-shadow: 0 8px 20px -10px var(--shadow-color);
+        }
+        .quick-tab-item:active {
+            transform: scale(0.94);
+        }
+
+        .quick-tab-icon {
+            font-size: 1.6rem;
+            line-height: 1.4;
+            transition: transform 0.2s;
+        }
+        .quick-tab-item:hover .quick-tab-icon {
+            transform: scale(1.08);
+        }
+
+        .quick-tab-name {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 64px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        /* 删除按钮（悬停显示） */
+        .quick-tab-delete {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ef4444;
+            color: white;
+            border: 2px solid var(--card-bg);
+            font-size: 10px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1;
+            padding: 0;
+        }
+        .quick-tab-item:hover .quick-tab-delete {
+            display: flex;
+        }
+        .quick-tab-delete:hover {
+            transform: scale(1.2);
+            background: #dc2626;
+        }
+
+        /* 添加标签卡片 */
+        .quick-tab-add {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            border-radius: 16px;
+            border: 2px dashed var(--border-color);
+            cursor: pointer;
+            transition: all 0.25s;
+            background: transparent;
+            min-height: 72px;
+            gap: 2px;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        .quick-tab-add:hover {
+            opacity: 1;
+            border-color: var(--btn-primary);
+            background: var(--card-bg);
+        }
+        .quick-tab-add .add-icon {
+            font-size: 1.8rem;
+            line-height: 1.4;
+        }
+        .quick-tab-add .add-text {
+            font-size: 0.5rem;
+        }
+
+        /* 空状态 */
+        .quick-tabs-empty {
+            text-align: center;
+            padding: 1.5rem 0.5rem;
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-size: 0.75rem;
+        }
+
+        /* ========== 添加标签弹窗 - 优化配色 ========== */
+        .tab-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+        .tab-modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .tab-modal-content {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 2rem 1.8rem 1.8rem;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        /* 顶部装饰光效 */
+        .tab-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--btn-primary), #e8809e, var(--btn-primary));
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .tab-modal-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+        .tab-modal-content h3 span {
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .tab-modal-content .form-group {
+            margin-bottom: 1rem;
+        }
+        .tab-modal-content .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.3px;
+        }
+        .tab-modal-content .form-group input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 30px;
+            border: 1.5px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            font-family: inherit;
+        }
+        .tab-modal-content .form-group input:focus {
+            border-color: var(--btn-primary);
+            box-shadow: 0 0 0 3px rgba(242, 155, 184, 0.2);
+        }
+        .tab-modal-content .form-group input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.4;
+        }
+
+        /* 图标预览小提示 */
+        .tab-modal-content .icon-hint {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            margin-top: 0.2rem;
+            text-align: right;
+        }
+
+        .tab-modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 1.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .tab-modal-buttons button {
+            padding: 8px 24px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+        .tab-modal-buttons .btn-cancel {
+            background: var(--btn-bg);
+            color: var(--text-secondary);
+        }
+        .tab-modal-buttons .btn-cancel:hover {
+            background: #e0d0d8;
+            transform: translateY(-1px);
+        }
+        body.dark .tab-modal-buttons .btn-cancel:hover {
+            background: #3a3a52;
+        }
+        .tab-modal-buttons .btn-confirm {
+            background: var(--btn-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(242, 155, 184, 0.3);
+        }
+        .tab-modal-buttons .btn-confirm:hover {
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(242, 155, 184, 0.4);
+        }
+        .tab-modal-buttons .btn-confirm:active {
+            transform: scale(0.96);
+        }
+
+        /* 加载状态 */
+        .tab-modal-loading {
+            display: none;
+            text-align: center;
+            padding: 0.5rem 0;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        .tab-modal-loading.active {
+            display: block;
+        }
+
+        /* 网络错误提示条 */
+        .network-error-banner {
+            display: none;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            margin-top: 0.3rem;
+            text-align: center;
+        }
+        body.dark .network-error-banner {
+            background: #451a03;
+            color: #fcd34d;
+        }
+        .network-error-banner.active {
+            display: inline-block;
+        }
+
+        /* ========== 顶部导航 ========== */
         .top-nav {
             position: fixed;
             top: 1rem;
@@ -235,6 +590,8 @@
             background: var(--card-bg);
             color: var(--text-primary);
         }
+
+        /* ========== 底部版权 ========== */
         .search-footer {
             width: 100%;
             max-width: 1300px;
@@ -254,15 +611,43 @@
             border: 1px solid var(--border-color);
             backdrop-filter: blur(8px);
         }
+
+        /* ========== 响应式 ========== */
         @media (max-width: 640px) {
             .search-datetime .time { font-size: 3rem; }
-            .search-datetime .date { font-size: 1.1rem; }
+            .search-datetime .date { font-size: 1rem; }
             .search-engine-box { flex-wrap: wrap; padding: 0.4rem; border-radius: 30px; }
             .search-engine-box select { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); border-radius: 30px 30px 0 0; padding: 8px 16px; text-align: center; }
             .search-engine-box input { padding: 10px 6px; font-size: 0.9rem; }
             .search-engine-box button { width: 100%; padding: 8px 16px; font-size: 0.8rem; }
             .top-nav a, .top-nav select { font-size: 0.7rem; padding: 4px 12px; }
+            .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; }
+            .quick-tab-item { min-height: 62px; padding: 6px 3px; }
+            .quick-tab-icon { font-size: 1.3rem; }
+            .quick-tab-name { font-size: 0.5rem; max-width: 50px; }
+            .quick-tab-add { min-height: 62px; }
+            .quick-tab-add .add-icon { font-size: 1.4rem; }
+
+            .tab-modal-content {
+                padding: 1.5rem 1.2rem 1.2rem;
+                border-radius: 24px;
+            }
+            .tab-modal-buttons button {
+                padding: 6px 18px;
+                font-size: 0.75rem;
+            }
         }
+
+        @media (max-width: 400px) {
+            .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
+            .quick-tab-item { min-height: 54px; padding: 4px 2px; border-radius: 12px; }
+            .quick-tab-icon { font-size: 1.1rem; }
+            .quick-tab-name { font-size: 0.45rem; max-width: 44px; }
+            .quick-tab-add { min-height: 54px; }
+            .quick-tab-add .add-icon { font-size: 1.2rem; }
+        }
+
+        /* ========== Toast ========== */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -275,18 +660,20 @@
             font-size: 0.8rem;
             z-index: 1100;
             animation: fadeOut 2.5s ease forwards;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         .toast-error {
             background: #c0392b;
         }
         @keyframes fadeOut {
-            0% { opacity: 1; }
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
             70% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-15px); visibility: hidden; }
         }
     </style>
 </head>
 <body>
+    <!-- 顶部导航 -->
     <div class="top-nav">
         <a href="/">📚 返回书签</a>
         <select id="themeSelector">
@@ -296,7 +683,9 @@
         </select>
     </div>
 
+    <!-- 主体 -->
     <div class="search-wrapper">
+        <!-- 时间 + 搜索 -->
         <div class="search-container">
             <div class="search-datetime">
                 <div class="date" id="searchDate">加载中...</div>
@@ -309,15 +698,66 @@
                 <input type="text" id="engineSearchInput" placeholder="输入关键词，按 Enter 搜索..." autocomplete="off">
                 <button id="engineSearchBtn">搜索</button>
             </div>
-            <div class="search-tip">⌨️ 按 Enter 快速搜索</div>
+            <div class="search-tip">⌨️ 按 Enter 快速搜索 · 点击标签快速访问</div>
+        </div>
+
+        <!-- ===== 标签区域 ===== -->
+        <div class="quick-tabs-section">
+            <div class="quick-tabs-header">
+                <h3>📌 我的标签</h3>
+                <div class="quick-tabs-actions">
+                    <button id="addTabBtn">+ 添加</button>
+                    <button id="resetTabsBtn" style="opacity:0.5;">重置</button>
+                </div>
+            </div>
+            <div class="quick-tabs-grid" id="quickTabsGrid">
+                <!-- 由 JS 动态渲染 -->
+                <div style="grid-column:1/-1; text-align:center; padding:1rem; color:var(--text-secondary); opacity:0.5; font-size:0.8rem;">⏳ 加载中...</div>
+            </div>
+            <!-- 网络错误提示 -->
+            <div class="network-error-banner" id="networkErrorBanner">⚠️ 网络连接异常，请刷新重试</div>
         </div>
     </div>
 
+    <!-- 底部版权 -->
     <div class="search-footer">
         <div class="footer-bottom" id="copyrightContainer">加载中...</div>
     </div>
 
+    <!-- ===== 添加标签弹窗 - 优化配色 ===== -->
+    <div id="tabModal" class="tab-modal">
+        <div class="tab-modal-content">
+            <h3><span>✨</span> 添加快捷标签</h3>
+            <div class="form-group">
+                <label>🌐 网站名称</label>
+                <input type="text" id="tabNameInput" placeholder="例如：GitHub" maxlength="20" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>🔗 网址</label>
+                <input type="text" id="tabUrlInput" placeholder="https://github.com" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>🎨 图标（输入 emoji，留空自动匹配）</label>
+                <input type="text" id="tabIconInput" placeholder="例如：🐱" maxlength="4" autocomplete="off">
+                <div class="icon-hint">💡 留空将根据名称首字母自动分配图标</div>
+            </div>
+            <div class="tab-modal-loading" id="tabModalLoading">⏳ 提交中...</div>
+            <div class="tab-modal-buttons">
+                <button class="btn-cancel" id="tabModalCancel">取消</button>
+                <button class="btn-confirm" id="tabModalConfirm">添加</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ============================================================
+        //  1. API 配置
+        // ============================================================
+        const API_BASE = 'https://arleybks.arley.cn';
+
+        // ============================================================
+        //  2. 搜索引擎配置
+        // ============================================================
         const SEARCH_ENGINES = [
             { name: '百度', icon: '🌐', url: 'https://www.baidu.com/s?wd=' },
             { name: 'Google', icon: '🌍', url: 'https://www.google.com/search?q=' },
@@ -329,6 +769,9 @@
             { name: '头条搜索', icon: '📰', url: 'https://m.toutiao.com/search/?keyword=' }
         ];
 
+        // ============================================================
+        //  3. 主题切换
+        // ============================================================
         function setTheme(theme) {
             const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             document.body.classList.toggle('dark', isDark);
@@ -353,6 +796,9 @@
 
         initTheme();
 
+        // ============================================================
+        //  4. 时钟
+        // ============================================================
         function updateDateTime() {
             const now = new Date();
             const year = now.getFullYear();
@@ -370,6 +816,9 @@
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
+        // ============================================================
+        //  5. 搜索引擎
+        // ============================================================
         function renderEngineSelect() {
             const select = document.getElementById('engineSelect');
             select.innerHTML = SEARCH_ENGINES.map((engine, i) => `
@@ -382,11 +831,7 @@
             const input = document.getElementById('engineSearchInput');
             const keyword = input.value.trim();
             if (!keyword) {
-                const toast = document.createElement('div');
-                toast.className = 'toast toast-error';
-                toast.textContent = '请输入关键词';
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2000);
+                showToast('请输入关键词', true);
                 return;
             }
             const index = parseInt(document.getElementById('engineSelect').value);
@@ -398,12 +843,318 @@
         document.getElementById('engineSearchInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performSearch();
         });
-
         document.getElementById('engineSearchInput').focus();
 
+        // ============================================================
+        //  6. 标签管理 — 纯后端存储
+        // ============================================================
+        const DEFAULT_TABS = [
+            { name: 'GitHub', url: 'https://github.com', icon: '🐙' },
+            { name: 'V2EX', url: 'https://v2ex.com', icon: '💬' },
+            { name: 'MDN', url: 'https://developer.mozilla.org', icon: '📘' },
+            { name: 'Canva', url: 'https://canva.com', icon: '🎨' },
+            { name: 'Cloudflare', url: 'https://cloudflare.com', icon: '☁️' },
+            { name: 'Arley Blog', url: 'https://blog.arley.cn', icon: '📝' }
+        ];
+
+        let currentTabs = [];
+        let isNetworkError = false;
+
+        // 从后端获取标签
+        async function fetchTabs() {
+            const errorBanner = document.getElementById('networkErrorBanner');
+            try {
+                const res = await fetch(`${API_BASE}/api/tabs`);
+                const result = await res.json();
+                if (result.success && Array.isArray(result.data)) {
+                    currentTabs = result.data.length > 0 ? result.data : [...DEFAULT_TABS];
+                    isNetworkError = false;
+                    errorBanner.classList.remove('active');
+                } else {
+                    // 后端返回空或失败，使用默认
+                    currentTabs = [...DEFAULT_TABS];
+                    // 尝试初始化到后端
+                    await saveTabsToServer(currentTabs);
+                    isNetworkError = false;
+                    errorBanner.classList.remove('active');
+                }
+                renderTabs();
+            } catch (err) {
+                console.error('获取标签失败:', err);
+                isNetworkError = true;
+                errorBanner.classList.add('active');
+                // 使用默认数据展示（但不保存）
+                currentTabs = [...DEFAULT_TABS];
+                renderTabs();
+                showToast('网络异常，使用默认标签', true);
+            }
+        }
+
+        // 保存标签到后端
+        async function saveTabsToServer(tabs) {
+            const errorBanner = document.getElementById('networkErrorBanner');
+            try {
+                const res = await fetch(`${API_BASE}/api/tabs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tabs })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    isNetworkError = false;
+                    errorBanner.classList.remove('active');
+                    return true;
+                } else {
+                    throw new Error(result.error || '保存失败');
+                }
+            } catch (err) {
+                console.error('保存标签失败:', err);
+                isNetworkError = true;
+                errorBanner.classList.add('active');
+                showToast('保存失败，请检查网络', true);
+                return false;
+            }
+        }
+
+        // 渲染标签
+        function renderTabs() {
+            const grid = document.getElementById('quickTabsGrid');
+            const tabs = currentTabs || [];
+
+            if (!tabs || tabs.length === 0) {
+                grid.innerHTML = `
+                    <div class="quick-tabs-empty" style="grid-column:1/-1;">
+                        🌱 还没有标签，点击「+ 添加」创建你的快捷方式吧
+                    </div>
+                    <div class="quick-tab-add" onclick="openAddModal()">
+                        <span class="add-icon">➕</span>
+                        <span class="add-text">添加</span>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            tabs.forEach((tab, index) => {
+                const icon = tab.icon || '🔗';
+                const name = tab.name || '未命名';
+                const url = tab.url || '#';
+                html += `
+                    <div class="quick-tab-item" onclick="openTab('${escapeHtml(url)}')" title="${escapeHtml(name)}">
+                        <span class="quick-tab-icon">${icon}</span>
+                        <span class="quick-tab-name">${escapeHtml(name)}</span>
+                        <span class="quick-tab-delete" onclick="event.stopPropagation(); deleteTab(${index})">✕</span>
+                    </div>
+                `;
+            });
+
+            // 添加按钮
+            html += `
+                <div class="quick-tab-add" onclick="openAddModal()">
+                    <span class="add-icon">➕</span>
+                    <span class="add-text">添加</span>
+                </div>
+            `;
+
+            grid.innerHTML = html;
+        }
+
+        // 打开标签
+        function openTab(url) {
+            if (!url || url === '#') return;
+            let finalUrl = url;
+            if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                finalUrl = 'https://' + finalUrl;
+            }
+            window.open(finalUrl, '_blank');
+        }
+
+        // 删除标签
+        async function deleteTab(index) {
+            if (index < 0 || index >= currentTabs.length) return;
+            const name = currentTabs[index].name || '未命名';
+            if (!confirm(`确定要删除「${name}」吗？`)) return;
+            
+            const deleted = currentTabs.splice(index, 1);
+            const success = await saveTabsToServer(currentTabs);
+            if (success) {
+                renderTabs();
+                showToast(`已删除「${name}」`);
+            } else {
+                // 保存失败，恢复数据
+                currentTabs.splice(index, 0, deleted[0]);
+                renderTabs();
+                showToast('删除失败，请检查网络', true);
+            }
+        }
+
+        // 重置标签
+        async function resetTabs() {
+            if (!confirm('确定要重置为默认标签吗？')) return;
+            currentTabs = [...DEFAULT_TABS];
+            const success = await saveTabsToServer(currentTabs);
+            renderTabs();
+            showToast(success ? '已重置为默认标签' : '重置失败，请检查网络', !success);
+        }
+
+        // ============================================================
+        //  7. 添加标签弹窗
+        // ============================================================
+        const modal = document.getElementById('tabModal');
+        const nameInput = document.getElementById('tabNameInput');
+        const urlInput = document.getElementById('tabUrlInput');
+        const iconInput = document.getElementById('tabIconInput');
+        const loadingEl = document.getElementById('tabModalLoading');
+
+        function openAddModal() {
+            nameInput.value = '';
+            urlInput.value = '';
+            iconInput.value = '';
+            loadingEl.classList.remove('active');
+            modal.classList.add('active');
+            setTimeout(() => nameInput.focus(), 150);
+        }
+
+        function closeAddModal() {
+            modal.classList.remove('active');
+            loadingEl.classList.remove('active');
+        }
+
+        // 智能匹配图标
+        function getAutoIcon(name) {
+            if (!name) return '🔗';
+            const firstChar = name.charAt(0).toUpperCase();
+            const emojiMap = {
+                'G': '🐙', 'V': '💬', 'M': '📘', 'C': '☁️',
+                'A': '📝', 'B': '🔵', 'D': '🐶', 'Y': '🌟',
+                'T': '📰', 'S': '🔍', 'W': '🌐', 'N': '📺',
+                'Z': '💎', 'P': '📷', 'F': '📄', 'E': '📧',
+                'R': '📚', 'U': '🎓', 'I': '💡', 'O': '🎯',
+                'L': '📋', 'H': '🛠️', 'J': '☕', 'K': '🔑',
+                'Q': '❓', 'X': '✖️', '1': '🔢', '2': '🔢',
+                '3': '🔢', '4': '🔢', '5': '🔢', '6': '🔢',
+                '7': '🔢', '8': '🔢', '9': '🔢', '0': '🔢'
+            };
+            return emojiMap[firstChar] || '🔗';
+        }
+
+        async function confirmAddTab() {
+            const name = nameInput.value.trim();
+            let url = urlInput.value.trim();
+            let icon = iconInput.value.trim();
+
+            if (!name) {
+                showToast('请输入网站名称', true);
+                nameInput.focus();
+                return;
+            }
+            if (!url) {
+                showToast('请输入网址', true);
+                urlInput.focus();
+                return;
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            if (!icon) {
+                icon = getAutoIcon(name);
+            }
+
+            // 检查重复
+            const exists = currentTabs.some(t => t.name === name || t.url === url);
+            if (exists) {
+                showToast('该标签已存在', true);
+                return;
+            }
+
+            loadingEl.classList.add('active');
+            const confirmBtn = document.getElementById('tabModalConfirm');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = '提交中...';
+
+            const newTab = { name, url, icon };
+            currentTabs.push(newTab);
+            const success = await saveTabsToServer(currentTabs);
+            
+            if (success) {
+                renderTabs();
+                closeAddModal();
+                showToast(`✅ 已添加「${name}」`);
+            } else {
+                // 回滚
+                currentTabs.pop();
+                renderTabs();
+                showToast('添加失败，请检查网络', true);
+            }
+
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = '添加';
+            loadingEl.classList.remove('active');
+        }
+
+        // ============================================================
+        //  8. 弹窗事件绑定
+        // ============================================================
+        document.getElementById('addTabBtn').addEventListener('click', openAddModal);
+        document.getElementById('resetTabsBtn').addEventListener('click', resetTabs);
+        document.getElementById('tabModalCancel').addEventListener('click', closeAddModal);
+        document.getElementById('tabModalConfirm').addEventListener('click', confirmAddTab);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeAddModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeAddModal();
+            }
+        });
+
+        nameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') urlInput.focus(); });
+        urlInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') iconInput.focus(); });
+        iconInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') confirmAddTab(); });
+
+        // 暴露全局函数
+        window.openTab = openTab;
+        window.deleteTab = deleteTab;
+        window.openAddModal = openAddModal;
+        window.resetTabs = resetTabs;
+
+        // ============================================================
+        //  9. Toast 提示
+        // ============================================================
+        function showToast(msg, isError = false) {
+            // 移除已有 toast
+            document.querySelectorAll('.toast').forEach(el => el.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast' + (isError ? ' toast-error' : '');
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        // ============================================================
+        //  10. 工具函数
+        // ============================================================
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // ============================================================
+        //  11. 版权信息
+        // ============================================================
         async function fetchCopyright() {
             try {
-                const res = await fetch('/api/siteinfo');
+                const res = await fetch(`${API_BASE}/api/siteinfo`);
                 const result = await res.json();
                 const currentYear = new Date().getFullYear();
                 const container = document.getElementById('copyrightContainer');
@@ -442,7 +1193,14 @@
                 document.getElementById('copyrightContainer').innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
             }
         }
+
+        // ============================================================
+        //  12. 初始化
+        // ============================================================
+        fetchTabs();
         fetchCopyright();
+
+        console.log("%c 🏷️ 标签已加载（后端存储） %c 数据同步到 Upstash Redis ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px; background:#f29bb8; color:white;");
     </script>
 </body>
 </html>
