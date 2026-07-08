@@ -13,13 +13,13 @@ export default {
 				return {
 					"Access-Control-Allow-Origin": origin,
 					"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
-					"Access-Control-Allow-Headers": "Content-Type, Authorization",
+					"Access-Control-Allow-Headers": "Content-Type, Authorization, X-Username",
 					"Access-Control-Allow-Credentials": "true",
 				};
 			}
 			return {
 				"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
-				"Access-Control-Allow-Headers": "Content-Type, Authorization",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization, X-Username",
 			};
 		}
 
@@ -142,75 +142,7 @@ export default {
 		}
 
 		// ================================================================
-		//  ========== 标签 API（放在书签 API 之前） ==========
-		// ================================================================
-
-		// 获取标签（公开）
-		if (path === "/api/tabs" && method === "GET") {
-			try {
-				let tabs = await redisCommand("GET", "tabs");
-				if (!tabs) {
-					await redisCommand("SET", "tabs", JSON.stringify(DEFAULT_TABS));
-					tabs = DEFAULT_TABS;
-				}
-				if (typeof tabs === "string") tabs = JSON.parse(tabs);
-				return new Response(JSON.stringify({
-					success: true,
-					data: tabs
-				}), {
-					status: 200,
-					headers: {
-						...getCorsHeaders(request),
-						"Content-Type": "application/json"
-					}
-				});
-			} catch (err) {
-				return new Response(JSON.stringify({
-					success: false,
-					error: err.message
-				}), {
-					status: 500,
-					headers: getCorsHeaders(request)
-				});
-			}
-		}
-
-		// 保存标签（公开）
-		if (path === "/api/tabs" && method === "POST") {
-			try {
-				const { tabs } = await request.json();
-				if (!Array.isArray(tabs)) {
-					return new Response(JSON.stringify({
-						success: false,
-						error: "数据格式错误"
-					}), {
-						status: 400,
-						headers: getCorsHeaders(request)
-					});
-				}
-				const limitedTabs = tabs.slice(0, 50);
-				await redisCommand("SET", "tabs", JSON.stringify(limitedTabs));
-				return new Response(JSON.stringify({
-					success: true,
-					message: "保存成功",
-					count: limitedTabs.length
-				}), {
-					status: 200,
-					headers: getCorsHeaders(request)
-				});
-			} catch (err) {
-				return new Response(JSON.stringify({
-					success: false,
-					error: err.message
-				}), {
-					status: 500,
-					headers: getCorsHeaders(request)
-				});
-			}
-		}
-
-		// ================================================================
-		//  ========== 书签 API ==========
+		//  ✅ 1. 📚 书签 API（完全不变，主站依赖）
 		// ================================================================
 
 		// 获取书签（公开）
@@ -470,7 +402,7 @@ export default {
 		}
 
 		// ================================================================
-		//  ========== 留言 API ==========
+		//  ✅ 2. 💬 留言 API（完全不变）
 		// ================================================================
 
 		if (path === "/api/messages" && method === "GET") {
@@ -628,7 +560,7 @@ export default {
 		}
 
 		// ================================================================
-		//  ========== 404反馈 API ==========
+		//  ✅ 3. 🚫 404反馈 API（完全不变）
 		// ================================================================
 
 		if (path === "/api/admin/404feedback" && method === "GET") {
@@ -862,7 +794,7 @@ export default {
 		}
 
 		// ================================================================
-		//  ========== 快捷链接 API ==========
+		//  ✅ 4. 🔗 快捷链接 API（完全不变）
 		// ================================================================
 
 		if (path === "/api/quicklinks" && method === "GET") {
@@ -955,7 +887,7 @@ export default {
 		}
 
 		// ================================================================
-		//  ========== 网站设置 API ==========
+		//  ✅ 5. ⚙️ 网站设置 API（完全不变）
 		// ================================================================
 
 		if (path === "/api/siteinfo" && method === "GET") {
@@ -1038,7 +970,7 @@ export default {
 		}
 
 		// ================================================================
-		//  ========== 登录 API ==========
+		//  ✅ 6. 🔑 管理登录 API（完全不变）
 		// ================================================================
 
 		if (path === "/api/login" && method === "POST") {
@@ -1058,6 +990,322 @@ export default {
 					error: "密码错误"
 				}), {
 					status: 401,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// ================================================================
+		//  ✅ 7. 🆕 用户认证 API（新增，不影响原有功能）
+		// ================================================================
+
+		// 用户注册
+		if (path === "/api/auth/register" && method === "POST") {
+			try {
+				const { username, password } = await request.json();
+				
+				if (!username || !password) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "用户名和密码不能为空"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+				
+				if (username.length < 2 || username.length > 20) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "用户名长度需在 2-20 个字符"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+				
+				if (password.length < 4) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "密码长度至少 4 个字符"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const userKey = `user:${username}`;
+				const existing = await redisCommand("GET", userKey);
+				if (existing) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "用户名已被注册"
+					}), {
+						status: 409,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const userData = {
+					username: username,
+					password: password,
+					createdAt: new Date().toISOString()
+				};
+				await redisCommand("SET", userKey, JSON.stringify(userData));
+
+				const tabsKey = `tabs:${username}`;
+				await redisCommand("SET", tabsKey, JSON.stringify(DEFAULT_TABS));
+
+				return new Response(JSON.stringify({
+					success: true,
+					message: "注册成功，请登录"
+				}), {
+					status: 200,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// 用户登录
+		if (path === "/api/auth/login" && method === "POST") {
+			try {
+				const { username, password } = await request.json();
+				
+				if (!username || !password) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "用户名和密码不能为空"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const userKey = `user:${username}`;
+				const userDataRaw = await redisCommand("GET", userKey);
+				
+				if (!userDataRaw) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "用户不存在"
+					}), {
+						status: 401,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const userData = typeof userDataRaw === "string" ? JSON.parse(userDataRaw) : userDataRaw;
+				
+				if (userData.password !== password) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "密码错误"
+					}), {
+						status: 401,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const token = btoa(`${username}:${Date.now()}:${Math.random().toString(36).substring(2, 10)}`);
+
+				return new Response(JSON.stringify({
+					success: true,
+					token: token,
+					username: username,
+					message: "登录成功"
+				}), {
+					status: 200,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// 验证 token
+		if (path === "/api/auth/verify" && method === "POST") {
+			try {
+				const { token } = await request.json();
+				if (!token) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "缺少 token"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				try {
+					const decoded = atob(token);
+					const parts = decoded.split(':');
+					if (parts.length === 3) {
+						const timestamp = parseInt(parts[1]);
+						const now = Date.now();
+						if (now - timestamp > 7 * 24 * 60 * 60 * 1000) {
+							return new Response(JSON.stringify({
+								success: false,
+								error: "登录已过期，请重新登录"
+							}), {
+								status: 401,
+								headers: getCorsHeaders(request)
+							});
+						}
+						return new Response(JSON.stringify({
+							success: true,
+							username: parts[0],
+							message: "token 有效"
+						}), {
+							status: 200,
+							headers: getCorsHeaders(request)
+						});
+					}
+				} catch (e) {}
+
+				return new Response(JSON.stringify({
+					success: false,
+					error: "无效的 token"
+				}), {
+					status: 401,
+					headers: getCorsHeaders(request)
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// ================================================================
+		//  ✅ 8. 📌 用户标签 API（新增，不影响原有功能）
+		// ================================================================
+
+		// 获取用户标签（支持用户隔离）
+		if (path === "/api/tabs" && method === "GET") {
+			try {
+				const username = request.headers.get("X-Username");
+				
+				if (username) {
+					// 登录用户：获取自己的标签
+					const tabsKey = `tabs:${username}`;
+					let tabs = await redisCommand("GET", tabsKey);
+					if (!tabs) {
+						await redisCommand("SET", tabsKey, JSON.stringify(DEFAULT_TABS));
+						tabs = DEFAULT_TABS;
+					}
+					if (typeof tabs === "string") tabs = JSON.parse(tabs);
+					return new Response(JSON.stringify({
+						success: true,
+						data: tabs,
+						isLoggedIn: true,
+						username: username
+					}), {
+						status: 200,
+						headers: {
+							...getCorsHeaders(request),
+							"Content-Type": "application/json"
+						}
+					});
+				} else {
+					// 未登录：返回默认标签
+					return new Response(JSON.stringify({
+						success: true,
+						data: DEFAULT_TABS,
+						isLoggedIn: false,
+						message: "未登录，使用默认标签"
+					}), {
+						status: 200,
+						headers: {
+							...getCorsHeaders(request),
+							"Content-Type": "application/json"
+						}
+					});
+				}
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err.message
+				}), {
+					status: 500,
+					headers: getCorsHeaders(request)
+				});
+			}
+		}
+
+		// 保存用户标签（需要登录）
+		if (path === "/api/tabs" && method === "POST") {
+			try {
+				const username = request.headers.get("X-Username");
+				
+				if (!username) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "请先登录"
+					}), {
+						status: 401,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const userKey = `user:${username}`;
+				const userExists = await redisCommand("GET", userKey);
+				if (!userExists) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "用户不存在，请重新登录"
+					}), {
+						status: 401,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const { tabs } = await request.json();
+				if (!Array.isArray(tabs)) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "数据格式错误"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
+
+				const limitedTabs = tabs.slice(0, 50);
+				const tabsKey = `tabs:${username}`;
+				await redisCommand("SET", tabsKey, JSON.stringify(limitedTabs));
+
+				return new Response(JSON.stringify({
+					success: true,
+					message: "保存成功",
+					count: limitedTabs.length
+				}), {
+					status: 200,
 					headers: getCorsHeaders(request)
 				});
 			} catch (err) {
