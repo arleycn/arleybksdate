@@ -1,1269 +1,1265 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="author" content="Arley">
-    <meta name="keywords" content="arley,搜索,引擎,导航"/>
-    <meta name="description" content="Arley's | 极简搜索 + 标签">
-    <title>Arley's | 搜索</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="shortcut icon" href="/images/bks.png" type="image/x-icon">
-    <link rel="apple-touch-icon" href="/images/bks.png">
-    <link rel="stylesheet" href="css/main.css">
-    <style>
-        /* ===== 基础重置 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background: linear-gradient(145deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding: 1rem;
-            position: relative;
-        }
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('../images/bg.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            opacity: 0.35;
-            z-index: -2;
-            pointer-events: none;
-        }
-        body.dark::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-            pointer-events: none;
-        }
-        @media (max-width: 768px) {
-            body::before {
-                background-image: url('../images/bgmobile.jpg');
-                opacity: 0.4;
-            }
-        }
-
-        /* ===== 搜索区域 ===== */
-        .search-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 0.5rem 1rem 1rem;
-            position: relative;
-            z-index: 1;
-            gap: 1.2rem;
-        }
-
-        .search-container {
-            width: 100%;
-            max-width: 680px;
-            text-align: center;
-            padding: 0.5rem 0;
-        }
-
-        .search-datetime {
-            margin-bottom: 1.5rem;
-        }
-        .search-datetime .date {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            opacity: 0.7;
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
-        .search-datetime .time {
-            font-size: 4rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #e8809e, #c95c7c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            line-height: 1.2;
-            letter-spacing: 4px;
-            font-variant-numeric: tabular-nums;
-        }
-        body.dark .search-datetime .time {
-            background: linear-gradient(135deg, #d99bb8, #b86b9e);
-            background-clip: text;
-            -webkit-background-clip: text;
-        }
-        .search-datetime .weekday {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            opacity: 0.5;
-            margin-top: 0.2rem;
-            letter-spacing: 3px;
-        }
-
-        .search-engine-box {
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 60px;
-            padding: 0.3rem 0.3rem 0.3rem 0.3rem;
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 0.2rem;
-            box-shadow: 0 8px 28px -12px var(--shadow-color);
-            transition: box-shadow 0.25s;
-            margin-bottom: 0.3rem;
-        }
-        .search-engine-box:focus-within {
-            box-shadow: 0 8px 32px -8px var(--shadow-color), 0 0 0 2px rgba(245, 163, 189, 0.25);
-        }
-        .search-engine-box select {
-            background: transparent;
-            border: none;
-            padding: 10px 6px 10px 16px;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            outline: none;
-            cursor: pointer;
-            font-family: inherit;
-            min-width: 80px;
-            border-right: 1px solid var(--border-color);
-            border-radius: 40px 0 0 40px;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            padding-right: 28px;
-        }
-        .search-engine-box select option {
-            background: var(--card-bg);
-            color: var(--text-primary);
-        }
-        .search-engine-box select:hover {
-            background-color: var(--btn-bg);
-        }
-        .search-engine-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 12px 6px;
-            font-size: 1rem;
-            color: var(--text-primary) !important;
-            outline: none;
-            min-width: 0;
-        }
-        .search-engine-box input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
-        }
-        .search-engine-box input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset !important;
-            -webkit-text-fill-color: var(--text-primary) !important;
-        }
-        .search-engine-box button {
-            background: var(--btn-primary);
-            border: none;
-            color: white;
-            padding: 10px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .search-engine-box button:hover {
-            filter: brightness(1.08);
-            transform: scale(1.02);
-        }
-        .search-tip {
-            font-size: 0.6rem;
-            color: var(--text-secondary);
-            opacity: 0.4;
-            text-align: center;
-            margin-top: 0.1rem;
-        }
-
-        /* ===== 标签区域 ===== */
-        .quick-tabs-section {
-            width: 100%;
-            max-width: 760px;
-            margin: 0.2rem auto 0;
-            padding: 0.5rem 0;
-        }
-
-        .quick-tabs-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.6rem;
-            padding: 0 0.2rem;
-        }
-        .quick-tabs-header h3 {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            opacity: 0.6;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-        .quick-tabs-actions {
-            display: flex;
-            gap: 6px;
-        }
-        .quick-tabs-actions button {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            backdrop-filter: blur(4px);
-            font-family: inherit;
-        }
-        .quick-tabs-actions button:hover {
-            background: var(--btn-primary);
-            color: white;
-        }
-        /* 添加按钮在左，重置在右 */
-        .quick-tabs-actions .btn-add {
-            order: 0;
-        }
-        .quick-tabs-actions .btn-reset {
-            order: 1;
-            opacity: 0.5;
-        }
-
-        .quick-tabs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-            gap: 10px;
-            padding: 0.3rem 0;
-        }
-
-        .quick-tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 4px;
-            border-radius: 16px;
-            background: var(--card-bg);
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            backdrop-filter: blur(4px);
-            text-decoration: none;
-            color: var(--text-primary);
-            min-height: 72px;
-            position: relative;
-            gap: 4px;
-        }
-        .quick-tab-item:hover {
-            transform: translateY(-4px);
-            border-color: var(--btn-primary);
-            box-shadow: 0 8px 20px -10px var(--shadow-color);
-        }
-        .quick-tab-item:active {
-            transform: scale(0.94);
-        }
-
-        .quick-tab-icon {
-            font-size: 1.6rem;
-            line-height: 1.4;
-            transition: transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-        }
-        .quick-tab-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 4px;
-        }
-        .quick-tab-item:hover .quick-tab-icon {
-            transform: scale(1.08);
-        }
-
-        .quick-tab-name {
-            font-size: 0.55rem;
-            color: var(--text-secondary);
-            text-align: center;
-            max-width: 64px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-weight: 500;
-        }
-
-        .quick-tab-delete {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #ef4444;
-            color: white;
-            border: 2px solid var(--card-bg);
-            font-size: 10px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            line-height: 1;
-            padding: 0;
-        }
-        .quick-tab-item:hover .quick-tab-delete {
-            display: flex;
-        }
-        .quick-tab-delete:hover {
-            transform: scale(1.2);
-            background: #dc2626;
-        }
-
-        .quick-tab-add {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 4px;
-            border-radius: 16px;
-            border: 2px dashed var(--border-color);
-            cursor: pointer;
-            transition: all 0.25s;
-            background: transparent;
-            min-height: 72px;
-            gap: 2px;
-            color: var(--text-secondary);
-            opacity: 0.5;
-        }
-        .quick-tab-add:hover {
-            opacity: 1;
-            border-color: var(--btn-primary);
-            background: var(--card-bg);
-        }
-        .quick-tab-add .add-icon {
-            font-size: 1.8rem;
-            line-height: 1.4;
-        }
-        .quick-tab-add .add-text {
-            font-size: 0.5rem;
-        }
-
-        .quick-tabs-empty {
-            text-align: center;
-            padding: 1.5rem 0.5rem;
-            color: var(--text-secondary);
-            opacity: 0.4;
-            font-size: 0.75rem;
-        }
-
-        .network-error-banner {
-            display: none;
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.6rem;
-            margin-top: 0.3rem;
-            text-align: center;
-        }
-        body.dark .network-error-banner {
-            background: #451a03;
-            color: #fcd34d;
-        }
-        .network-error-banner.active {
-            display: inline-block;
-        }
-
-        /* ===== 顶部导航 ===== */
-        .top-nav {
-            position: fixed;
-            top: 1rem;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 100;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .top-nav a,
-        .top-nav select {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 6px 16px;
-            border-radius: 30px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            transition: all 0.2s;
-            backdrop-filter: blur(8px);
-            cursor: pointer;
-            font-family: inherit;
-        }
-        .top-nav a:hover,
-        .top-nav select:hover {
-            background: var(--btn-primary);
-            color: white;
-        }
-        .top-nav select option {
-            background: var(--card-bg);
-            color: var(--text-primary);
-        }
-
-        /* ===== 底部版权 ===== */
-        .search-footer {
-            width: 100%;
-            max-width: 1300px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            flex-shrink: 0;
-            padding: 0.5rem 0;
-        }
-        .search-footer .footer-bottom {
-            padding: 0.6rem 1rem;
-            text-align: center;
-            font-size: 0.6rem;
-            color: var(--text-secondary);
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(8px);
-        }
-
-        /* ================================================================
-           ===== 弹窗样式 =====
-           ================================================================ */
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 28px;
-            padding: 1.2rem;
-            width: 90%;
-            max-width: 400px;
-            border: 1px solid var(--border-color);
-            animation: modalSlideIn 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            color: var(--text-primary);
-        }
-
-        .modal-content h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .modal-content .form-group {
-            margin-bottom: 0.8rem;
-        }
-        .modal-content .form-group label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 0.3rem;
-        }
-        .modal-content .form-group input {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 30px;
-            border: 1.5px solid var(--border-color);
-            background: var(--card-bg);
-            color: var(--text-primary);
-            font-size: 0.85rem;
-            outline: none;
-            font-family: inherit;
-            transition: border-color 0.25s;
-        }
-        .modal-content .form-group input:focus {
-            border-color: var(--btn-primary);
-        }
-        .modal-content .form-group input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.4;
-        }
-
-        /* 网站图标预览 */
-        .favicon-preview {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 6px;
-            padding: 6px 12px;
-            background: var(--btn-bg);
-            border-radius: 30px;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            opacity: 0.7;
-            min-height: 36px;
-        }
-        .favicon-preview .preview-icon {
-            font-size: 1.2rem;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .favicon-preview .preview-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 4px;
-        }
-        .favicon-preview .preview-label {
-            font-size: 0.6rem;
-            opacity: 0.6;
-        }
-
-        .modal-content .icon-hint {
-            font-size: 0.55rem;
-            color: var(--text-secondary);
-            opacity: 0.5;
-            margin-top: 0.1rem;
-            text-align: right;
-        }
-
-        .modal-content .modal-loading {
-            display: none;
-            text-align: center;
-            padding: 0.3rem 0;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-        .modal-content .modal-loading.active {
-            display: block;
-        }
-
-        /* ===== 按钮布局：取消在左，确认在右 ===== */
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid var(--border-color);
-        }
-        .modal-buttons .btn {
-            background: var(--btn-bg);
-            border: none;
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-secondary);
-            font-family: inherit;
-            min-width: 72px;
-        }
-        .modal-buttons .btn:hover {
-            opacity: 0.8;
-        }
-        .modal-buttons .btn-primary {
-            background: var(--btn-primary);
-            color: white;
-        }
-        .modal-buttons .btn-primary:hover {
-            filter: brightness(1.05);
-            transform: translateY(-1px);
-        }
-        .modal-buttons .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .modal-buttons .btn-cancel {
-            margin-right: auto;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ===== Toast ===== */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #27ae60;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            z-index: 1100;
-            animation: fadeOut 2.5s ease forwards;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-        .toast-error {
-            background: #c0392b;
-        }
-        @keyframes fadeOut {
-            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            70% { opacity: 1; }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-15px); visibility: hidden; }
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 640px) {
-            .search-datetime .time { font-size: 3rem; }
-            .search-datetime .date { font-size: 1rem; }
-            .search-engine-box { flex-wrap: wrap; padding: 0.4rem; border-radius: 30px; }
-            .search-engine-box select { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); border-radius: 30px 30px 0 0; padding: 8px 16px; text-align: center; }
-            .search-engine-box input { padding: 10px 6px; font-size: 0.9rem; }
-            .search-engine-box button { width: 100%; padding: 8px 16px; font-size: 0.8rem; }
-            .top-nav a, .top-nav select { font-size: 0.7rem; padding: 4px 12px; }
-            .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; }
-            .quick-tab-item { min-height: 62px; padding: 6px 3px; }
-            .quick-tab-icon { font-size: 1.3rem; width: 28px; height: 28px; }
-            .quick-tab-name { font-size: 0.5rem; max-width: 50px; }
-            .quick-tab-add { min-height: 62px; }
-            .quick-tab-add .add-icon { font-size: 1.4rem; }
-            .modal-content { padding: 1rem; border-radius: 24px; }
-            .modal-buttons .btn { padding: 6px 14px; font-size: 0.75rem; min-width: 60px; }
-            .favicon-preview { font-size: 0.65rem; padding: 4px 10px; }
-        }
-
-        @media (max-width: 400px) {
-            .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
-            .quick-tab-item { min-height: 54px; padding: 4px 2px; border-radius: 12px; }
-            .quick-tab-icon { font-size: 1.1rem; width: 24px; height: 24px; }
-            .quick-tab-name { font-size: 0.45rem; max-width: 44px; }
-            .quick-tab-add { min-height: 54px; }
-            .quick-tab-add .add-icon { font-size: 1.2rem; }
-        }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+	<meta name="author" content="Arley">
+	<meta name="keywords" content="arley,搜索,引擎,导航" />
+	<meta name="description" content="Arley's | 极简搜索 + 标签">
+	<title>Arley's | 搜索</title>
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<link rel="shortcut icon" href="/images/bks.png" type="image/x-icon">
+	<link rel="apple-touch-icon" href="/images/bks.png">
+	<link rel="stylesheet" href="css/main.css">
+	<style>
+		/* ===== 基础重置 ===== */
+		* {
+		    margin: 0;
+		    padding: 0;
+		    box-sizing: border-box;
+		}
+		html, body {
+		    height: 100%;
+		    margin: 0;
+		    padding: 0;
+		}
+		body {
+		    background: linear-gradient(145deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+		    font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
+		    color: var(--text-primary);
+		    transition: all 0.3s ease;
+		    display: flex;
+		    flex-direction: column;
+		    min-height: 100vh;
+		    padding: 1rem;
+		    position: relative;
+		}
+		body::before {
+		    content: "";
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100%;
+		    height: 100%;
+		    background-image: url('../images/bg.jpg');
+		    background-size: cover;
+		    background-position: center;
+		    background-repeat: no-repeat;
+		    background-attachment: fixed;
+		    opacity: 0.35;
+		    z-index: -2;
+		    pointer-events: none;
+		}
+		body.dark::after {
+		    content: "";
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100%;
+		    height: 100%;
+		    background: rgba(0, 0, 0, 0.5);
+		    z-index: -1;
+		    pointer-events: none;
+		}
+		@media (max-width: 768px) {
+		    body::before {
+		        background-image: url('../images/bgmobile.jpg');
+		        opacity: 0.4;
+		    }
+		}
+		
+		/* ===== 搜索区域 ===== */
+		.search-wrapper {
+		    flex: 1;
+		    display: flex;
+		    flex-direction: column;
+		    justify-content: center;
+		    align-items: center;
+		    padding: 0.5rem 1rem 1rem;
+		    position: relative;
+		    z-index: 1;
+		    gap: 1.2rem;
+		}
+		
+		.search-container {
+		    width: 100%;
+		    max-width: 680px;
+		    text-align: center;
+		    padding: 0.5rem 0;
+		}
+		
+		.search-datetime {
+		    margin-bottom: 1.5rem;
+		}
+		.search-datetime .date {
+		    font-size: 1.2rem;
+		    color: var(--text-secondary);
+		    opacity: 0.7;
+		    font-weight: 300;
+		    letter-spacing: 2px;
+		}
+		.search-datetime .time {
+		    font-size: 4rem;
+		    font-weight: 700;
+		    background: linear-gradient(135deg, #e8809e, #c95c7c);
+		    background-clip: text;
+		    -webkit-background-clip: text;
+		    color: transparent;
+		    line-height: 1.2;
+		    letter-spacing: 4px;
+		    font-variant-numeric: tabular-nums;
+		}
+		body.dark .search-datetime .time {
+		    background: linear-gradient(135deg, #d99bb8, #b86b9e);
+		    background-clip: text;
+		    -webkit-background-clip: text;
+		}
+		.search-datetime .weekday {
+		    font-size: 0.9rem;
+		    color: var(--text-secondary);
+		    opacity: 0.5;
+		    margin-top: 0.2rem;
+		    letter-spacing: 3px;
+		}
+		
+		.search-engine-box {
+		    width: 100%;
+		    background: var(--card-bg);
+		    border-radius: 60px;
+		    padding: 0.3rem 0.3rem 0.3rem 0.3rem;
+		    backdrop-filter: blur(12px);
+		    border: 1px solid var(--border-color);
+		    display: flex;
+		    align-items: center;
+		    gap: 0.2rem;
+		    box-shadow: 0 8px 28px -12px var(--shadow-color);
+		    transition: box-shadow 0.25s;
+		    margin-bottom: 0.3rem;
+		}
+		.search-engine-box:focus-within {
+		    box-shadow: 0 8px 32px -8px var(--shadow-color), 0 0 0 2px rgba(245, 163, 189, 0.25);
+		}
+		.search-engine-box select {
+		    background: transparent;
+		    border: none;
+		    padding: 10px 6px 10px 16px;
+		    font-size: 0.85rem;
+		    color: var(--text-primary);
+		    outline: none;
+		    cursor: pointer;
+		    font-family: inherit;
+		    min-width: 80px;
+		    border-right: 1px solid var(--border-color);
+		    border-radius: 40px 0 0 40px;
+		    appearance: none;
+		    -webkit-appearance: none;
+		    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+		    background-repeat: no-repeat;
+		    background-position: right 8px center;
+		    padding-right: 28px;
+		}
+		.search-engine-box select option {
+		    background: var(--card-bg);
+		    color: var(--text-primary);
+		}
+		.search-engine-box select:hover {
+		    background-color: var(--btn-bg);
+		}
+		.search-engine-box input {
+		    flex: 1;
+		    border: none;
+		    background: transparent;
+		    padding: 12px 6px;
+		    font-size: 1rem;
+		    color: var(--text-primary) !important;
+		    outline: none;
+		    min-width: 0;
+		}
+		.search-engine-box input::placeholder {
+		    color: var(--text-secondary);
+		    opacity: 0.5;
+		}
+		.search-engine-box input:-webkit-autofill {
+		    -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset !important;
+		    -webkit-text-fill-color: var(--text-primary) !important;
+		}
+		.search-engine-box button {
+		    background: var(--btn-primary);
+		    border: none;
+		    color: white;
+		    padding: 10px 22px;
+		    border-radius: 40px;
+		    font-weight: 600;
+		    font-size: 0.9rem;
+		    cursor: pointer;
+		    transition: all 0.2s;
+		    white-space: nowrap;
+		    flex-shrink: 0;
+		}
+		.search-engine-box button:hover {
+		    filter: brightness(1.08);
+		    transform: scale(1.02);
+		}
+		.search-tip {
+		    font-size: 0.6rem;
+		    color: var(--text-secondary);
+		    opacity: 0.4;
+		    text-align: center;
+		    margin-top: 0.1rem;
+		}
+		
+		/* ===== 标签区域 ===== */
+		.quick-tabs-section {
+		    width: 100%;
+		    max-width: 760px;
+		    margin: 0.2rem auto 0;
+		    padding: 0.5rem 0;
+		}
+		
+		.quick-tabs-header {
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		    margin-bottom: 0.6rem;
+		    padding: 0 0.2rem;
+		}
+		.quick-tabs-header h3 {
+		    font-size: 0.8rem;
+		    color: var(--text-secondary);
+		    opacity: 0.6;
+		    font-weight: 400;
+		    letter-spacing: 1px;
+		}
+		.quick-tabs-actions {
+		    display: flex;
+		    gap: 6px;
+		}
+		.quick-tabs-actions button {
+		    background: var(--card-bg);
+		    border: 1px solid var(--border-color);
+		    padding: 3px 12px;
+		    border-radius: 30px;
+		    font-size: 0.65rem;
+		    color: var(--text-secondary);
+		    cursor: pointer;
+		    transition: all 0.2s;
+		    backdrop-filter: blur(4px);
+		    font-family: inherit;
+		}
+		.quick-tabs-actions button:hover {
+		    background: var(--btn-primary);
+		    color: white;
+		}
+		/* 添加按钮在左，重置在右 */
+		.quick-tabs-actions .btn-add {
+		    order: 0;
+		}
+		.quick-tabs-actions .btn-reset {
+		    order: 1;
+		    opacity: 0.5;
+		}
+		
+		.quick-tabs-grid {
+		    display: grid;
+		    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+		    gap: 10px;
+		    padding: 0.3rem 0;
+		}
+		
+		.quick-tab-item {
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: center;
+		    padding: 8px 4px;
+		    border-radius: 16px;
+		    background: var(--card-bg);
+		    border: 1px solid transparent;
+		    cursor: pointer;
+		    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+		    backdrop-filter: blur(4px);
+		    text-decoration: none;
+		    color: var(--text-primary);
+		    min-height: 72px;
+		    position: relative;
+		    gap: 4px;
+		}
+		.quick-tab-item:hover {
+		    transform: translateY(-4px);
+		    border-color: var(--btn-primary);
+		    box-shadow: 0 8px 20px -10px var(--shadow-color);
+		}
+		.quick-tab-item:active {
+		    transform: scale(0.94);
+		}
+		
+		.quick-tab-icon {
+		    font-size: 1.6rem;
+		    line-height: 1.4;
+		    transition: transform 0.2s;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    width: 32px;
+		    height: 32px;
+		}
+		.quick-tab-icon img {
+		    width: 100%;
+		    height: 100%;
+		    object-fit: contain;
+		    border-radius: 4px;
+		}
+		.quick-tab-item:hover .quick-tab-icon {
+		    transform: scale(1.08);
+		}
+		
+		.quick-tab-name {
+		    font-size: 0.55rem;
+		    color: var(--text-secondary);
+		    text-align: center;
+		    max-width: 64px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		    font-weight: 500;
+		}
+		
+		.quick-tab-delete {
+		    position: absolute;
+		    top: -4px;
+		    right: -4px;
+		    width: 18px;
+		    height: 18px;
+		    border-radius: 50%;
+		    background: #ef4444;
+		    color: white;
+		    border: 2px solid var(--card-bg);
+		    font-size: 10px;
+		    display: none;
+		    align-items: center;
+		    justify-content: center;
+		    cursor: pointer;
+		    transition: all 0.2s;
+		    line-height: 1;
+		    padding: 0;
+		}
+		.quick-tab-item:hover .quick-tab-delete {
+		    display: flex;
+		}
+		.quick-tab-delete:hover {
+		    transform: scale(1.2);
+		    background: #dc2626;
+		}
+		
+		.quick-tab-add {
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: center;
+		    padding: 8px 4px;
+		    border-radius: 16px;
+		    border: 2px dashed var(--border-color);
+		    cursor: pointer;
+		    transition: all 0.25s;
+		    background: transparent;
+		    min-height: 72px;
+		    gap: 2px;
+		    color: var(--text-secondary);
+		    opacity: 0.5;
+		}
+		.quick-tab-add:hover {
+		    opacity: 1;
+		    border-color: var(--btn-primary);
+		    background: var(--card-bg);
+		}
+		.quick-tab-add .add-icon {
+		    font-size: 1.8rem;
+		    line-height: 1.4;
+		}
+		.quick-tab-add .add-text {
+		    font-size: 0.5rem;
+		}
+		
+		.quick-tabs-empty {
+		    text-align: center;
+		    padding: 1.5rem 0.5rem;
+		    color: var(--text-secondary);
+		    opacity: 0.4;
+		    font-size: 0.75rem;
+		}
+		
+		.network-error-banner {
+		    display: none;
+		    background: #fef3c7;
+		    color: #92400e;
+		    padding: 4px 12px;
+		    border-radius: 30px;
+		    font-size: 0.6rem;
+		    margin-top: 0.3rem;
+		    text-align: center;
+		}
+		body.dark .network-error-banner {
+		    background: #451a03;
+		    color: #fcd34d;
+		}
+		.network-error-banner.active {
+		    display: inline-block;
+		}
+		
+		/* ===== 顶部导航 ===== */
+		.top-nav {
+		    position: fixed;
+		    top: 1rem;
+		    left: 0;
+		    right: 0;
+		    display: flex;
+		    justify-content: space-between;
+		    padding: 0 1rem;
+		    z-index: 100;
+		    gap: 0.5rem;
+		    flex-wrap: wrap;
+		}
+		.top-nav a,
+		.top-nav select {
+		    background: var(--card-bg);
+		    border: 1px solid var(--border-color);
+		    padding: 6px 16px;
+		    border-radius: 30px;
+		    text-decoration: none;
+		    color: var(--text-secondary);
+		    font-size: 0.8rem;
+		    transition: all 0.2s;
+		    backdrop-filter: blur(8px);
+		    cursor: pointer;
+		    font-family: inherit;
+		}
+		.top-nav a:hover,
+		.top-nav select:hover {
+		    background: var(--btn-primary);
+		    color: white;
+		}
+		.top-nav select option {
+		    background: var(--card-bg);
+		    color: var(--text-primary);
+		}
+		
+		/* ===== 底部版权 ===== */
+		.search-footer {
+		    width: 100%;
+		    max-width: 1300px;
+		    margin: 0 auto;
+		    position: relative;
+		    z-index: 1;
+		    flex-shrink: 0;
+		    padding: 0.5rem 0;
+		}
+		.search-footer .footer-bottom {
+		    padding: 0.6rem 1rem;
+		    text-align: center;
+		    font-size: 0.6rem;
+		    color: var(--text-secondary);
+		    background: var(--card-bg);
+		    border-radius: 16px;
+		    border: 1px solid var(--border-color);
+		    backdrop-filter: blur(8px);
+		}
+		
+		/* ================================================================
+		   ===== 弹窗样式 =====
+		   ================================================================ */
+		
+		.modal {
+		    display: none;
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100%;
+		    height: 100%;
+		    background: rgba(0, 0, 0, 0.5);
+		    backdrop-filter: blur(4px);
+		    z-index: 1000;
+		    justify-content: center;
+		    align-items: center;
+		}
+		.modal.active {
+		    display: flex;
+		}
+		
+		.modal-content {
+		    background: var(--card-bg);
+		    border-radius: 28px;
+		    padding: 1.2rem;
+		    width: 90%;
+		    max-width: 400px;
+		    border: 1px solid var(--border-color);
+		    animation: modalSlideIn 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+		    color: var(--text-primary);
+		}
+		
+		.modal-content h3 {
+		    font-size: 1.1rem;
+		    font-weight: 600;
+		    text-align: center;
+		    margin-bottom: 1rem;
+		    color: var(--text-primary);
+		}
+		
+		.modal-content .form-group {
+		    margin-bottom: 0.8rem;
+		}
+		.modal-content .form-group label {
+		    display: block;
+		    font-size: 0.75rem;
+		    font-weight: 500;
+		    color: var(--text-secondary);
+		    margin-bottom: 0.3rem;
+		}
+		.modal-content .form-group input {
+		    width: 100%;
+		    padding: 10px 14px;
+		    border-radius: 30px;
+		    border: 1.5px solid var(--border-color);
+		    background: var(--card-bg);
+		    color: var(--text-primary);
+		    font-size: 0.85rem;
+		    outline: none;
+		    font-family: inherit;
+		    transition: border-color 0.25s;
+		}
+		.modal-content .form-group input:focus {
+		    border-color: var(--btn-primary);
+		}
+		.modal-content .form-group input::placeholder {
+		    color: var(--text-secondary);
+		    opacity: 0.4;
+		}
+		
+		/* 网站图标预览 */
+		.favicon-preview {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		    margin-top: 6px;
+		    padding: 6px 12px;
+		    background: var(--btn-bg);
+		    border-radius: 30px;
+		    font-size: 0.7rem;
+		    color: var(--text-secondary);
+		    opacity: 0.7;
+		    min-height: 36px;
+		}
+		.favicon-preview .preview-icon {
+		    font-size: 1.2rem;
+		    width: 28px;
+		    height: 28px;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    flex-shrink: 0;
+		}
+		.favicon-preview .preview-icon img {
+		    width: 100%;
+		    height: 100%;
+		    object-fit: contain;
+		    border-radius: 4px;
+		}
+		.favicon-preview .preview-label {
+		    font-size: 0.6rem;
+		    opacity: 0.6;
+		}
+		
+		.modal-content .icon-hint {
+		    font-size: 0.55rem;
+		    color: var(--text-secondary);
+		    opacity: 0.5;
+		    margin-top: 0.1rem;
+		    text-align: right;
+		}
+		
+		.modal-content .modal-loading {
+		    display: none;
+		    text-align: center;
+		    padding: 0.3rem 0;
+		    font-size: 0.75rem;
+		    color: var(--text-secondary);
+		}
+		.modal-content .modal-loading.active {
+		    display: block;
+		}
+		
+		/* ===== 按钮布局：取消在左，确认在右 ===== */
+		.modal-buttons {
+		    display: flex;
+		    gap: 10px;
+		    justify-content: space-between;
+		    margin-top: 0.5rem;
+		    padding-top: 0.5rem;
+		    border-top: 1px solid var(--border-color);
+		}
+		.modal-buttons .btn {
+		    background: var(--btn-bg);
+		    border: none;
+		    padding: 6px 18px;
+		    border-radius: 30px;
+		    font-size: 0.8rem;
+		    cursor: pointer;
+		    transition: all 0.2s;
+		    color: var(--text-secondary);
+		    font-family: inherit;
+		    min-width: 72px;
+		}
+		.modal-buttons .btn:hover {
+		    opacity: 0.8;
+		}
+		.modal-buttons .btn-primary {
+		    background: var(--btn-primary);
+		    color: white;
+		}
+		.modal-buttons .btn-primary:hover {
+		    filter: brightness(1.05);
+		    transform: translateY(-1px);
+		}
+		.modal-buttons .btn-primary:disabled {
+		    opacity: 0.6;
+		    cursor: not-allowed;
+		    transform: none;
+		}
+		.modal-buttons .btn-cancel {
+		    margin-right: auto;
+		}
+		
+		@keyframes modalSlideIn {
+		    from {
+		        opacity: 0;
+		        transform: translateY(-30px);
+		    }
+		    to {
+		        opacity: 1;
+		        transform: translateY(0);
+		    }
+		}
+		
+		/* ===== Toast ===== */
+		.toast {
+		    position: fixed;
+		    bottom: 20px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    background: #27ae60;
+		    color: white;
+		    padding: 8px 20px;
+		    border-radius: 40px;
+		    font-size: 0.8rem;
+		    z-index: 1100;
+		    animation: fadeOut 2.5s ease forwards;
+		    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+		}
+		.toast-error {
+		    background: #c0392b;
+		}
+		@keyframes fadeOut {
+		    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+		    70% { opacity: 1; }
+		    100% { opacity: 0; transform: translateX(-50%) translateY(-15px); visibility: hidden; }
+		}
+		
+		/* ===== 响应式 ===== */
+		@media (max-width: 640px) {
+		    .search-datetime .time { font-size: 3rem; }
+		    .search-datetime .date { font-size: 1rem; }
+		    .search-engine-box { flex-wrap: wrap; padding: 0.4rem; border-radius: 30px; }
+		    .search-engine-box select { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); border-radius: 30px 30px 0 0; padding: 8px 16px; text-align: center; }
+		    .search-engine-box input { padding: 10px 6px; font-size: 0.9rem; }
+		    .search-engine-box button { width: 100%; padding: 8px 16px; font-size: 0.8rem; }
+		    .top-nav a, .top-nav select { font-size: 0.7rem; padding: 4px 12px; }
+		    .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; }
+		    .quick-tab-item { min-height: 62px; padding: 6px 3px; }
+		    .quick-tab-icon { font-size: 1.3rem; width: 28px; height: 28px; }
+		    .quick-tab-name { font-size: 0.5rem; max-width: 50px; }
+		    .quick-tab-add { min-height: 62px; }
+		    .quick-tab-add .add-icon { font-size: 1.4rem; }
+		    .modal-content { padding: 1rem; border-radius: 24px; }
+		    .modal-buttons .btn { padding: 6px 14px; font-size: 0.75rem; min-width: 60px; }
+		    .favicon-preview { font-size: 0.65rem; padding: 4px 10px; }
+		}
+		
+		@media (max-width: 400px) {
+		    .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
+		    .quick-tab-item { min-height: 54px; padding: 4px 2px; border-radius: 12px; }
+		    .quick-tab-icon { font-size: 1.1rem; width: 24px; height: 24px; }
+		    .quick-tab-name { font-size: 0.45rem; max-width: 44px; }
+		    .quick-tab-add { min-height: 54px; }
+		    .quick-tab-add .add-icon { font-size: 1.2rem; }
+		}
+	</style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <div class="top-nav">
-        <a href="/">📚 返回书签</a>
-        <select id="themeSelector">
-            <option value="auto">🌈 跟随系统</option>
-            <option value="light">☀️ 白天</option>
-            <option value="dark">🌙 夜间</option>
-        </select>
-    </div>
-
-    <!-- 主体 -->
-    <div class="search-wrapper">
-        <!-- 时间 + 搜索 -->
-        <div class="search-container">
-            <div class="search-datetime">
-                <div class="date" id="searchDate">加载中...</div>
-                <div class="time" id="searchTime">--:--:--</div>
-                <div class="weekday" id="searchWeekday">--</div>
-            </div>
-
-            <div class="search-engine-box">
-                <select id="engineSelect"></select>
-                <input type="text" id="engineSearchInput" placeholder="输入关键词，按 Enter 搜索..." autocomplete="off">
-                <button id="engineSearchBtn">搜索</button>
-            </div>
-            <div class="search-tip">⌨️ 按 Enter 快速搜索 · 点击标签快速访问</div>
-        </div>
-
-        <!-- 标签区域 -->
-        <div class="quick-tabs-section">
-            <div class="quick-tabs-header">
-                <h3>📌 我的标签</h3>
-                <div class="quick-tabs-actions">
-                    <button class="btn-add" id="addTabBtn">+ 添加</button>
-                    <button class="btn-reset" id="resetTabsBtn">重置</button>
-                </div>
-            </div>
-            <div class="quick-tabs-grid" id="quickTabsGrid">
-                <div style="grid-column:1/-1; text-align:center; padding:1rem; color:var(--text-secondary); opacity:0.5; font-size:0.8rem;">⏳ 加载中...</div>
-            </div>
-            <div class="network-error-banner" id="networkErrorBanner">⚠️ 网络连接异常，请刷新重试</div>
-        </div>
-    </div>
-
-    <!-- 底部版权 -->
-    <div class="search-footer">
-        <div class="footer-bottom" id="copyrightContainer">加载中...</div>
-    </div>
-
-    <!-- ===== 添加标签弹窗 ===== -->
-    <div id="tabModal" class="modal">
-        <div class="modal-content">
-            <h3>✨ 添加快捷标签</h3>
-            <div class="form-group">
-                <label>🌐 网站名称</label>
-                <input type="text" id="tabNameInput" placeholder="例如：GitHub" maxlength="20" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>🔗 网址</label>
-                <input type="text" id="tabUrlInput" placeholder="https://github.com" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>🎨 图标（留空自动获取网站 favicon）</label>
-                <input type="text" id="tabIconInput" placeholder="例如：🐱 或留空自动获取" maxlength="4" autocomplete="off">
-                <div class="favicon-preview" id="faviconPreview">
-                    <span class="preview-icon" id="previewIcon">🔗</span>
-                    <span>网站图标预览</span>
-                    <span class="preview-label" id="previewStatus">输入网址后自动获取</span>
-                </div>
-                <div class="icon-hint">💡 留空将自动从网站获取 favicon.ico 图标</div>
-            </div>
-            <div class="modal-loading" id="tabModalLoading">⏳ 提交中...</div>
-            <div class="modal-buttons">
-                <button class="btn btn-cancel" id="tabModalCancel">取消</button>
-                <button class="btn btn-primary" id="tabModalConfirm">添加</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ================================================================
-        //  1. API 配置
-        // ================================================================
-        const API_BASE = 'https://arleybks.arley.cn';
-
-        // ================================================================
-        //  2. 搜索引擎配置
-        // ================================================================
-        const SEARCH_ENGINES = [
-            { name: '百度', icon: '🌐', url: 'https://www.baidu.com/s?wd=' },
-            { name: 'Google', icon: '🌍', url: 'https://www.google.com/search?q=' },
-            { name: 'Bing', icon: '🔵', url: 'https://www.bing.com/search?q=' },
-            { name: '搜狗', icon: '🐶', url: 'https://www.sogou.com/web?query=' },
-            { name: '360', icon: '🛡️', url: 'https://www.so.com/s?q=' },
-            { name: 'DuckDuckGo', icon: '🦆', url: 'https://duckduckgo.com/?q=' },
-            { name: 'Yandex', icon: '🌟', url: 'https://yandex.com/search/?text=' },
-            { name: '头条搜索', icon: '📰', url: 'https://m.toutiao.com/search/?keyword=' }
-        ];
-
-        // ================================================================
-        //  3. 主题切换
-        // ================================================================
-        function setTheme(theme) {
-            const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            document.body.classList.toggle('dark', isDark);
-            localStorage.setItem('theme', theme);
-            document.getElementById('themeSelector').value = theme;
-        }
-
-        function initTheme() {
-            const saved = localStorage.getItem('theme') || 'auto';
-            setTheme(saved);
-        }
-
-        document.getElementById('themeSelector').addEventListener('change', function() {
-            setTheme(this.value);
-        });
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-            if (localStorage.getItem('theme') === 'auto') {
-                setTheme('auto');
-            }
-        });
-
-        initTheme();
-
-        // ================================================================
-        //  4. 时钟
-        // ================================================================
-        function updateDateTime() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            
-            document.getElementById('searchDate').textContent = `${year}年${month}月${day}日`;
-            document.getElementById('searchTime').textContent = `${hours}:${minutes}:${seconds}`;
-            document.getElementById('searchWeekday').textContent = weekdays[now.getDay()];
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
-
-        // ================================================================
-        //  5. 搜索引擎
-        // ================================================================
-        function renderEngineSelect() {
-            const select = document.getElementById('engineSelect');
-            select.innerHTML = SEARCH_ENGINES.map((engine, i) => `
-                <option value="${i}" ${i === 2 ? 'selected' : ''}>${engine.icon} ${engine.name}</option>
-            `).join('');
-        }
-        renderEngineSelect();
-
-        function performSearch() {
-            const input = document.getElementById('engineSearchInput');
-            const keyword = input.value.trim();
-            if (!keyword) {
-                showToast('请输入关键词', true);
-                return;
-            }
-            const index = parseInt(document.getElementById('engineSelect').value);
-            const engine = SEARCH_ENGINES[index];
-            window.open(engine.url + encodeURIComponent(keyword), '_blank');
-        }
-
-        document.getElementById('engineSearchBtn').addEventListener('click', performSearch);
-        document.getElementById('engineSearchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
-        });
-        document.getElementById('engineSearchInput').focus();
-
-        // ================================================================
-        //  6. 网站图标获取工具
-        // ================================================================
-
-        function extractDomain(url) {
-            try {
-                const parsed = new URL(url);
-                return parsed.hostname;
-            } catch (e) {
-                try {
-                    const parsed = new URL('https://' + url);
-                    return parsed.hostname;
-                } catch (e2) {
-                    return url.split('/')[0].split('?')[0];
-                }
-            }
-        }
-
-        function getFaviconUrl(url) {
-            const domain = extractDomain(url);
-            if (!domain) return null;
-            return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-        }
-
-        // ================================================================
-        //  7. 标签管理
-        // ================================================================
-        const DEFAULT_TABS = [
-            { name: 'GitHub', url: 'https://github.com', icon: '🐙' },
-            { name: 'V2EX', url: 'https://v2ex.com', icon: '💬' },
-            { name: 'MDN', url: 'https://developer.mozilla.org', icon: '📘' },
-            { name: 'Canva', url: 'https://canva.com', icon: '🎨' },
-            { name: 'Cloudflare', url: 'https://cloudflare.com', icon: '☁️' },
-            { name: 'Arley Blog', url: 'https://blog.arley.cn', icon: '📝' }
-        ];
-
-        let currentTabs = [];
-        let isNetworkError = false;
-
-        async function fetchTabs() {
-            const errorBanner = document.getElementById('networkErrorBanner');
-            try {
-                const res = await fetch(`${API_BASE}/api/tabs`);
-                const result = await res.json();
-                if (result.success && Array.isArray(result.data)) {
-                    currentTabs = result.data.length > 0 ? result.data : [...DEFAULT_TABS];
-                    isNetworkError = false;
-                    errorBanner.classList.remove('active');
-                } else {
-                    currentTabs = [...DEFAULT_TABS];
-                    await saveTabsToServer(currentTabs);
-                    isNetworkError = false;
-                    errorBanner.classList.remove('active');
-                }
-                renderTabs();
-            } catch (err) {
-                console.error('获取标签失败:', err);
-                isNetworkError = true;
-                errorBanner.classList.add('active');
-                currentTabs = [...DEFAULT_TABS];
-                renderTabs();
-                showToast('网络异常，使用默认标签', true);
-            }
-        }
-
-        async function saveTabsToServer(tabs) {
-            const errorBanner = document.getElementById('networkErrorBanner');
-            try {
-                const res = await fetch(`${API_BASE}/api/tabs`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tabs })
-                });
-                const result = await res.json();
-                if (result.success) {
-                    isNetworkError = false;
-                    errorBanner.classList.remove('active');
-                    return true;
-                } else {
-                    throw new Error(result.error || '保存失败');
-                }
-            } catch (err) {
-                console.error('保存标签失败:', err);
-                isNetworkError = true;
-                errorBanner.classList.add('active');
-                showToast('保存失败，请检查网络', true);
-                return false;
-            }
-        }
-
-        function renderTabs() {
-            const grid = document.getElementById('quickTabsGrid');
-            const tabs = currentTabs || [];
-
-            if (!tabs || tabs.length === 0) {
-                grid.innerHTML = `
-                    <div class="quick-tabs-empty" style="grid-column:1/-1;">
-                        🌱 还没有标签，点击「添加」创建你的快捷方式吧
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '';
-            tabs.forEach((tab, index) => {
-                const icon = tab.icon || '🔗';
-                const name = tab.name || '未命名';
-                const url = tab.url || '#';
-                // 判断是否为图片 URL
-                const isImageIcon = icon && (icon.startsWith('http') || icon.startsWith('data:'));
-                html += `
-                    <div class="quick-tab-item" onclick="openTab('${escapeHtml(url)}')" title="${escapeHtml(name)}">
-                        <span class="quick-tab-icon">${isImageIcon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy">` : icon}</span>
-                        <span class="quick-tab-name">${escapeHtml(name)}</span>
-                        <span class="quick-tab-delete" onclick="event.stopPropagation(); deleteTab(${index})">✕</span>
-                    </div>
-                `;
-            });
-
-            grid.innerHTML = html;
-        }
-
-        function openTab(url) {
-            if (!url || url === '#') return;
-            let finalUrl = url;
-            if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
-                finalUrl = 'https://' + finalUrl;
-            }
-            window.open(finalUrl, '_blank');
-        }
-
-        async function deleteTab(index) {
-            if (index < 0 || index >= currentTabs.length) return;
-            const name = currentTabs[index].name || '未命名';
-            if (!confirm(`确定要删除「${name}」吗？`)) return;
-            
-            const deleted = currentTabs.splice(index, 1);
-            const success = await saveTabsToServer(currentTabs);
-            if (success) {
-                renderTabs();
-                showToast(`已删除「${name}」`);
-            } else {
-                currentTabs.splice(index, 0, deleted[0]);
-                renderTabs();
-                showToast('删除失败，请检查网络', true);
-            }
-        }
-
-        async function resetTabs() {
-            if (!confirm('确定要重置为默认标签吗？')) return;
-            currentTabs = [...DEFAULT_TABS];
-            const success = await saveTabsToServer(currentTabs);
-            renderTabs();
-            showToast(success ? '已重置为默认标签' : '重置失败，请检查网络', !success);
-        }
-
-        // ================================================================
-        //  8. 弹窗控制
-        // ================================================================
-        const modal = document.getElementById('tabModal');
-        const nameInput = document.getElementById('tabNameInput');
-        const urlInput = document.getElementById('tabUrlInput');
-        const iconInput = document.getElementById('tabIconInput');
-        const loadingEl = document.getElementById('tabModalLoading');
-        const previewIcon = document.getElementById('previewIcon');
-        const previewStatus = document.getElementById('previewStatus');
-
-        // 网址输入实时预览 favicon
-        urlInput.addEventListener('input', function() {
-            const url = this.value.trim();
-            if (url) {
-                const faviconUrl = getFaviconUrl(url);
-                if (faviconUrl) {
-                    previewIcon.innerHTML = `<img src="${faviconUrl}" alt="favicon" onerror="this.parentElement.innerHTML='🔗'">`;
-                    previewStatus.textContent = '✅ 已获取网站图标';
-                } else {
-                    previewIcon.innerHTML = '🔗';
-                    previewStatus.textContent = '⚠️ 无法解析网址';
-                }
-            } else {
-                previewIcon.innerHTML = '🔗';
-                previewStatus.textContent = '输入网址后自动获取';
-            }
-        });
-
-        function openAddModal() {
-            nameInput.value = '';
-            urlInput.value = '';
-            iconInput.value = '';
-            previewIcon.innerHTML = '🔗';
-            previewStatus.textContent = '输入网址后自动获取';
-            loadingEl.classList.remove('active');
-            modal.classList.add('active');
-            setTimeout(() => nameInput.focus(), 100);
-        }
-
-        function closeAddModal() {
-            modal.classList.remove('active');
-            loadingEl.classList.remove('active');
-        }
-
-        modal.onclick = function(e) {
-            if (e.target === modal) {
-                closeAddModal();
-            }
-        };
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                closeAddModal();
-            }
-        });
-
-        // 智能获取图标
-        function getTabIcon(name, url, userIcon) {
-            // 如果用户手动输入了图标，使用用户的
-            if (userIcon) return userIcon;
-            
-            // 尝试从网址获取 favicon
-            if (url) {
-                const faviconUrl = getFaviconUrl(url);
-                if (faviconUrl) return faviconUrl;
-            }
-            
-            // 降级：根据名称首字母匹配 emoji
-            if (name) {
-                const firstChar = name.charAt(0).toUpperCase();
-                const emojiMap = {
-                    'G': '🐙', 'V': '💬', 'M': '📘', 'C': '☁️',
-                    'A': '📝', 'B': '🔵', 'D': '🐶', 'Y': '🌟',
-                    'T': '📰', 'S': '🔍', 'W': '🌐', 'N': '📺',
-                    'Z': '💎', 'P': '📷', 'F': '📄', 'E': '📧',
-                    'R': '📚', 'U': '🎓', 'I': '💡', 'O': '🎯',
-                    'L': '📋', 'H': '🛠️', 'J': '☕', 'K': '🔑',
-                    'Q': '❓', 'X': '✖️'
-                };
-                return emojiMap[firstChar] || '🔗';
-            }
-            
-            return '🔗';
-        }
-
-        async function confirmAddTab() {
-            const name = nameInput.value.trim();
-            let url = urlInput.value.trim();
-            const userIcon = iconInput.value.trim();
-
-            if (!name) {
-                showToast('请输入网站名称', true);
-                nameInput.focus();
-                return;
-            }
-            if (!url) {
-                showToast('请输入网址', true);
-                urlInput.focus();
-                return;
-            }
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-            }
-
-            const icon = getTabIcon(name, url, userIcon);
-
-            const exists = currentTabs.some(t => t.name === name || t.url === url);
-            if (exists) {
-                showToast('该标签已存在', true);
-                return;
-            }
-
-            loadingEl.classList.add('active');
-            const confirmBtn = document.getElementById('tabModalConfirm');
-            confirmBtn.disabled = true;
-            confirmBtn.textContent = '提交中...';
-
-            const newTab = { name, url, icon };
-            currentTabs.push(newTab);
-            const success = await saveTabsToServer(currentTabs);
-            
-            if (success) {
-                renderTabs();
-                closeAddModal();
-                showToast(`✅ 已添加「${name}」`);
-            } else {
-                currentTabs.pop();
-                renderTabs();
-                showToast('添加失败，请检查网络', true);
-            }
-
-            confirmBtn.disabled = false;
-            confirmBtn.textContent = '添加';
-            loadingEl.classList.remove('active');
-        }
-
-        // ================================================================
-        //  9. 事件绑定
-        // ================================================================
-        document.getElementById('addTabBtn').addEventListener('click', openAddModal);
-        document.getElementById('resetTabsBtn').addEventListener('click', resetTabs);
-        document.getElementById('tabModalCancel').addEventListener('click', closeAddModal);
-        document.getElementById('tabModalConfirm').addEventListener('click', confirmAddTab);
-
-        nameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') urlInput.focus();
-        });
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') iconInput.focus();
-        });
-        iconInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') confirmAddTab();
-        });
-
-        // 暴露全局函数
-        window.openTab = openTab;
-        window.deleteTab = deleteTab;
-        window.openAddModal = openAddModal;
-        window.resetTabs = resetTabs;
-
-        // ================================================================
-        //  10. Toast
-        // ================================================================
-        function showToast(msg, isError = false) {
-            document.querySelectorAll('.toast').forEach(el => el.remove());
-            const toast = document.createElement('div');
-            toast.className = 'toast' + (isError ? ' toast-error' : '');
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2800);
-        }
-
-        // ================================================================
-        //  11. 工具函数
-        // ================================================================
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>"]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                if (m === '"') return '&quot;';
-                return m;
-            });
-        }
-
-        // ================================================================
-        //  12. 版权信息
-        // ================================================================
-        async function fetchCopyright() {
-            try {
-                const res = await fetch(`${API_BASE}/api/siteinfo`);
-                const result = await res.json();
-                const currentYear = new Date().getFullYear();
-                const container = document.getElementById('copyrightContainer');
-                if (result.success && result.siteInfo) {
-                    const info = result.siteInfo;
-                    const name = info.name || "Arley's | 书签导航";
-                    const desc = info.description || "自用书签导航站，欢迎使用";
-                    const year = info.copyrightYear || currentYear;
-                    const owner = info.copyrightOwner || '';
-                    const ownerUrl = info.copyrightUrl || '';
-                    const poweredName = info.poweredName || '';
-                    const poweredUrl = info.poweredUrl || '';
-                    const icpNumber = info.icpNumber || '';
-                    let html = '';
-                    if (owner) {
-                        html += `COPYRIGHT © ${year} `;
-                        if (ownerUrl) html += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
-                        else html += `<strong>${owner}</strong> `;
-                    }
-                    if (poweredName) {
-                        if (html) html += `| `;
-                        html += `POWERED BY `;
-                        if (poweredUrl) html += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
-                        else html += `<strong>${poweredName}</strong> `;
-                    }
-                    if (icpNumber) {
-                        if (html) html += `| `;
-                        html += `萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
-                    }
-                    container.innerHTML = html || `${currentYear} ${name} · ${desc}`;
-                } else {
-                    container.innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
-                }
-            } catch (err) {
-                const currentYear = new Date().getFullYear();
-                document.getElementById('copyrightContainer').innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
-            }
-        }
-
-        // ================================================================
-        //  13. 初始化
-        // ================================================================
-        fetchTabs();
-        fetchCopyright();
-
-        console.log("%c 🏷️ 标签已加载（后端存储） %c 数据同步到 Upstash Redis ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px; background:#f29bb8; color:white;");
-    </script>
+	<!-- 顶部导航 -->
+	<div class="top-nav">
+		<a href="/">📚 返回书签</a>
+		<select id="themeSelector">
+			<option value="auto">🌈 跟随系统</option>
+			<option value="light">☀️ 白天</option>
+			<option value="dark">🌙 夜间</option>
+		</select>
+	</div>
+	<!-- 主体 -->
+	<div class="search-wrapper">
+		<!-- 时间 + 搜索 -->
+		<div class="search-container">
+			<div class="search-datetime">
+				<div class="date" id="searchDate">加载中...</div>
+				<div class="time" id="searchTime">--:--:--</div>
+				<div class="weekday" id="searchWeekday">--</div>
+			</div>
+			<div class="search-engine-box">
+				<select id="engineSelect"></select>
+				<input type="text" id="engineSearchInput" placeholder="输入关键词，按 Enter 搜索..." autocomplete="off">
+				<button id="engineSearchBtn">搜索</button>
+			</div>
+			<div class="search-tip">⌨️ 按 Enter 快速搜索 · 点击标签快速访问</div>
+		</div>
+		<!-- 标签区域 -->
+		<div class="quick-tabs-section">
+			<div class="quick-tabs-header">
+				<h3>📌 我的标签</h3>
+				<div class="quick-tabs-actions">
+					<button class="btn-add" id="addTabBtn">+ 添加</button>
+					<button class="btn-reset" id="resetTabsBtn">重置</button>
+				</div>
+			</div>
+			<div class="quick-tabs-grid" id="quickTabsGrid">
+				<div style="grid-column:1/-1; text-align:center; padding:1rem; color:var(--text-secondary); opacity:0.5; font-size:0.8rem;">⏳ 加载中...</div>
+			</div>
+			<div class="network-error-banner" id="networkErrorBanner">⚠️ 网络连接异常，请刷新重试</div>
+		</div>
+	</div>
+	<!-- 底部版权 -->
+	<div class="search-footer">
+		<div class="footer-bottom" id="copyrightContainer">加载中...</div>
+	</div>
+	<!-- ===== 添加标签弹窗 ===== -->
+	<div id="tabModal" class="modal">
+		<div class="modal-content">
+			<h3>✨ 添加快捷标签</h3>
+			<div class="form-group">
+				<label>🌐 网站名称</label>
+				<input type="text" id="tabNameInput" placeholder="例如：GitHub" maxlength="20" autocomplete="off">
+			</div>
+			<div class="form-group">
+				<label>🔗 网址</label>
+				<input type="text" id="tabUrlInput" placeholder="https://github.com" autocomplete="off">
+			</div>
+			<div class="form-group">
+				<label>🎨 图标（留空自动获取网站 favicon）</label>
+				<input type="text" id="tabIconInput" placeholder="例如：🐱 或留空自动获取" maxlength="4" autocomplete="off">
+				<div class="favicon-preview" id="faviconPreview">
+					<span class="preview-icon" id="previewIcon">🔗</span>
+					<span>网站图标预览</span>
+					<span class="preview-label" id="previewStatus">输入网址后自动获取</span>
+				</div>
+				<div class="icon-hint">💡 留空将自动从网站获取 favicon.ico 图标</div>
+			</div>
+			<div class="modal-loading" id="tabModalLoading">⏳ 提交中...</div>
+			<div class="modal-buttons">
+				<button class="btn btn-cancel" id="tabModalCancel">取消</button>
+				<button class="btn btn-primary" id="tabModalConfirm">添加</button>
+			</div>
+		</div>
+	</div>
+	<script>
+		// ================================================================
+		//  1. API 配置
+		// ================================================================
+		const API_BASE = 'https://arleybks.arley.cn';
+		
+		// ================================================================
+		//  2. 搜索引擎配置
+		// ================================================================
+		const SEARCH_ENGINES = [
+		    { name: '百度', icon: '🌐', url: 'https://www.baidu.com/s?wd=' },
+		    { name: 'Google', icon: '🌍', url: 'https://www.google.com/search?q=' },
+		    { name: 'Bing', icon: '🔵', url: 'https://www.bing.com/search?q=' },
+		    { name: '搜狗', icon: '🐶', url: 'https://www.sogou.com/web?query=' },
+		    { name: '360', icon: '🛡️', url: 'https://www.so.com/s?q=' },
+		    { name: 'DuckDuckGo', icon: '🦆', url: 'https://duckduckgo.com/?q=' },
+		    { name: 'Yandex', icon: '🌟', url: 'https://yandex.com/search/?text=' },
+		    { name: '头条搜索', icon: '📰', url: 'https://m.toutiao.com/search/?keyword=' }
+		];
+		
+		// ================================================================
+		//  3. 主题切换
+		// ================================================================
+		function setTheme(theme) {
+		    const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+		    document.body.classList.toggle('dark', isDark);
+		    localStorage.setItem('theme', theme);
+		    document.getElementById('themeSelector').value = theme;
+		}
+		
+		function initTheme() {
+		    const saved = localStorage.getItem('theme') || 'auto';
+		    setTheme(saved);
+		}
+		
+		document.getElementById('themeSelector').addEventListener('change', function() {
+		    setTheme(this.value);
+		});
+		
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+		    if (localStorage.getItem('theme') === 'auto') {
+		        setTheme('auto');
+		    }
+		});
+		
+		initTheme();
+		
+		// ================================================================
+		//  4. 时钟
+		// ================================================================
+		function updateDateTime() {
+		    const now = new Date();
+		    const year = now.getFullYear();
+		    const month = String(now.getMonth() + 1).padStart(2, '0');
+		    const day = String(now.getDate()).padStart(2, '0');
+		    const hours = String(now.getHours()).padStart(2, '0');
+		    const minutes = String(now.getMinutes()).padStart(2, '0');
+		    const seconds = String(now.getSeconds()).padStart(2, '0');
+		    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+		    
+		    document.getElementById('searchDate').textContent = `${year}年${month}月${day}日`;
+		    document.getElementById('searchTime').textContent = `${hours}:${minutes}:${seconds}`;
+		    document.getElementById('searchWeekday').textContent = weekdays[now.getDay()];
+		}
+		updateDateTime();
+		setInterval(updateDateTime, 1000);
+		
+		// ================================================================
+		//  5. 搜索引擎
+		// ================================================================
+		function renderEngineSelect() {
+		    const select = document.getElementById('engineSelect');
+		    select.innerHTML = SEARCH_ENGINES.map((engine, i) => `
+		        <option value="${i}" ${i === 2 ? 'selected' : ''}>${engine.icon} ${engine.name}</option>
+		    `).join('');
+		}
+		renderEngineSelect();
+		
+		function performSearch() {
+		    const input = document.getElementById('engineSearchInput');
+		    const keyword = input.value.trim();
+		    if (!keyword) {
+		        showToast('请输入关键词', true);
+		        return;
+		    }
+		    const index = parseInt(document.getElementById('engineSelect').value);
+		    const engine = SEARCH_ENGINES[index];
+		    window.open(engine.url + encodeURIComponent(keyword), '_blank');
+		}
+		
+		document.getElementById('engineSearchBtn').addEventListener('click', performSearch);
+		document.getElementById('engineSearchInput').addEventListener('keypress', (e) => {
+		    if (e.key === 'Enter') performSearch();
+		});
+		document.getElementById('engineSearchInput').focus();
+		
+		// ================================================================
+		//  6. 网站图标获取工具（国内可用）
+		// ================================================================
+		
+		function extractDomain(url) {
+		    try {
+		const parsed = new URL(url);
+		return parsed.hostname;
+		    } catch (e) {
+		try {
+		    const parsed = new URL('https://' + url);
+		    return parsed.hostname;
+		} catch (e2) {
+		    // 简单提取域名
+		    const match = url.match(/^(?:https?:\/\/)?([^\/?#]+)/);
+		    return match ? match[1] : url;
+		}
+		    }
+		}
+		
+		function getFaviconUrl(url) {
+		    const domain = extractDomain(url);
+		    if (!domain) return null;
+		    return `https://favicon.im/${domain}`;
+		}
+		
+		// ================================================================
+		//  7. 标签管理
+		// ================================================================
+		const DEFAULT_TABS = [
+		    { name: 'GitHub', url: 'https://github.com', icon: '🐙' },
+		    { name: 'V2EX', url: 'https://v2ex.com', icon: '💬' },
+		    { name: 'MDN', url: 'https://developer.mozilla.org', icon: '📘' },
+		    { name: 'Canva', url: 'https://canva.com', icon: '🎨' },
+		    { name: 'Cloudflare', url: 'https://cloudflare.com', icon: '☁️' },
+		    { name: 'Arley Blog', url: 'https://blog.arley.cn', icon: '📝' }
+		];
+		
+		let currentTabs = [];
+		let isNetworkError = false;
+		
+		async function fetchTabs() {
+		    const errorBanner = document.getElementById('networkErrorBanner');
+		    try {
+		        const res = await fetch(`${API_BASE}/api/tabs`);
+		        const result = await res.json();
+		        if (result.success && Array.isArray(result.data)) {
+		            currentTabs = result.data.length > 0 ? result.data : [...DEFAULT_TABS];
+		            isNetworkError = false;
+		            errorBanner.classList.remove('active');
+		        } else {
+		            currentTabs = [...DEFAULT_TABS];
+		            await saveTabsToServer(currentTabs);
+		            isNetworkError = false;
+		            errorBanner.classList.remove('active');
+		        }
+		        renderTabs();
+		    } catch (err) {
+		        console.error('获取标签失败:', err);
+		        isNetworkError = true;
+		        errorBanner.classList.add('active');
+		        currentTabs = [...DEFAULT_TABS];
+		        renderTabs();
+		        showToast('网络异常，使用默认标签', true);
+		    }
+		}
+		
+		async function saveTabsToServer(tabs) {
+		    const errorBanner = document.getElementById('networkErrorBanner');
+		    try {
+		        const res = await fetch(`${API_BASE}/api/tabs`, {
+		            method: 'POST',
+		            headers: { 'Content-Type': 'application/json' },
+		            body: JSON.stringify({ tabs })
+		        });
+		        const result = await res.json();
+		        if (result.success) {
+		            isNetworkError = false;
+		            errorBanner.classList.remove('active');
+		            return true;
+		        } else {
+		            throw new Error(result.error || '保存失败');
+		        }
+		    } catch (err) {
+		        console.error('保存标签失败:', err);
+		        isNetworkError = true;
+		        errorBanner.classList.add('active');
+		        showToast('保存失败，请检查网络', true);
+		        return false;
+		    }
+		}
+		
+		function renderTabs() {
+		    const grid = document.getElementById('quickTabsGrid');
+		    const tabs = currentTabs || [];
+		
+		    if (!tabs || tabs.length === 0) {
+		        grid.innerHTML = `
+		            <div class="quick-tabs-empty" style="grid-column:1/-1;">
+		                🌱 还没有标签，点击「添加」创建你的快捷方式吧
+		            </div>
+		        `;
+		        return;
+		    }
+		
+		    let html = '';
+		    tabs.forEach((tab, index) => {
+		        const icon = tab.icon || '🔗';
+		        const name = tab.name || '未命名';
+		        const url = tab.url || '#';
+		        // 判断是否为图片 URL
+		        const isImageIcon = icon && (icon.startsWith('http') || icon.startsWith('data:'));
+		        html += `
+		            <div class="quick-tab-item" onclick="openTab('${escapeHtml(url)}')" title="${escapeHtml(name)}">
+		                <span class="quick-tab-icon">${isImageIcon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy">` : icon}</span>
+		                <span class="quick-tab-name">${escapeHtml(name)}</span>
+		                <span class="quick-tab-delete" onclick="event.stopPropagation(); deleteTab(${index})">✕</span>
+		            </div>
+		        `;
+		    });
+		
+		    grid.innerHTML = html;
+		}
+		
+		function openTab(url) {
+		    if (!url || url === '#') return;
+		    let finalUrl = url;
+		    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+		        finalUrl = 'https://' + finalUrl;
+		    }
+		    window.open(finalUrl, '_blank');
+		}
+		
+		async function deleteTab(index) {
+		    if (index < 0 || index >= currentTabs.length) return;
+		    const name = currentTabs[index].name || '未命名';
+		    if (!confirm(`确定要删除「${name}」吗？`)) return;
+		    
+		    const deleted = currentTabs.splice(index, 1);
+		    const success = await saveTabsToServer(currentTabs);
+		    if (success) {
+		        renderTabs();
+		        showToast(`已删除「${name}」`);
+		    } else {
+		        currentTabs.splice(index, 0, deleted[0]);
+		        renderTabs();
+		        showToast('删除失败，请检查网络', true);
+		    }
+		}
+		
+		async function resetTabs() {
+		    if (!confirm('确定要重置为默认标签吗？')) return;
+		    currentTabs = [...DEFAULT_TABS];
+		    const success = await saveTabsToServer(currentTabs);
+		    renderTabs();
+		    showToast(success ? '已重置为默认标签' : '重置失败，请检查网络', !success);
+		}
+		
+		// ================================================================
+		//  8. 弹窗控制
+		// ================================================================
+		const modal = document.getElementById('tabModal');
+		const nameInput = document.getElementById('tabNameInput');
+		const urlInput = document.getElementById('tabUrlInput');
+		const iconInput = document.getElementById('tabIconInput');
+		const loadingEl = document.getElementById('tabModalLoading');
+		const previewIcon = document.getElementById('previewIcon');
+		const previewStatus = document.getElementById('previewStatus');
+		
+		// 网址输入实时预览 favicon
+		urlInput.addEventListener('input', function() {
+		    const url = this.value.trim();
+		    if (url) {
+		        const faviconUrl = getFaviconUrl(url);
+		        if (faviconUrl) {
+		            previewIcon.innerHTML = `<img src="${faviconUrl}" alt="favicon" onerror="this.parentElement.innerHTML='🔗'">`;
+		            previewStatus.textContent = '✅ 已获取网站图标';
+		        } else {
+		            previewIcon.innerHTML = '🔗';
+		            previewStatus.textContent = '⚠️ 无法解析网址';
+		        }
+		    } else {
+		        previewIcon.innerHTML = '🔗';
+		        previewStatus.textContent = '输入网址后自动获取';
+		    }
+		});
+		
+		function openAddModal() {
+		    nameInput.value = '';
+		    urlInput.value = '';
+		    iconInput.value = '';
+		    previewIcon.innerHTML = '🔗';
+		    previewStatus.textContent = '输入网址后自动获取';
+		    loadingEl.classList.remove('active');
+		    modal.classList.add('active');
+		    setTimeout(() => nameInput.focus(), 100);
+		}
+		
+		function closeAddModal() {
+		    modal.classList.remove('active');
+		    loadingEl.classList.remove('active');
+		}
+		
+		modal.onclick = function(e) {
+		    if (e.target === modal) {
+		        closeAddModal();
+		    }
+		};
+		
+		document.addEventListener('keydown', function(e) {
+		    if (e.key === 'Escape' && modal.classList.contains('active')) {
+		        closeAddModal();
+		    }
+		});
+		
+		// 智能获取图标
+		function getTabIcon(name, url, userIcon) {
+		    // 如果用户手动输入了图标，使用用户的
+		    if (userIcon) return userIcon;
+		    
+		    // 尝试从网址获取 favicon
+		    if (url) {
+		        const faviconUrl = getFaviconUrl(url);
+		        if (faviconUrl) return faviconUrl;
+		    }
+		    
+		    // 降级：根据名称首字母匹配 emoji
+		    if (name) {
+		        const firstChar = name.charAt(0).toUpperCase();
+		        const emojiMap = {
+		            'G': '🐙', 'V': '💬', 'M': '📘', 'C': '☁️',
+		            'A': '📝', 'B': '🔵', 'D': '🐶', 'Y': '🌟',
+		            'T': '📰', 'S': '🔍', 'W': '🌐', 'N': '📺',
+		            'Z': '💎', 'P': '📷', 'F': '📄', 'E': '📧',
+		            'R': '📚', 'U': '🎓', 'I': '💡', 'O': '🎯',
+		            'L': '📋', 'H': '🛠️', 'J': '☕', 'K': '🔑',
+		            'Q': '❓', 'X': '✖️'
+		        };
+		        return emojiMap[firstChar] || '🔗';
+		    }
+		    
+		    return '🔗';
+		}
+		
+		async function confirmAddTab() {
+		    const name = nameInput.value.trim();
+		    let url = urlInput.value.trim();
+		    const userIcon = iconInput.value.trim();
+		
+		    if (!name) {
+		        showToast('请输入网站名称', true);
+		        nameInput.focus();
+		        return;
+		    }
+		    if (!url) {
+		        showToast('请输入网址', true);
+		        urlInput.focus();
+		        return;
+		    }
+		    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+		        url = 'https://' + url;
+		    }
+		
+		    const icon = getTabIcon(name, url, userIcon);
+		
+		    const exists = currentTabs.some(t => t.name === name || t.url === url);
+		    if (exists) {
+		        showToast('该标签已存在', true);
+		        return;
+		    }
+		
+		    loadingEl.classList.add('active');
+		    const confirmBtn = document.getElementById('tabModalConfirm');
+		    confirmBtn.disabled = true;
+		    confirmBtn.textContent = '提交中...';
+		
+		    const newTab = { name, url, icon };
+		    currentTabs.push(newTab);
+		    const success = await saveTabsToServer(currentTabs);
+		    
+		    if (success) {
+		        renderTabs();
+		        closeAddModal();
+		        showToast(`✅ 已添加「${name}」`);
+		    } else {
+		        currentTabs.pop();
+		        renderTabs();
+		        showToast('添加失败，请检查网络', true);
+		    }
+		
+		    confirmBtn.disabled = false;
+		    confirmBtn.textContent = '添加';
+		    loadingEl.classList.remove('active');
+		}
+		
+		// ================================================================
+		//  9. 事件绑定
+		// ================================================================
+		document.getElementById('addTabBtn').addEventListener('click', openAddModal);
+		document.getElementById('resetTabsBtn').addEventListener('click', resetTabs);
+		document.getElementById('tabModalCancel').addEventListener('click', closeAddModal);
+		document.getElementById('tabModalConfirm').addEventListener('click', confirmAddTab);
+		
+		nameInput.addEventListener('keypress', (e) => {
+		    if (e.key === 'Enter') urlInput.focus();
+		});
+		urlInput.addEventListener('keypress', (e) => {
+		    if (e.key === 'Enter') iconInput.focus();
+		});
+		iconInput.addEventListener('keypress', (e) => {
+		    if (e.key === 'Enter') confirmAddTab();
+		});
+		
+		// 暴露全局函数
+		window.openTab = openTab;
+		window.deleteTab = deleteTab;
+		window.openAddModal = openAddModal;
+		window.resetTabs = resetTabs;
+		
+		// ================================================================
+		//  10. Toast
+		// ================================================================
+		function showToast(msg, isError = false) {
+		    document.querySelectorAll('.toast').forEach(el => el.remove());
+		    const toast = document.createElement('div');
+		    toast.className = 'toast' + (isError ? ' toast-error' : '');
+		    toast.textContent = msg;
+		    document.body.appendChild(toast);
+		    setTimeout(() => toast.remove(), 2800);
+		}
+		
+		// ================================================================
+		//  11. 工具函数
+		// ================================================================
+		function escapeHtml(str) {
+		    if (!str) return '';
+		    return String(str).replace(/[&<>"]/g, function(m) {
+		        if (m === '&') return '&amp;';
+		        if (m === '<') return '&lt;';
+		        if (m === '>') return '&gt;';
+		        if (m === '"') return '&quot;';
+		        return m;
+		    });
+		}
+		
+		// ================================================================
+		//  12. 版权信息
+		// ================================================================
+		async function fetchCopyright() {
+		    try {
+		        const res = await fetch(`${API_BASE}/api/siteinfo`);
+		        const result = await res.json();
+		        const currentYear = new Date().getFullYear();
+		        const container = document.getElementById('copyrightContainer');
+		        if (result.success && result.siteInfo) {
+		            const info = result.siteInfo;
+		            const name = info.name || "Arley's | 书签导航";
+		            const desc = info.description || "自用书签导航站，欢迎使用";
+		            const year = info.copyrightYear || currentYear;
+		            const owner = info.copyrightOwner || '';
+		            const ownerUrl = info.copyrightUrl || '';
+		            const poweredName = info.poweredName || '';
+		            const poweredUrl = info.poweredUrl || '';
+		            const icpNumber = info.icpNumber || '';
+		            let html = '';
+		            if (owner) {
+		                html += `COPYRIGHT © ${year} `;
+		                if (ownerUrl) html += `<a href="${ownerUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${owner}</strong></a> `;
+		                else html += `<strong>${owner}</strong> `;
+		            }
+		            if (poweredName) {
+		                if (html) html += `| `;
+		                html += `POWERED BY `;
+		                if (poweredUrl) html += `<a href="${poweredUrl}" target="_blank" style="color: var(--btn-primary); text-decoration: none;"><strong>${poweredName}</strong></a> `;
+		                else html += `<strong>${poweredName}</strong> `;
+		            }
+		            if (icpNumber) {
+		                if (html) html += `| `;
+		                html += `萌ICP备 <a href="https://icp.gov.moe/?keyword=${icpNumber}" target="_blank" rel="noopener" style="color: var(--btn-primary); text-decoration: none;"><strong>${icpNumber}</strong>号</a>`;
+		            }
+		            container.innerHTML = html || `${currentYear} ${name} · ${desc}`;
+		        } else {
+		            container.innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
+		        }
+		    } catch (err) {
+		        const currentYear = new Date().getFullYear();
+		        document.getElementById('copyrightContainer').innerHTML = `${currentYear} Arley's | 书签导航 · 自用书签导航站，欢迎使用`;
+		    }
+		}
+		
+		// ================================================================
+		//  13. 初始化
+		// ================================================================
+		fetchTabs();
+		fetchCopyright();
+		
+		console.log("%c 🏷️ 标签已加载（后端存储） %c 数据同步到 Upstash Redis ", "color: #ffffff; background: #d2136b; border-radius: 5px; padding:5px;", "padding:5px; background:#f29bb8; color:white;");
+	</script>
 </body>
 </html>
