@@ -134,15 +134,6 @@
             </div>
         </div>
     </div>
-    <!-- ❤️ 点赞组件 -->
-    <div id="like-placeholder"></div>
-    <script>
-        fetch('https://like.arley.workers.dev/like-component')
-            .then(r => r.text())
-            .then(html => {
-                document.getElementById('like-placeholder').outerHTML = html;
-            });
-    </script>
     <script src="js/search.js"></script>
 </body>
 </html>
