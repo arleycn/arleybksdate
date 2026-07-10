@@ -111,20 +111,29 @@ body.dark .search-datetime .time {
 /* ===== 搜索框 ===== */
 .search-engine-box {
     width: 100%;
-    background: var(--card-bg);
     border-radius: 60px;
     padding: 0.3rem 0.3rem 0.3rem 0.3rem;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 0.2rem;
     box-shadow: 0 8px 28px -12px var(--shadow-color);
-    transition: box-shadow 0.25s;
-    margin-bottom: 0.3rem;
+    transition: box-shadow 0.25s, opacity 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease;
+    /* ===== 非焦点状态：半透明 ===== */
+    opacity: 0.55;
+    background: rgba(255, 255, 255, 0.4);
+}
+/* 深色模式下非焦点状态 */
+body.dark .search-engine-box {
+    background: rgba(0, 0, 0, 0.4);
 }
 .search-engine-box:focus-within {
     box-shadow: 0 8px 32px -8px var(--shadow-color), 0 0 0 2px rgba(245, 163, 189, 0.25);
+    /* ===== 焦点状态：完全不透明 ===== */
+    opacity: 1;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
 }
 .search-engine-box select {
     background: transparent;
