@@ -695,3 +695,35 @@ body.dark .network-error-banner {
     .quick-tab-add { min-height: 54px; }
     .quick-tab-add .add-icon { font-size: 1.2rem; }
 }
+/* ===== 清空按钮 ===== */
+.clear-btn {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-secondary) !important;
+    padding: 0 8px !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    opacity: 0.4;
+    transition: opacity 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    min-width: auto !important;
+    width: 28px;
+    height: 28px;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--btn-bg) !important;
+}
+.clear-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+    background: var(--btn-bg) !important;
+    filter: none !important;
+}
+body.dark .clear-btn {
+    opacity: 0.5;
+}
+body.dark .clear-btn:hover {
+    opacity: 0.9;
+}

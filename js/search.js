@@ -664,6 +664,32 @@ function initEvents() {
         if (e.key === 'Enter') performSearch();
     });
 
+    // ✅ 新增：清空按钮控制
+    const searchInput = document.getElementById('engineSearchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+
+    searchInput.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+            clearBtn.style.display = 'flex';
+        } else {
+            clearBtn.style.display = 'none';
+        }
+    });
+
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        searchInput.focus();
+        this.style.display = 'none';
+    });
+
+    searchInput.addEventListener('blur', function() {
+        setTimeout(() => {
+            if (this.value.trim().length === 0) {
+                clearBtn.style.display = 'none';
+            }
+        }, 150);
+    });
+
     // 标签
     document.getElementById('addTabBtn').addEventListener('click', openAddModal);
     document.getElementById('resetTabsBtn').addEventListener('click', resetTabs);
