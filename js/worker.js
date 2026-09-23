@@ -354,11 +354,27 @@ export default {
 			try {
 				const parts = path.split("/");
 				const category = decodeURIComponent(parts[4]);
-				const subcategory = parts[5] ? decodeURIComponent(parts[5]) : null;
-				const index = parseInt(parts[6] || parts[5]);
+
+				// 判断 parts[5] 是索引还是小分类名：
+				// 纯数字 → 无小分类，parts[5] 就是索引
+				// 非数字 → 有小分类，parts[6] 才是索引
+				const isSubcategory = parts[5] && !/^\d+$/.test(parts[5]);
+				const subcategory = isSubcategory ? decodeURIComponent(parts[5]) : null;
+				const index = parseInt(isSubcategory ? parts[6] : parts[5], 10);
+
+				if (isNaN(index)) {
+					return new Response(JSON.stringify({
+						success: false,
+						error: "无效的索引"
+					}), {
+						status: 400,
+						headers: getCorsHeaders(request)
+					});
+				}
 
 				let bookmarks = await redisCommand("GET", "bookmarks");
 				if (typeof bookmarks === "string") bookmarks = JSON.parse(bookmarks);
+				if (!Array.isArray(bookmarks)) bookmarks = [];
 
 				const categoryIndex = bookmarks.findIndex(c => c.category === category);
 				if (categoryIndex === -1) {
@@ -371,18 +387,49 @@ export default {
 					});
 				}
 
+				const categoryData = bookmarks[categoryIndex];
+
 				if (subcategory) {
-					const subcategoryIndex = bookmarks[categoryIndex].subcategories.findIndex(s => s.name === subcategory);
-					if (subcategoryIndex !== -1 && index >= 0 && index < bookmarks[categoryIndex].subcategories[subcategoryIndex].bookmarks.length) {
-						bookmarks[categoryIndex].subcategories[subcategoryIndex].bookmarks.splice(index, 1);
+					const subcategories = categoryData.subcategories || [];
+					const subcategoryIndex = subcategories.findIndex(s => s.name === subcategory);
+
+					if (subcategoryIndex === -1) {
+						return new Response(JSON.stringify({
+							success: false,
+							error: "小分类不存在"
+						}), {
+							status: 404,
+							headers: getCorsHeaders(request)
+						});
 					}
+
+					const subBookmarks = subcategories[subcategoryIndex].bookmarks || [];
+					if (index < 0 || index >= subBookmarks.length) {
+						return new Response(JSON.stringify({
+							success: false,
+							error: "书签索引越界"
+						}), {
+							status: 404,
+							headers: getCorsHeaders(request)
+						});
+					}
+					subBookmarks.splice(index, 1);
 				} else {
-					if (index >= 0 && index < bookmarks[categoryIndex].bookmarks.length) {
-						bookmarks[categoryIndex].bookmarks.splice(index, 1);
+					const directBookmarks = categoryData.bookmarks || [];
+					if (index < 0 || index >= directBookmarks.length) {
+						return new Response(JSON.stringify({
+							success: false,
+							error: "书签索引越界"
+						}), {
+							status: 404,
+							headers: getCorsHeaders(request)
+						});
 					}
+					directBookmarks.splice(index, 1);
 				}
 
 				await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks));
+
 				return new Response(JSON.stringify({
 					success: true,
 					message: "删除成功"
@@ -391,6 +438,7 @@ export default {
 					headers: getCorsHeaders(request)
 				});
 			} catch (err) {
+				console.error("删除书签错误:", err);
 				return new Response(JSON.stringify({
 					success: false,
 					error: err.message
