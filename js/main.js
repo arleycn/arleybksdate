@@ -169,6 +169,16 @@ function renderCategoryNav() {
             currentCategory = chip.dataset.cat;
             renderCategoryNav();
             renderBookmarks();
+            // 已滚过书签区起点时，选完分类滚回列表开头，避免停在旧位置
+            const head = document.querySelector('.sticky-head');
+            const list = document.getElementById('bookmarksContainer');
+            if (head && list) {
+                requestAnimationFrame(() => {
+                    if (list.getBoundingClientRect().top < head.offsetHeight) {
+                        list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
         });
     });
 }

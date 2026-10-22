@@ -904,3 +904,45 @@ body.dark .loader-text {
    本站动效只有 4px 上浮与 0.3~0.4s 淡入，幅度很小，
    保持原样比一刀切更符合实际观感。
    =================================================================== */
+
+/* ===================================================================
+   吸顶头部：分类胶囊 + 统计条
+   下滑后仍可点分类，不必滚回顶部
+   =================================================================== */
+.sticky-head {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    /* 抵消 body 0.8rem 内边距，让毛玻璃条接近全宽 */
+    margin: 0 -0.8rem;
+    padding: 8px 0.9rem 8px;
+    background: rgba(255, 245, 247, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 8px 20px -14px var(--shadow-color);
+}
+
+body.dark .sticky-head {
+    background: rgba(26, 26, 46, 0.82);
+}
+
+.sticky-head .category-nav-wrapper {
+    margin-bottom: 4px;
+}
+
+.sticky-head .stats-bar {
+    margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+    .sticky-head {
+        margin: 0 -0.6rem;
+        padding: 6px 0.7rem;
+    }
+}
+
+/* scrollIntoView 时给吸顶条留出高度 */
+#bookmarksContainer {
+    scroll-margin-top: 84px;
+}
