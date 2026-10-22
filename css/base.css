@@ -12,9 +12,9 @@
 :root {
     --bg-gradient-start: #fff5f7;
     --bg-gradient-end: #ffe4ed;
-    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(255, 255, 255, 0.92);
     --text-primary: #5d3a4b;
-    --text-secondary: #b86b84;
+    --text-secondary: #a05570;
     --border-color: #ffe0e8;
     --btn-bg: #f8cedb;
     --btn-primary: #f29bb8;
@@ -62,7 +62,7 @@ body::before {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    opacity: 0.35;
+    opacity: 0.25;
     z-index: -2;
     pointer-events: none;
 }
@@ -99,7 +99,7 @@ body.dark::after {
     cursor: pointer;
     transition: all 0.3s;
     backdrop-filter: blur(4px);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .btn-primary {
@@ -140,7 +140,7 @@ body.dark::after {
     color: white;
     padding: 8px 20px;
     border-radius: 40px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     z-index: 1100;
     animation: fadeOut 2.5s ease forwards;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
@@ -159,4 +159,22 @@ body.dark::after {
     0% { opacity: 1; }
     70% { opacity: 1; }
     100% { opacity: 0; visibility: hidden; }
+}
+
+/* ===================================================================
+   降低动效偏好：动画接近瞬时，但 toast 交给 JS 定时移除
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .toast {
+        animation: none !important;
+    }
 }

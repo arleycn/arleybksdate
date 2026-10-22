@@ -232,7 +232,7 @@ function renderBookmarks() {
                 bookmarks.forEach(bookmark => {
                     const displayName = searchKeyword ? highlightText(bookmark.name, searchKeyword) : escapeHtml(bookmark.name);
                     const displayUrl = searchKeyword ? highlightText(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url, searchKeyword) : escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url);
-                    html += `<div class="bookmark-card" data-url="${escapeHtml(bookmark.url)}" role="link" tabindex="0"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
+                    html += `<div class="bookmark-card" data-url="${escapeHtml(bookmark.url)}" role="link" tabindex="0"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div></div>`;
                 });
 
                 html += `</div></div>`;
@@ -242,7 +242,7 @@ function renderBookmarks() {
             cat.bookmarks.forEach(bookmark => {
                 const displayName = searchKeyword ? highlightText(bookmark.name, searchKeyword) : escapeHtml(bookmark.name);
                 const displayUrl = searchKeyword ? highlightText(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url, searchKeyword) : escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url);
-                html += `<div class="bookmark-card" data-url="${escapeHtml(bookmark.url)}" role="link" tabindex="0"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
+                html += `<div class="bookmark-card" data-url="${escapeHtml(bookmark.url)}" role="link" tabindex="0"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div></div>`;
             });
             html += `</div>`;
         }

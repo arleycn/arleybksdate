@@ -35,7 +35,7 @@
 }
 
 .hero h1 {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     background: linear-gradient(135deg, #e8809e, #c95c7c);
     background-clip: text;
     -webkit-background-clip: text;
@@ -76,7 +76,7 @@ body.dark .hero h1 {
     border: 1px solid var(--border-color);
     padding: 6px 14px;
     border-radius: 40px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
@@ -103,7 +103,7 @@ body.dark .hero h1 {
     border: 1px solid var(--border-color);
     padding: 6px 14px;
     border-radius: 40px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     cursor: pointer;
     color: var(--text-secondary);
     transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
@@ -166,7 +166,7 @@ body.dark .hero h1 {
     border: 1px solid var(--border-color);
     padding: 6px 14px;
     border-radius: 40px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
@@ -203,11 +203,11 @@ body.dark .hero h1 {
 }
 
 .category-icon {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
 }
 
 .category-title h2 {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--text-secondary);
 }
 
@@ -232,7 +232,7 @@ body.dark .hero h1 {
     background: var(--border-color);
     padding: 2px 8px;
     border-radius: 30px;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     margin-left: 8px;
 }
 
@@ -261,10 +261,10 @@ body.dark .hero h1 {
     overflow: hidden;
 }
 
-/* 悬停效果 */
+/* 悬停效果：用 translate 属性而非 transform，避免被 fadeInUp 的动画值覆盖 */
 .bookmark-card:hover {
-    transform: translateY(-4px) translateX(4px) !important;
-    box-shadow: 0 16px 28px -12px var(--shadow-color) !important;
+    translate: 0 -4px;
+    box-shadow: 0 16px 28px -12px var(--shadow-color);
     border-color: var(--btn-primary);
 }
 
@@ -308,7 +308,7 @@ body.dark .hero h1 {
 }
 
 .bookmark-url {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
@@ -317,7 +317,7 @@ body.dark .hero h1 {
 }
 
 .bookmark-desc {
-    font-size: 0.55rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     margin-top: 2px;
     white-space: nowrap;
@@ -329,7 +329,7 @@ body.dark .hero h1 {
 .icon-btn {
     background: var(--btn-bg);
     border: none;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     cursor: pointer;
     padding: 4px 10px;
     border-radius: 30px;
@@ -351,14 +351,14 @@ body.dark .hero h1 {
 }
 
 .messages-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     margin-bottom: 0.8rem;
 }
 
 .message-card {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 0.8rem;
     margin-bottom: 0.8rem;
     border: 1px solid var(--border-color);
@@ -374,7 +374,7 @@ body.dark .hero h1 {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.4rem;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     flex-wrap: wrap;
     gap: 0.3rem;
 }
@@ -392,13 +392,13 @@ body.dark .hero h1 {
 .message-content {
     line-height: 1.4;
     margin-bottom: 0.3rem;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .message-url a {
     color: var(--btn-primary);
     text-decoration: none;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     word-break: break-all;
 }
 
@@ -406,7 +406,7 @@ body.dark .hero h1 {
 .footer {
     margin-top: 2rem;
     background: var(--footer-bg);
-    border-radius: 24px;
+    border-radius: 20px;
     border: 1px solid var(--border-color);
     overflow: hidden;
     backdrop-filter: blur(12px);
@@ -437,7 +437,7 @@ body.dark .hero h1 {
 
 .about-text {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 0.8rem;
     margin-bottom: 0.8rem;
     border-left: 3px solid var(--btn-primary);
@@ -446,7 +446,7 @@ body.dark .hero h1 {
 .about-text p {
     margin-bottom: 0.3rem;
     line-height: 1.5;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
 }
 
 .reward-btn {
@@ -456,7 +456,7 @@ body.dark .hero h1 {
     padding: 5px 16px;
     border-radius: 30px;
     cursor: pointer;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     margin-top: 0.3rem;
 }
 
@@ -469,7 +469,7 @@ body.dark .hero h1 {
 
 .owner-card {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 0.6rem;
     flex: 1;
     min-width: 100px;
@@ -495,13 +495,13 @@ body.dark .hero h1 {
 }
 
 .owner-card .owner-name {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: bold;
     color: var(--btn-primary);
 }
 
 .owner-card .owner-desc {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
@@ -509,7 +509,7 @@ body.dark .hero h1 {
     padding: 0.6rem 1rem;
     text-align: center;
     border-top: 1px solid var(--border-color);
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     background: var(--card-bg);
 }
@@ -545,14 +545,14 @@ body.dark .hero h1 {
 }
 
 .reward-modal-content h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 0.8rem;
 }
 
 .reward-qrcode {
     background: white;
     padding: 0.8rem;
-    border-radius: 16px;
+    border-radius: 20px;
     margin: 0.8rem 0;
 }
 
@@ -563,7 +563,7 @@ body.dark .hero h1 {
 }
 
 .reward-tip {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
 }
 
 .close-reward {
@@ -587,7 +587,7 @@ body.dark .hero h1 {
 
 .modal-content h3 {
     margin-bottom: 1rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
     text-align: center;
 }
 
@@ -605,7 +605,7 @@ body.dark .hero h1 {
 }
 
 .modal-content textarea {
-    border-radius: 16px;
+    border-radius: 20px;
     resize: vertical;
 }
 
@@ -619,7 +619,7 @@ body.dark .hero h1 {
 /* 统计栏 */
 .stats-bar {
     text-align: center;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     margin-bottom: 0.8rem;
 }
@@ -653,7 +653,7 @@ body.dark .hero h1 {
     display: none;
     justify-content: center;
     align-items: center;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     z-index: 99;
     opacity: 0.9;
@@ -673,7 +673,7 @@ body.dark .hero h1 {
 
 mark {
     background: #f5bfd1;
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 0 2px;
 }
 
@@ -685,7 +685,7 @@ body.dark mark {
 /* 移动端适配 */
 @media (max-width: 640px) {
     .hero h1 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
         }
     .toolbar {
             flex-direction: column;
@@ -709,28 +709,28 @@ body.dark mark {
             overflow: hidden;
         }
     .bookmark-title {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 180px;
         }
     .bookmark-url {
-            font-size: 0.6rem;
+            font-size: 0.75rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 180px;
         }
     .bookmark-desc {
-            font-size: 0.55rem;
+            font-size: 0.75rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 180px;
         }
     .subcategory-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             max-width: calc(100% - 50px);
             overflow: hidden;
             text-overflow: ellipsis;
@@ -739,12 +739,12 @@ body.dark mark {
         }
     .category-chip {
             padding: 5px 12px;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
         }
     .tool-btn,
         .quick-item {
             padding: 5px 12px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
         }
     .footer-content {
             padding: 0.8rem;
@@ -760,7 +760,7 @@ body.dark mark {
             right: 18px;
             width: 44px;
             height: 44px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             z-index: 9999;
         }
     .back-to-top:active {
@@ -839,7 +839,7 @@ body.dark .global-loader {
 
 .loader-text {
     margin-top: 20px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #b86b84;
     font-weight: 500;
     letter-spacing: 1px;
@@ -865,7 +865,7 @@ body.dark .loader-text {
             height: 45px;
         }
     .loader-text {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             margin-top: 15px;
         }
 }

@@ -35,7 +35,7 @@ body {
 }
 
 .search-datetime .date {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--text-secondary);
     opacity: 0.7;
     font-weight: 300;
@@ -61,7 +61,7 @@ body.dark .search-datetime .time {
 }
 
 .search-datetime .weekday {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     opacity: 0.5;
     margin-top: 0.2rem;
@@ -71,7 +71,7 @@ body.dark .search-datetime .time {
 /* ===== 搜索框 ===== */
 .search-engine-box {
     width: 100%;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 0.3rem 0.3rem 0.3rem 0.3rem;
     backdrop-filter: blur(8px);
     border: 1px solid var(--border-color);
@@ -155,7 +155,7 @@ body.dark .search-engine-box {
     padding: 10px 22px;
     border-radius: 40px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
@@ -168,7 +168,7 @@ body.dark .search-engine-box {
 }
 
 .search-tip {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     opacity: 0.4;
     text-align: center;
@@ -192,7 +192,7 @@ body.dark .search-engine-box {
 }
 
 .quick-tabs-header h3 {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     opacity: 0.6;
     font-weight: 400;
@@ -209,7 +209,7 @@ body.dark .search-engine-box {
     border: 1px solid var(--border-color);
     padding: 3px 12px;
     border-radius: 30px;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
@@ -245,7 +245,7 @@ body.dark .search-engine-box {
     align-items: center;
     justify-content: center;
     padding: 8px 4px;
-    border-radius: 16px;
+    border-radius: 20px;
     background: var(--card-bg);
     border: 1px solid transparent;
     cursor: pointer;
@@ -269,7 +269,7 @@ body.dark .search-engine-box {
 }
 
 .quick-tab-icon {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     line-height: 1.4;
     transition: transform 0.2s;
     display: flex;
@@ -283,7 +283,7 @@ body.dark .search-engine-box {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border-radius: 4px;
+    border-radius: 12px;
 }
 
 .quick-tab-item:hover .quick-tab-icon {
@@ -291,7 +291,7 @@ body.dark .search-engine-box {
 }
 
 .quick-tab-name {
-    font-size: 0.55rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     text-align: center;
     max-width: 64px;
@@ -336,7 +336,7 @@ body.dark .search-engine-box {
     align-items: center;
     justify-content: center;
     padding: 8px 4px;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 2px dashed var(--border-color);
     cursor: pointer;
     transition: all 0.25s;
@@ -354,12 +354,12 @@ body.dark .search-engine-box {
 }
 
 .quick-tab-add .add-icon {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     line-height: 1.4;
 }
 
 .quick-tab-add .add-text {
-    font-size: 0.5rem;
+    font-size: 0.75rem;
 }
 
 .quick-tabs-empty {
@@ -367,7 +367,7 @@ body.dark .search-engine-box {
     padding: 1.5rem 0.5rem;
     color: var(--text-secondary);
     opacity: 0.4;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
 }
 
 .network-error-banner {
@@ -376,7 +376,7 @@ body.dark .search-engine-box {
     color: #92400e;
     padding: 4px 12px;
     border-radius: 30px;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     margin-top: 0.3rem;
     text-align: center;
 }
@@ -413,7 +413,7 @@ body.dark .network-error-banner {
     border-radius: 30px;
     text-decoration: none;
     color: var(--text-secondary);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     transition: all 0.2s;
     backdrop-filter: blur(8px);
     cursor: pointer;
@@ -433,7 +433,7 @@ body.dark .network-error-banner {
 }
 
 .top-nav .user-display {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     display: none;
     align-items: center;
@@ -454,10 +454,10 @@ body.dark .network-error-banner {
 .search-footer .footer-bottom {
     padding: 0.6rem 1rem;
     text-align: center;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid var(--border-color);
     backdrop-filter: blur(8px);
 }
@@ -492,7 +492,7 @@ body.dark .network-error-banner {
 }
 
 .modal-content h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     text-align: center;
     margin-bottom: 1rem;
@@ -505,7 +505,7 @@ body.dark .network-error-banner {
 
 .modal-content .form-group label {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: var(--text-secondary);
     margin-bottom: 0.3rem;
@@ -542,14 +542,14 @@ body.dark .network-error-banner {
     padding: 6px 12px;
     background: var(--btn-bg);
     border-radius: 30px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     opacity: 0.7;
     min-height: 36px;
 }
 
 .favicon-preview .preview-icon {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     width: 28px;
     height: 28px;
     display: flex;
@@ -562,16 +562,16 @@ body.dark .network-error-banner {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border-radius: 4px;
+    border-radius: 12px;
 }
 
 .favicon-preview .preview-label {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     opacity: 0.6;
 }
 
 .modal-content .icon-hint {
-    font-size: 0.55rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     opacity: 0.5;
     margin-top: 0.1rem;
@@ -582,7 +582,7 @@ body.dark .network-error-banner {
     display: none;
     text-align: center;
     padding: 0.3rem 0;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
 }
 
@@ -604,7 +604,7 @@ body.dark .network-error-banner {
     border: none;
     padding: 6px 18px;
     border-radius: 30px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s;
     color: var(--text-secondary);
@@ -642,27 +642,27 @@ body.dark .network-error-banner {
     .search-datetime .date { font-size: 1rem; }
     .search-engine-box { flex-wrap: wrap; padding: 0.4rem; border-radius: 30px; }
     .search-engine-box select { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); border-radius: 30px 30px 0 0; padding: 8px 16px; text-align: center; }
-    .search-engine-box input { padding: 10px 6px; font-size: 0.9rem; }
-    .search-engine-box button { width: 100%; padding: 8px 16px; font-size: 0.8rem; }
-    .top-nav a, .top-nav select, .top-nav .top-nav-btn { font-size: 0.7rem; padding: 4px 12px; }
+    .search-engine-box input { padding: 10px 6px; font-size: 0.85rem; }
+    .search-engine-box button { width: 100%; padding: 8px 16px; font-size: 0.85rem; }
+    .top-nav a, .top-nav select, .top-nav .top-nav-btn { font-size: 0.75rem; padding: 4px 12px; }
     .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; }
     .quick-tab-item { min-height: 62px; padding: 6px 3px; }
-    .quick-tab-icon { font-size: 1.3rem; width: 28px; height: 28px; }
-    .quick-tab-name { font-size: 0.5rem; max-width: 50px; }
+    .quick-tab-icon { font-size: 1.25rem; width: 28px; height: 28px; }
+    .quick-tab-name { font-size: 0.75rem; max-width: 50px; }
     .quick-tab-add { min-height: 62px; }
-    .quick-tab-add .add-icon { font-size: 1.4rem; }
-    .modal-content { padding: 1rem; border-radius: 24px; }
-    .modal-buttons .btn { padding: 6px 14px; font-size: 0.75rem; min-width: 60px; }
-    .favicon-preview { font-size: 0.65rem; padding: 4px 10px; }
+    .quick-tab-add .add-icon { font-size: 1.25rem; }
+    .modal-content { padding: 1rem; border-radius: 20px; }
+    .modal-buttons .btn { padding: 6px 14px; font-size: 0.85rem; min-width: 60px; }
+    .favicon-preview { font-size: 0.75rem; padding: 4px 10px; }
 }
 
 @media (max-width: 400px) {
     .quick-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
     .quick-tab-item { min-height: 54px; padding: 4px 2px; border-radius: 12px; }
-    .quick-tab-icon { font-size: 1.1rem; width: 24px; height: 24px; }
-    .quick-tab-name { font-size: 0.45rem; max-width: 44px; }
+    .quick-tab-icon { font-size: 1rem; width: 24px; height: 24px; }
+    .quick-tab-name { font-size: 0.75rem; max-width: 44px; }
     .quick-tab-add { min-height: 54px; }
-    .quick-tab-add .add-icon { font-size: 1.2rem; }
+    .quick-tab-add .add-icon { font-size: 1.25rem; }
 }
 
 /* ===== 清空按钮 ===== */

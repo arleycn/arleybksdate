@@ -2,12 +2,12 @@
 :root {
     --bg-gradient-start: #fff5f7;
     --bg-gradient-end: #ffe4ed;
-    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(255, 255, 255, 0.92);
     --text-primary: #5d3a4b;
-    --text-secondary: #b86b84;
+    --text-secondary: #a05570;
     --border-color: #ffe0e8;
     --tab-bg: rgba(245, 235, 230, 0.7);
-    --tab-active: #e67e22;
+    --tab-active: #f29bb8;
     --tab-active-bm: #f39c12;
     --tab-active-msg: #10b981;
     --tab-active-link: #3b82f6;
@@ -65,8 +65,8 @@ h1 {
     text-align: center;
     margin: 0;
     color: var(--text-secondary);
-    font-size: 1.6rem;
-    background: linear-gradient(135deg, #e67e22, #c0392b);
+    font-size: 1.75rem;
+    background: linear-gradient(135deg, #f29bb8, #d2136b);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -74,7 +74,7 @@ h1 {
 }
 
 body.dark h1 {
-    background: linear-gradient(135deg, #d99bb8, #b86b9e);
+    background: linear-gradient(135deg, #f8cedb, #f29bb8);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -201,7 +201,7 @@ body.dark h1 {
 h2 {
     color: var(--text-secondary);
     margin: 0 0 1rem 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .form-group {
@@ -212,7 +212,7 @@ h2 {
     display: block;
     margin-bottom: 0.3rem;
     color: var(--text-secondary);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .form-group input,
@@ -263,7 +263,7 @@ h2 {
 
 .btn-sm {
     padding: 5px 12px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
 }
 
 /* 书签列表项 */
@@ -298,7 +298,7 @@ h2 {
 }
 
 .message-time {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     opacity: 0.7;
 }
@@ -309,7 +309,7 @@ h2 {
 }
 
 .status-badge {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     padding: 2px 8px;
     border-radius: 20px;
 }
@@ -376,21 +376,21 @@ h2 {
 }
 
 .feedback404-time {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
 .feedback404-url {
     margin: 0.5rem 0;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     word-break: break-all;
 }
 
 .feedback404-message {
     background: rgba(0, 0, 0, 0.05);
     padding: 0.5rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
     margin: 0.5rem 0;
 }
 
@@ -398,7 +398,7 @@ h2 {
     display: flex;
     flex-wrap: wrap;
     gap: 0.8rem;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     margin: 0.5rem 0;
 }
@@ -462,14 +462,14 @@ h2 {
 @media (max-width: 640px) {
     body { padding: 0.8rem; }
     .form-row { flex-direction: column; gap: 0.5rem; }
-    .tab { padding: 6px 14px; font-size: 0.75rem; }
+    .tab { padding: 6px 14px; font-size: 0.85rem; }
     .card { padding: 1rem; }
 }
 
 /* 书签管理列表项样式（白天/黑夜自适应） */
 .bookmark-admin-item {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 0.8rem;
     margin-bottom: 0.8rem;
     border: 1px solid var(--border-color);
@@ -495,7 +495,7 @@ h2 {
 }
 
 .bookmark-category-path {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     margin-bottom: 0.3rem;
 }
 
@@ -508,19 +508,19 @@ h2 {
 }
 
 .bookmark-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin: 0.2rem 0;
     color: var(--text-primary);
 }
 
 .bookmark-url {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     word-break: break-all;
 }
 
 .bookmark-desc {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     opacity: 0.7;
     margin-top: 0.2rem;
