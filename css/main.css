@@ -380,6 +380,13 @@ body.dark .hero h1 {
     border-color: var(--btn-primary);
 }
 
+/* 键盘聚焦：卡片现在是 role=link，必须有可见焦点环 */
+.bookmark-card:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 3px;
+    border-color: var(--btn-primary);
+}
+
 /* 底部发光条动画 */
 .bookmark-card::after {
     content: '';

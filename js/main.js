@@ -232,7 +232,7 @@ function renderBookmarks() {
                 bookmarks.forEach(bookmark => {
                     const displayName = searchKeyword ? highlightText(bookmark.name, searchKeyword) : escapeHtml(bookmark.name);
                     const displayUrl = searchKeyword ? highlightText(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url, searchKeyword) : escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url);
-                    html += `<div class="bookmark-card"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
+                    html += `<div class="bookmark-card" data-url="${escapeHtml(bookmark.url)}" role="link" tabindex="0"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
                 });
 
                 html += `</div></div>`;
@@ -242,7 +242,7 @@ function renderBookmarks() {
             cat.bookmarks.forEach(bookmark => {
                 const displayName = searchKeyword ? highlightText(bookmark.name, searchKeyword) : escapeHtml(bookmark.name);
                 const displayUrl = searchKeyword ? highlightText(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url, searchKeyword) : escapeHtml(bookmark.url.length > 50 ? bookmark.url.substring(0, 50) + '...' : bookmark.url);
-                html += `<div class="bookmark-card"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
+                html += `<div class="bookmark-card" data-url="${escapeHtml(bookmark.url)}" role="link" tabindex="0"><div class="bookmark-info"><div class="bookmark-title">🔗 ${displayName}</div><div class="bookmark-url" title="${escapeHtml(bookmark.url)}">${displayUrl}</div>${bookmark.desc ? `<div class="bookmark-desc">💬 ${searchKeyword ? highlightText(bookmark.desc, searchKeyword) : escapeHtml(bookmark.desc)}</div>` : ''}</div><div class="bookmark-actions"><button class="icon-btn visit-btn" data-url="${escapeHtml(bookmark.url)}">访问</button></div></div>`;
             });
             html += `</div>`;
         }
@@ -254,14 +254,22 @@ function renderBookmarks() {
 
     const cards = document.querySelectorAll('.bookmark-card');
     cards.forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.03}s`;
+        card.style.animationDelay = `${Math.min(index, 20) * 0.03}s`;
     });
 
-    document.querySelectorAll('.visit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            let url = btn.dataset.url;
+    cards.forEach(card => {
+        const openCard = () => {
+            let url = card.dataset.url || '';
+            if (!url) return;
             if (!url.startsWith('http')) url = 'https://' + url;
             window.open(url, '_blank');
+        };
+        card.addEventListener('click', openCard);
+        card.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openCard();
+            }
         });
     });
 }
