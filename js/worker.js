@@ -71,6 +71,50 @@ export default {
 			return authHeader === `Bearer ${ADMIN_PASSWORD}`;
 		}
 
+		// ========== 书签读接口的边缘缓存 ==========
+		// 只缓存 JSON 正文，CORS 头每次请求重算，避免把 A 域名的响应头发给 B 域名
+		const BOOKMARKS_CACHE_KEY = "https://cache.internal/bookmarks";
+		const BOOKMARKS_CACHE_TTL = 60; // 秒
+
+		function cacheAvailable() {
+			return typeof caches !== "undefined" && caches && caches.default;
+		}
+
+		async function readBookmarksCache() {
+			if (!cacheAvailable()) return null;
+			try {
+				const hit = await caches.default.match(BOOKMARKS_CACHE_KEY);
+				if (!hit) return null;
+				// 自带过期时间，不依赖 Cache-Control 的启发式判定
+				const exp = Number(hit.headers.get("x-cache-exp") || 0);
+				if (!exp || Date.now() > exp) return null;
+				return await hit.text();
+			} catch (e) {
+				return null;
+			}
+		}
+
+		async function writeBookmarksCache(body) {
+			if (!cacheAvailable()) return;
+			try {
+				await caches.default.put(BOOKMARKS_CACHE_KEY, new Response(body, {
+					headers: {
+						"Content-Type": "application/json",
+						"Cache-Control": `public, max-age=${BOOKMARKS_CACHE_TTL}`,
+						"x-cache-exp": String(Date.now() + BOOKMARKS_CACHE_TTL * 1000)
+					}
+				}));
+			} catch (e) {}
+		}
+
+		// 后台写操作成功后必须调用，否则要等 60 秒才看到自己的修改
+		async function dropBookmarksCache() {
+			if (!cacheAvailable()) return;
+			try {
+				await caches.default.delete(BOOKMARKS_CACHE_KEY);
+			} catch (e) {}
+		}
+
 		// ========== 默认数据 ==========
 		const DEFAULT_MENU = [{
 			"name": "热搜新闻",
@@ -122,29 +166,49 @@ export default {
 		// 获取书签（公开）
 		if (path === "/api/bookmarks" && method === "GET") {
 			try {
+				const cached = await readBookmarksCache();
+				if (cached) {
+					return new Response(cached, {
+						status: 200,
+						headers: {
+							...getCorsHeaders(request),
+							"Content-Type": "application/json",
+							"Cache-Control": "no-store",
+							"X-Cache": "HIT"
+						}
+					});
+				}
+
 				let menu = await redisCommand("GET", "menu");
 				let bookmarks = await redisCommand("GET", "bookmarks");
+				let degraded = false; // Redis 没读到真实数据时，禁止写缓存
 				if (!menu) {
 					menu = DEFAULT_MENU;
+					degraded = true;
 					await redisCommand("SET", "menu", JSON.stringify(menu));
 				}
 				if (!bookmarks) {
 					bookmarks = DEFAULT_BOOKMARKS;
+					degraded = true;
 					await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks));
 				}
 				if (typeof menu === "string") menu = JSON.parse(menu);
 				if (typeof bookmarks === "string") bookmarks = JSON.parse(bookmarks);
-				return new Response(JSON.stringify({
+				const body = JSON.stringify({
 					success: true,
 					data: {
 						menu,
 						bookmarks
 					}
-				}), {
+				});
+				if (!degraded) await writeBookmarksCache(body);
+				return new Response(body, {
 					status: 200,
 					headers: {
 						...getCorsHeaders(request),
-						"Content-Type": "application/json"
+						"Content-Type": "application/json",
+						"Cache-Control": "no-store",
+						"X-Cache": degraded ? "BYPASS" : "MISS"
 					}
 				});
 			} catch (err) {
@@ -263,6 +327,7 @@ export default {
 				}
 
 				await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks));
+				await dropBookmarksCache();
 				return new Response(JSON.stringify({
 					success: true,
 					message: "添加成功"
@@ -296,6 +361,7 @@ export default {
 			try {
 				const { bookmarks } = await request.json();
 				await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks || []));
+				await dropBookmarksCache();
 				return new Response(JSON.stringify({
 					success: true,
 					message: "更新成功"
@@ -403,6 +469,7 @@ export default {
 				}
 
 				await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks));
+				await dropBookmarksCache();
 
 				return new Response(JSON.stringify({
 					success: true,
