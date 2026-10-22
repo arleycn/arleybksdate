@@ -160,21 +160,3 @@ body.dark::after {
     70% { opacity: 1; }
     100% { opacity: 0; visibility: hidden; }
 }
-
-/* ===================================================================
-   降低动效偏好：动画接近瞬时，但 toast 交给 JS 定时移除
-   =================================================================== */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-delay: 0s !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-    .toast {
-        animation: none !important;
-    }
-}

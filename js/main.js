@@ -254,7 +254,7 @@ function renderBookmarks() {
 
     const cards = document.querySelectorAll('.bookmark-card');
     cards.forEach((card, index) => {
-        card.style.animationDelay = `${Math.min(index, 20) * 0.03}s`;
+        card.style.animationDelay = `${Math.min(index, 40) * 0.03}s`;
     });
 
     cards.forEach(card => {
