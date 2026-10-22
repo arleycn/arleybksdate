@@ -1,17 +1,11 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* ========== 主题变量 ========== */
+/* ========== 主题变量（核心色并入樱花系，tabs 六色保留为功能语义） ========== */
 :root {
-    --bg-gradient-start: #fef9f1;
-    --bg-gradient-end: #fff3e8;
-    --card-bg: rgba(255, 255, 245, 0.96);
-    --text-primary: #3c2a2f;
-    --text-secondary: #b85c7e;
-    --border-color: #ffe0e0;
+    --bg-gradient-start: #fff5f7;
+    --bg-gradient-end: #ffe4ed;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --text-primary: #5d3a4b;
+    --text-secondary: #b86b84;
+    --border-color: #ffe0e8;
     --tab-bg: rgba(245, 235, 230, 0.7);
     --tab-active: #e67e22;
     --tab-active-bm: #f39c12;
@@ -19,9 +13,9 @@
     --tab-active-link: #3b82f6;
     --tab-active-set: #8b5cf6;
     --tab-active-404: #ef4444;
-    --btn-primary: #f39c12;
-    --btn-primary-hover: #e67e22;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --btn-primary: #f29bb8;
+    --btn-primary-hover: #e87ea1;
+    --shadow: 0 4px 12px rgba(176, 70, 100, 0.12);
 }
 
 body.dark {
@@ -78,6 +72,7 @@ h1 {
     color: transparent;
     margin-bottom: 30px;
 }
+
 body.dark h1 {
     background: linear-gradient(135deg, #d99bb8, #b86b9e);
     background-clip: text;
@@ -96,6 +91,7 @@ body.dark h1 {
     color: var(--text-secondary);
     transition: all 0.2s;
 }
+
 .theme-toggle-btn:hover {
     background: var(--btn-primary);
     color: white;
@@ -115,6 +111,7 @@ body.dark h1 {
     z-index: 100;
     color: var(--text-secondary);
 }
+
 .logout-btn:hover {
     background: var(--btn-primary);
     color: white;
@@ -141,24 +138,32 @@ body.dark h1 {
     border: 1px solid transparent;
     font-weight: 500;
 }
+
 .tab:hover {
     transform: translateY(-2px);
     background: rgba(155, 89, 182, 0.15);
 }
+
 .tab.active {
     background: var(--tab-active);
     color: white;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
 .tab[data-tab="bookmarks"].active { background: var(--tab-active-bm); }
+
 .tab[data-tab="messages"].active { background: var(--tab-active-msg); }
+
 .tab[data-tab="quicklinks"].active { background: var(--tab-active-link); }
+
 .tab[data-tab="settings"].active { background: var(--tab-active-set); }
+
 .tab[data-tab="feedback404"].active { background: var(--tab-active-404); }
 
 .tab-content {
     display: none;
 }
+
 .tab-content.active {
     display: block;
 }
@@ -174,6 +179,7 @@ body.dark h1 {
     box-shadow: var(--shadow);
     transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.2);
@@ -181,10 +187,15 @@ body.dark h1 {
 
 /* 各模块卡片特色左边框 */
 #tab-bookmarks .card:first-child { border-left: 5px solid #f39c12; }
+
 #tab-messages .card { border-left: 5px solid #10b981; }
+
 #tab-quicklinks .card { border-left: 5px solid #3b82f6; }
+
 #tab-settings .card:first-child { border-left: 5px solid #8b5cf6; }
+
 #tab-settings .card:last-child { border-left: 5px solid #ec489a; }
+
 #tab-feedback404 .card { border-left: 5px solid #ef4444; }
 
 h2 {
@@ -196,12 +207,14 @@ h2 {
 .form-group {
     margin-bottom: 0.8rem;
 }
+
 .form-group label {
     display: block;
     margin-bottom: 0.3rem;
     color: var(--text-secondary);
     font-size: 0.8rem;
 }
+
 .form-group input,
 .form-group select {
     width: 100%;
@@ -213,52 +226,41 @@ h2 {
     font-size: 0.85rem;
     outline: none;
 }
+
 .form-group input:focus,
 .form-group select:focus {
     border-color: var(--btn-primary);
 }
+
 .form-row {
     display: flex;
     gap: 0.8rem;
     flex-wrap: wrap;
 }
+
 .form-row .form-group {
     flex: 1;
     min-width: 140px;
 }
 
-.btn {
-    padding: 8px 20px;
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    background: #2a2a3e;
-    color: #e8e8e8;
-    transition: all 0.2s;
-    font-size: 0.85rem;
-}
-.btn-primary {
-    background: var(--btn-primary);
-    color: white;
-}
-.btn-primary:hover {
-    background: var(--btn-primary-hover);
-    transform: translateY(-2px);
-}
 .btn-danger {
     background: #c0392b;
     color: white;
 }
+
 .btn-danger:hover {
     background: #e74c3c;
 }
+
 .btn-success {
     background: #27ae60;
     color: white;
 }
+
 .btn-success:hover {
     background: #2ecc71;
 }
+
 .btn-sm {
     padding: 5px 12px;
     font-size: 0.75rem;
@@ -281,6 +283,7 @@ h2 {
     margin-bottom: 0.8rem;
     border-left: 3px solid #10b981;
 }
+
 .message-header {
     display: flex;
     justify-content: space-between;
@@ -288,32 +291,39 @@ h2 {
     flex-wrap: wrap;
     gap: 0.5rem;
 }
+
 .message-nickname {
     font-weight: bold;
     color: #10b981;
 }
+
 .message-time {
     font-size: 0.65rem;
     color: var(--text-secondary);
     opacity: 0.7;
 }
+
 .message-content {
     margin-top: 0.3rem;
     font-size: 0.85rem;
 }
+
 .status-badge {
     font-size: 0.65rem;
     padding: 2px 8px;
     border-radius: 20px;
 }
+
 .status-pending {
     background: #f39c12;
     color: #333;
 }
+
 .status-approved {
     background: #27ae60;
     color: white;
 }
+
 .message-actions {
     margin-top: 0.5rem;
     display: flex;
@@ -326,12 +336,14 @@ h2 {
     border-collapse: collapse;
     font-size: 0.85rem;
 }
+
 .bookmark-table th,
 .bookmark-table td {
     padding: 10px 6px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
+
 .bookmark-table th {
     color: var(--text-secondary);
     font-weight: 500;
@@ -348,10 +360,12 @@ h2 {
     width: 100%;
     box-sizing: border-box;
 }
+
 .feedback404-item:hover {
     background: rgba(239, 68, 68, 0.15);
     transform: translateX(4px);
 }
+
 .feedback404-header {
     display: flex;
     justify-content: space-between;
@@ -360,15 +374,18 @@ h2 {
     flex-wrap: wrap;
     gap: 0.5rem;
 }
+
 .feedback404-time {
     font-size: 0.7rem;
     color: var(--text-secondary);
 }
+
 .feedback404-url {
     margin: 0.5rem 0;
     font-size: 0.8rem;
     word-break: break-all;
 }
+
 .feedback404-message {
     background: rgba(0, 0, 0, 0.05);
     padding: 0.5rem;
@@ -376,6 +393,7 @@ h2 {
     font-size: 0.8rem;
     margin: 0.5rem 0;
 }
+
 .feedback404-info {
     display: flex;
     flex-wrap: wrap;
@@ -384,6 +402,7 @@ h2 {
     color: var(--text-secondary);
     margin: 0.5rem 0;
 }
+
 .feedback404-actions {
     display: flex;
     gap: 0.5rem;
@@ -412,9 +431,11 @@ h2 {
     justify-content: center;
     align-items: center;
 }
+
 .modal.active, .edit-modal.active {
     display: flex;
 }
+
 .modal-content, .edit-modal-content {
     background: var(--card-bg);
     border-radius: 20px;
@@ -424,11 +445,13 @@ h2 {
     border: 1px solid var(--border-color);
     animation: modalSlideIn 0.3s ease;
 }
+
 .modal-content h3, .edit-modal-content h3 {
     margin-bottom: 1rem;
     color: var(--text-secondary);
     text-align: center;
 }
+
 .modal-buttons, .edit-modal-buttons {
     display: flex;
     gap: 0.8rem;
@@ -436,41 +459,13 @@ h2 {
     margin-top: 1.2rem;
 }
 
-/* toast提示 */
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #27ae60;
-    color: white;
-    padding: 8px 20px;
-    border-radius: 40px;
-    font-size: 0.8rem;
-    z-index: 1100;
-    animation: fadeOut 2.5s ease forwards;
-}
-.toast-error {
-    background: #c0392b;
-}
-
-@keyframes fadeOut {
-    0% { opacity: 1; }
-    70% { opacity: 1; }
-    100% { opacity: 0; visibility: hidden; }
-}
-@keyframes modalSlideIn {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 @media (max-width: 640px) {
     body { padding: 0.8rem; }
     .form-row { flex-direction: column; gap: 0.5rem; }
-    .btn { padding: 6px 14px; font-size: 0.75rem; }
     .tab { padding: 6px 14px; font-size: 0.75rem; }
     .card { padding: 1rem; }
 }
+
 /* 书签管理列表项样式（白天/黑夜自适应） */
 .bookmark-admin-item {
     background: var(--card-bg);
@@ -480,10 +475,12 @@ h2 {
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
 }
+
 .bookmark-admin-item:hover {
     transform: translateX(4px);
     box-shadow: var(--shadow);
 }
+
 .bookmark-admin-inner {
     display: flex;
     flex-wrap: wrap;
@@ -491,36 +488,44 @@ h2 {
     align-items: center;
     gap: 0.8rem;
 }
+
 .bookmark-info-area {
     flex: 1;
     min-width: 0;
 }
+
 .bookmark-category-path {
     font-size: 0.7rem;
     margin-bottom: 0.3rem;
 }
+
 .cat-parent {
     color: var(--text-secondary);
 }
+
 .cat-sub {
     color: var(--btn-primary);
 }
+
 .bookmark-title {
     font-size: 0.9rem;
     margin: 0.2rem 0;
     color: var(--text-primary);
 }
+
 .bookmark-url {
     font-size: 0.7rem;
     color: var(--text-secondary);
     word-break: break-all;
 }
+
 .bookmark-desc {
     font-size: 0.65rem;
     color: var(--text-secondary);
     opacity: 0.7;
     margin-top: 0.2rem;
 }
+
 .bookmark-actions-area {
     display: flex;
     gap: 0.5rem;
