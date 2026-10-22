@@ -23,7 +23,7 @@ setTimeout(function() {
     }
 }, 5000);
 
-const API_BASE = "https://arleybks.arley.cn";
+const API_BASE = /(^|\.)bm\.arley\.cn$/.test(location.hostname) ? "" : "https://arleybks.arley.cn";
 let fullData = { menu: [], bookmarks: [] };
 let currentCategory = "";
 let searchKeyword = "";
@@ -477,7 +477,7 @@ document.getElementById('rewardBtn').onclick = () => { rewardModal.classList.add
 document.getElementById('closeRewardBtn').onclick = () => { rewardModal.classList.remove('active'); };
 rewardModal.onclick = (e) => { if (e.target === rewardModal) rewardModal.classList.remove('active'); };
 
-document.getElementById('adminBtn').onclick = () => { window.open('admin.html', '_blank'); };
+document.getElementById('adminBtn').onclick = () => { window.open('/admin', '_blank'); };
 document.getElementById('searchBtn').onclick = searchBookmarks;
 document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') searchBookmarks(); };
 document.getElementById('clearSearchBtn').onclick = clearSearch;

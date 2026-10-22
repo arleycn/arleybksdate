@@ -3,7 +3,7 @@ console.log("%c 🔍 Arley's 搜索页 %c 标签 ", "color: #ffffff; background:
 // ================================================================
 //  1. API 配置 & 用户状态
 // ================================================================
-const API_BASE = 'https://arleybks.arley.cn';
+const API_BASE = /(^|\.)bm\.arley\.cn$/.test(location.hostname) ? "" : "https://arleybks.arley.cn";
 
 const DEFAULT_TABS = [
     { name: 'GitHub', url: 'https://github.com', icon: '🐙' },

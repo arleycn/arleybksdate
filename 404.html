@@ -399,7 +399,7 @@
     <div style="position:fixed; bottom:15px; right:15px; opacity:0.2; pointer-events:none;">🍃</div>
 
     <script>
-        const API_BASE = "https://arleybks.arley.cn";
+        const API_BASE = /(^|\.)bm\.arley\.cn$/.test(location.hostname) ? "" : "https://arleybks.arley.cn";
         
         // 获取动态书签总数
         async function fetchBookmarkCount() {

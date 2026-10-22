@@ -1,4 +1,4 @@
-const API_BASE = "https://arleybks.arley.cn";
+const API_BASE = /(^|\.)bm\.arley\.cn$/.test(location.hostname) ? "" : "https://arleybks.arley.cn";
 let adminPass = localStorage.getItem("adminPass");
 
 function showLoginModal() {
