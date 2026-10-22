@@ -6,7 +6,6 @@
 ### 搜索页: [https://bm.arley.cn/search.html](https://bm.arley.cn/search.html)
 ### 管理后台: [https://bm.arley.cn/admin](https://bm.arley.cn/admin)
 ### 404: [https://bm.arley.cn/404](https://bm.arley.cn/404)
-### API调试: [https://bm.arley.cn/apihome](https://bm.arley.cn/apihome)
 
 ## 功能特点
 
@@ -18,7 +17,6 @@
 - 🔐 管理后台（需密码登录）
 - 🚀 独立 Key 存储，模块分离
 - ❓ 404错误页面优雅处理（自定义404.html）
-- 🛠️ API调试工具页面（apihome.html）方便开发测试
 
 ### 搜索页功能（新增）
 - 🔍 聚合搜索引擎（百度/Google/Bing/搜狗/360/DuckDuckGo/Yandex/头条搜索）
@@ -81,7 +79,6 @@ ArleyBKS/
 ├── search.html              # 搜索页（聚合搜索 + 标签）
 ├── admin.html               # 管理后台页面
 ├── 404.html                 # 自定义 404 错误页面
-├── apihome.html             # API 调试页面
 ├── css/
 │   ├── admin.css            # 后台管理专用样式
 │   ├── main.css             # 前台主样式
@@ -102,8 +99,6 @@ ArleyBKS/
 <img width="2550" height="1233" alt="404" src="https://github.com/user-attachments/assets/21288d94-29c0-41e7-bec6-e0573dd01633" />
 
 <img width="2550" height="1233" alt="admin" src="https://github.com/user-attachments/assets/4f3f9d0e-f5a0-48bb-8e19-7f7d869eaf1d" />
-
-<img width="2550" height="1233" alt="apihome" src="https://github.com/user-attachments/assets/67c262df-b255-4072-a3cb-7e832f153be8" />
 
 ## 许可证
 

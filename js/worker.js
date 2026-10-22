@@ -115,32 +115,6 @@ export default {
 			{ name: 'Arley Blog', url: 'https://blog.arley.cn', icon: '📝' }
 		];
 
-		// ========== 根路径 ==========
-		if (path === "/" && method === "GET") {
-			return new Response(JSON.stringify({
-				name: "Arley's Bookmark API",
-				status: "running",
-				version: "2.0.0"
-			}), {
-				status: 200,
-				headers: {
-					...getCorsHeaders(request),
-					"Content-Type": "application/json"
-				}
-			});
-		}
-
-		// ========== 健康检查 ==========
-		if (path === "/health" && method === "GET") {
-			return new Response(JSON.stringify({
-				status: "ok",
-				timestamp: new Date().toISOString()
-			}), {
-				status: 200,
-				headers: getCorsHeaders(request)
-			});
-		}
-
 		// ================================================================
 		//  ✅ 1. 📚 书签 API（完全不变，主站依赖）
 		// ================================================================
@@ -1179,64 +1153,6 @@ export default {
 					message: "登录成功"
 				}), {
 					status: 200,
-					headers: getCorsHeaders(request)
-				});
-			} catch (err) {
-				return new Response(JSON.stringify({
-					success: false,
-					error: err.message
-				}), {
-					status: 500,
-					headers: getCorsHeaders(request)
-				});
-			}
-		}
-
-		// 验证 token
-		if (path === "/api/auth/verify" && method === "POST") {
-			try {
-				const { token } = await request.json();
-				if (!token) {
-					return new Response(JSON.stringify({
-						success: false,
-						error: "缺少 token"
-					}), {
-						status: 400,
-						headers: getCorsHeaders(request)
-					});
-				}
-
-				try {
-					const decoded = atob(token);
-					const parts = decoded.split(':');
-					if (parts.length === 3) {
-						const timestamp = parseInt(parts[1]);
-						const now = Date.now();
-						if (now - timestamp > 7 * 24 * 60 * 60 * 1000) {
-							return new Response(JSON.stringify({
-								success: false,
-								error: "登录已过期，请重新登录"
-							}), {
-								status: 401,
-								headers: getCorsHeaders(request)
-							});
-						}
-						return new Response(JSON.stringify({
-							success: true,
-							username: parts[0],
-							message: "token 有效"
-						}), {
-							status: 200,
-							headers: getCorsHeaders(request)
-						});
-					}
-				} catch (e) {}
-
-				return new Response(JSON.stringify({
-					success: false,
-					error: "无效的 token"
-				}), {
-					status: 401,
 					headers: getCorsHeaders(request)
 				});
 			} catch (err) {
