@@ -182,15 +182,15 @@ export default {
 				let menu = await redisCommand("GET", "menu");
 				let bookmarks = await redisCommand("GET", "bookmarks");
 				let degraded = false; // Redis 没读到真实数据时，禁止写缓存
+				// 读不到就只在本响应里用默认值顶上，绝不写回 Redis。
+				// 否则 Upstash 额度耗尽或抖动一次，229 条书签会被空数组永久覆盖。
 				if (!menu) {
 					menu = DEFAULT_MENU;
 					degraded = true;
-					await redisCommand("SET", "menu", JSON.stringify(menu));
 				}
 				if (!bookmarks) {
 					bookmarks = DEFAULT_BOOKMARKS;
 					degraded = true;
-					await redisCommand("SET", "bookmarks", JSON.stringify(bookmarks));
 				}
 				if (typeof menu === "string") menu = JSON.parse(menu);
 				if (typeof bookmarks === "string") bookmarks = JSON.parse(bookmarks);
